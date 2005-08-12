@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
 		printf("Error starting up socks :o\n");
 		exit(EXIT_FAILURE);
 	}
+	printf("%d\n", WSAGetLastError());
 	
 	FD_ZERO(&master);
 	FD_ZERO(&read_fds);
@@ -103,11 +104,13 @@ int main(int argc, char *argv[])
 		perror("socket");
 		exit(EXIT_FAILURE);
 	}
+	printf("%d\n", WSAGetLastError());
 	
 	if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
 	{
 		perror("setsockopt");
-		//exit(EXIT_FAILURE);
+		printf("%d %d\n", listener, WSAGetLastError());
+		exit(EXIT_FAILURE);
 	}
 	
 	// wee lets bind it
@@ -118,13 +121,13 @@ int main(int argc, char *argv[])
 	if(bind(listener, (struct sockaddr *)&myaddr, sizeof(myaddr)) == -1)
 	{
 		perror("bind");
-		//exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 	
 	if(listen(listener, 25) == -1)
 	{
 		perror("listen");
-		//exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 	
 	FD_SET(listener, &master);
@@ -136,7 +139,7 @@ int main(int argc, char *argv[])
 		if(select(fdmax + 1, &read_fds, NULL, NULL, NULL) == -1)
 		{
 			perror("select");
-			//exit(EXIT_FAILURE);
+			exit(EXIT_FAILURE);
 		}
 		
 		for(i = 0; i <= fdmax; ++i)
