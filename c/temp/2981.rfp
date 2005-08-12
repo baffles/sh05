@@ -1,0 +1,130 @@
+16SpeedHack video?43http://www.allegro.cc/rss/thread.xml/51809534 15Nial Giacomelli3157 31Wed, 10 Aug 2005 12:20:11 +0000521 This might not interest anyone else but I think it would be neat if some of the SpeedHack contestants used their webcams to take timelapse shots of them throughout the competition (something like: one webcam shot every 15/30 minutes) and then compiled it into AVI files for us to watch <img src="http://www.allegro.cc/forums/smileys/smiley.gif" alt=":)"><br />
+<br />
+I noticed the guys that did Darwinia made a &#39;day in the life of an Indie game developer&#39; timelapse short, so why can&#39;t the Allegro crowd?!  15Michael Faerber4800 31Wed, 10 Aug 2005 12:24:48 +0000173 Yeah, I would find this cool. See some speedhackers punching their monitors and shooting their keyboards! <img src="http://www.allegro.cc/forums/smileys/wink.gif" alt=";)">  8ReyBrujo1210 31Wed, 10 Aug 2005 12:31:40 +0000107 I don&#39;t have a webcam <img src="http://www.allegro.cc/forums/smileys/tongue.gif" alt=":P" border="0" /> 6jorram3035 31Wed, 10 Aug 2005 15:17:52 +0000199 &quot;Speedhack: The Reality Show&quot;?<br />
+<br />
+My sister has a webcam, but I dont think you&#39;ll like to see me coding at 4AM on Monday: wearing pijamas, unshaved, stressed and cursing...  15Nial Giacomelli3157 31Wed, 10 Aug 2005 15:20:06 +000036 &quot;Programmers: Gone Wild!&quot;  3BAF2981 31Wed, 10 Aug 2005 15:54:45 +0000239 I dont have a webcam either, but perhaps i can use my digital camera to take some pics of me, tired, mad, coding wildly at 2am in my new room that isnt even finished yet <img src="http://www.allegro.cc/forums/smileys/tongue.gif" alt=":P">  6jorram3035 31Wed, 10 Aug 2005 16:13:05 +0000150 I think that a set of photos would be better than a video. The photos can be uploaded to the progress log together with the screenshots of the game.   10NyanKoneko5617 31Wed, 10 Aug 2005 16:44:32 +000050 I agree with Jorram.  I&#39;d do a photo journal.  15William Heatley3136 31Wed, 10 Aug 2005 18:20:13 +0000310 You don&#39;t want to see what I do when I code...<br />
+<br />
+Anyway, why not use a program that every X seconds captures the screen, JPEGs it, and uploads it to a webserver? Then we can all have live web cams of what people are coding! And without all that nonsense of watching people type at a keyboard.  3BAF2981 31Wed, 10 Aug 2005 18:22:18 +000040 I dont have a webcam or i&#39;d do that  15William Heatley3136 31Wed, 10 Aug 2005 18:25:25 +000032 Which is why my idea is better.  15Nial Giacomelli3157 31Wed, 10 Aug 2005 20:39:22 +0000106 Yeah. Whichever way suits people. I just think that it gives a nice insight into creative &#39;flow&#39;.  6jorram3035 31Wed, 10 Aug 2005 20:50:09 +0000536 <div class="quote_container"><div class="title">Quote:</div><div class="quote">Anyway, why not use a program that every X seconds captures the screen, JPEGs it, and uploads it to a webserver?<br />
+</div></div><br />
+It would need too much disk space and bandwidth. For his Speed entry, Shawn Hargreaves had a script that copied all the files to a new directory labelled with the date and time of execution. Thus he got &#39;snapshots&#39; of the development process, and it&#39;s quite interesting to see the evolution of the code.   11Chris Katko1881 31Wed, 10 Aug 2005 20:54:02 +0000517 <div class="quote_container"><div class="title">Quote:</div><div class="quote">It would need too much disk space and bandwidth. <br />
+</div></div>Is SpeedHack two days? Once every 30 minutes over 48 hours is 96 files. A 1280x960 PNG is around the 900-1200KB area. So we&#39;re looking at 108MB. But you might get better compression with something other than World of Warcraft screeshots (<img src="http://www.allegro.cc/forums/smileys/wink.gif" alt=";)">), and obviously, not all of the files going to be uploaded.  15William Heatley3136 31Wed, 10 Aug 2005 21:27:14 +0000677 A 1280x960 JPEG at 85% is 180kb.<br />
+In any case, screen snapshots won&#39;t document the evolution of the game very well. I think&#39;ll be better to just have it as a live webcam. So there&#39;s only one picture on there, and the webpage reloads every X seconds to refresh the picture.<br />
+<br />
+Shawn&#39;s method seems like a better idea for watching the program&#39;s evolution. Source-only snapshots would be pretty small.<br />
+That or a program that takes a random screenshot of the game whenever the developer runs the game. That&#39;d require that the game&#39;s name is static throughout the compo.<br />
+<br />
+EDIT: It&#39;s 3 days. Starting on Friday.  4Soga4589 31Wed, 10 Aug 2005 21:30:06 +0000170 Or better yet, set up a screen-capturing webcam kind of thing, where you go to their &quot;webcam&quot; to see slightly streaming snapshots of their desktop at the time.  15William Heatley3136 31Wed, 10 Aug 2005 21:31:32 +000042 Uhhhh....isn&#39;t that what I just said?  4Soga4589 31Wed, 10 Aug 2005 21:33:11 +0000295 But yours <i>saves</i> the files to a webserver, and some people simply wouldn&#39;t have the room for those screenshots if they were taken every few seconds. My idea involves streaming, so it doesn&#39;t save the screenshots. It just loads the picture directly off the webcam, then trashes it.  8ReyBrujo1210 31Wed, 10 Aug 2005 21:33:17 +0000783 Hmm... for the next Speedhack we may be able to make an Allegro program to take snapshots of the desktop and upload the picture directly to the Speedhack blog (with an option to ask if you want it to do it directly or ask for permission to upload it, just for you who like browsing p0rn pages <img src="http://www.allegro.cc/forums/smileys/tongue.gif" alt=":P" border="0" />).<br />
+<br />
+There was a Windows program that every custom_minutes+(random%5) minutes made a popup appear with a textbox so that you could write there what you were doing at that time. That would be very useful, especially if it could upload a picture or something to a blog. And RSS feedback for the Speedhack blog would be nice too, so that you don&#39;t need to go there everytime an addition is made. 15William Heatley3136 31Wed, 10 Aug 2005 21:36:27 +0000193 Soga: But mine <i>saves</i> <i>one</i> file to the webserver, and only one. There&#39;s only ever one on the server.<br />
+People load the picture directly off the webserver with autorefresh.  4Soga4589 31Wed, 10 Aug 2005 21:42:30 +0000160 You could have been a little more clear in your first post. <img src="http://www.allegro.cc/forums/smileys/tongue.gif" alt=":P"> I suppose that&#39;d work too.  6jorram3035 31Wed, 10 Aug 2005 21:43:45 +0000129 I think that a photo journal and code snapshots will be enough. You can already submit screenshots of your progress to the blog.  9Eric Love846 31Thu, 11 Aug 2005 12:11:20 +0000950 I thought about this a long time ago - a documentary of the SpeedHack. It would be an interesting project for a film-making student who&#39;s handy with a camera. Here&#39;s what you need:<br />
+<br />
+- Camera set up pointing at where the hacker sits<br />
+- Some setup to capture what&#39;s on the screen at all times<br />
+- A few sections where the filmmaker interviews the hacker about how he&#39;s going (at other times the hacker can talk directly to the fixed camera to explain things when he wants)<br />
+- The filmmaker might film any other data gathering the hacker does - any development where you see more than a guy sitting at the computer<br />
+<br />
+This would take a few hours of filming and under a day of editing (I guess, depending on quality).<br />
+<br />
+If four filmmakers did this with four different SpeedHackers, it could make for a good hour of television. It would be good publicity for this community.<br />
+  4HoHo4534 31Thu, 11 Aug 2005 12:30:29 +00004367 To see the coder itself I think webcam that saves 5-10s movie clips after every some minutes is better than some still images of the same thing. <br />
+<br />
+For desktop screenshots KSnapshot with some DCOP controlling scritp/program that saves the image after eg. every minute would be quite good too.<br />
+<br />
+<br />
+ <div class='source-code'><pre>hoho@KALLE-TE ~<span class="k3">/</span>katsepolygon<span class="k3">/</span>scimark2c<span class="k3">/</span>gcc-acovea $  dcopstart ksnapshot
+ksnapshot-3946
+hoho@KALLE-TE ~<span class="k3">/</span>katsepolygon<span class="k3">/</span>scimark2c<span class="k3">/</span>gcc-acovea $  dcop ksnapshot-3946 interface grabMode
+<span class="n">0</span>
+hoho@KALLE-TE ~<span class="k3">/</span>katsepolygon<span class="k3">/</span>scimark2c<span class="k3">/</span>gcc-acovea $ dcop ksnapshot-3946 interface url
+file:<span class="c">///home/hoho/Desktop/pildid/pilt11-desktop.png</span>
+hoho@KALLE-TE ~<span class="k3">/</span>katsepolygon<span class="k3">/</span>scimark2c<span class="k3">/</span>gcc-acovea $ dcop ksnapshot-3946 interface setURL file:<span class="c">///home/hoho/snapshots/snapshot001.jpg</span>
+<span class="c">//Setup is complete, now just grab an image and save it:</span>
+hoho@KALLE-TE ~<span class="k3">/</span>katsepolygon<span class="k3">/</span>scimark2c<span class="k3">/</span>gcc-acovea $ dcop ksnapshot-3946 interface slotGrab
+hoho@KALLE-TE ~<span class="k3">/</span>katsepolygon<span class="k3">/</span>scimark2c<span class="k3">/</span>gcc-acovea $ dcop ksnapshot-3946 interface slotSave
+
+hoho@KALLE-TE ~<span class="k3">/</span>katsepolygon<span class="k3">/</span>scimark2c<span class="k3">/</span>gcc-acovea $ ls <span class="k3">-</span>l ~<span class="k3">/</span>snapshots<span class="k3">/</span>
+total <span class="n">1132</span>
+<span class="k3">-</span>rw-r--r--  <span class="n">1</span> hoho users <span class="n">162104</span> Aug <span class="n">11</span> <span class="n">18</span><span class="k2">:</span><span class="n">28</span> snapshot001.jpg
+<span class="k3">-</span>rw-r--r--  <span class="n">1</span> hoho users <span class="n">162104</span> Aug <span class="n">11</span> <span class="n">18</span><span class="k2">:</span><span class="n">28</span> snapshot2.jpg
+<span class="k3">-</span>rw-r--r--  <span class="n">1</span> hoho users <span class="n">162104</span> Aug <span class="n">11</span> <span class="n">18</span><span class="k2">:</span><span class="n">30</span> snapshot3.jpg
+<span class="k3">-</span>rw-r--r--  <span class="n">1</span> hoho users <span class="n">152190</span> Aug <span class="n">11</span> <span class="n">18</span><span class="k2">:</span><span class="n">37</span> snapshot4.jpg
+<span class="k3">-</span>rw-r--r--  <span class="n">1</span> hoho users <span class="n">152190</span> Aug <span class="n">11</span> <span class="n">18</span><span class="k2">:</span><span class="n">37</span> snapshot5.jpg
+<span class="k3">-</span>rw-r--r--  <span class="n">1</span> hoho users <span class="n">117376</span> Aug <span class="n">11</span> <span class="n">18</span><span class="k2">:</span><span class="n">38</span> snapshot6.jpg
+<span class="k3">-</span>rw-r--r--  <span class="n">1</span> hoho users <span class="n">233624</span> Aug <span class="n">11</span> <span class="n">18</span><span class="k2">:</span><span class="n">38</span> snapshot7.jpg</pre></div><br />
+<br />
+Now someone just write a script that does this and put it into cron and you are done <img src="http://www.allegro.cc/forums/smileys/smiley.gif" alt=":)"><br />
+<br />
+[edit]<br />
+<br />
+I should have set the URL file name to something like snapshot1 instead of 001, all images are automatically given serial names starting from 1, not 001. I guess with some magic one could make it use leading zeros.<br />
+<br />
+[edit2]<br />
+<br />
+Actually it was the first time I have used DCOP and I immediately started to like it a lot. I guess I&#39;ll whip up some proggie that does just what I presented here.<br />
+<br />
+I&#39;ll also attatch a sample screenshot.<br />
+<br />
+Also I messed the original commands up a bit, I&#39;ll update them. As you can see the commands on the screenshot are a bit different than listed, copy-paste doesn&#39;t always work as I would like it to  <img src="http://www.allegro.cc/forums/smileys/smiley.gif" alt=":)">  3BAF2981 31Fri, 12 Aug 2005 04:05:46 +0000160 Wee, I&#39;m setting up my new webcam as we speak. I&#39;ll post a URL to the thingy, and I&#39;m having it save it all on my hard drive so i can AVI it later.  6jorram3035 31Fri, 12 Aug 2005 04:21:01 +0000408 <div class="quote_container"><div class="title">Quote:</div><div class="quote">Wee, I&#39;m setting up my new webcam as we speak. I&#39;ll post a URL to the thingy, and I&#39;m having it save it all on my hard drive so i can AVI it later.<br />
+</div></div><br />
+I&#39;ll post photos to the blog. In fact I just uploaded the first one <img src="http://www.allegro.cc/forums/smileys/cheesy.gif" alt=":D">.  3BAF2981 31Fri, 12 Aug 2005 04:45:42 +0000236 <a href="http://www.allegro.cc/go/http://bafzone.bafsoft.com/cam/webcam.jpg">Here she is</a><br />
+<br />
+Or, via img tags:<br />
+<br />
+<img src="http://www.allegro.cc/go/http://bafzone.bafsoft.com/cam/webcam.jpg" alt="picture" />  15William Heatley3136 31Fri, 12 Aug 2005 04:55:59 +000050 Are you looking at yourself, looking at yourself?  3BAF2981 31Fri, 12 Aug 2005 04:58:27 +0000410 I was changing some options for the overlays/camera and such <img src="http://www.allegro.cc/forums/smileys/smiley.gif" alt=":)"><br />
+<br />
+[edit] Heh, there&#39;s x-chat<br />
+<br />
+[edit2] Its bed time <img src="http://www.allegro.cc/forums/smileys/smiley.gif" alt=":)"> you wil see mostly blackness till prolly about 7-8 am tomorrow when I get up and start hacking (rules released at 8am my time).   4HoHo4534 31Fri, 12 Aug 2005 09:06:03 +00004701 As I said before I would like to make a script that takes screenshots of one&#39;s desktop in regular interval. I just finished doing it for the second time*.<br />
+<br />
+Here is the code:<br />
+ <div class='source-code'><pre><span class="p">#!/usr/bin/env perl</span>
+
+<span class="p">#copied and modified from http://wiki.kde.org/tiki-index.php?page=Tips+and+Tricks</span>
+my $targetdir<span class="k3">=</span><span class="s">'/home/hoho/snapshots/'</span><span class="k2">;</span>  # <span class="k1">for</span> date  usewithout <span class="k3">/</span> at the end<span class="k3">!</span><span class="k3">!</span><span class="k3">!</span>
+unless <span class="k2">(</span><span class="k3">-</span>d $targetdir<span class="k2">)</span> <span class="k2">{</span> `<a href="http://www.delorie.com/djgpp/doc/libc/libc_570.html" target="_blank">mkdir</a> $targetdir`<span class="k2">;</span> <span class="k2">}</span> ### <a href="http://www.delorie.com/djgpp/doc/libc/libc_570.html" target="_blank">mkdir</a>
+
+<span class="p"># GET PID</span>
+$number_pid <span class="k3">=</span> `ps <span class="k3">-</span>C ksnapshot <span class="k3">-</span><span class="k3">-</span>format pid <span class="k3">-</span><span class="k3">-</span>no-heading`<span class="k3">+</span><span class="n">0</span><span class="k2">;</span>
+die <span class="k1">if</span> $number_pid <span class="k3">=</span><span class="k3">=</span> <span class="n">0</span><span class="k2">;</span>
+
+my $command1 <span class="k3">=</span> <span class="s">'dcop ksnapshot-'</span>.$number_pid.<span class="s">' interface'</span><span class="k2">;</span>
+my $command2 <span class="k3">=</span> $command1.<span class="s">' slotGrab'</span><span class="k2">;</span>
+
+my $command_setTime<span class="k3">=</span>$command1.<span class="s">' setTime 1'</span><span class="k2">;</span>
+`$command_setTime`<span class="k2">;</span>
+
+my $commad_setMode<span class="k3">=</span>$command1.<span class="s">' setGrabMode 0'</span><span class="k2">;</span>
+`$commad_setMode`<span class="k2">;</span>
+
+<span class="k1">for</span> <span class="k2">(</span>$i <span class="k3">=</span><span class="n">0</span><span class="k2">;</span><span class="k2">;</span>$i<span class="k3">+</span><span class="k3">+</span><span class="k2">)</span><span class="k2">{</span>
+    <span class="p">#my $filename = $targetdir.`date +/cap_%F--%H-%M-%S.png`;</span>
+       my $num_str <span class="k3">=</span> <a href="http://www.delorie.com/djgpp/doc/libc/libc_737.html" target="_blank">sprintf</a><span class="k2">(</span> <span class="s">"%06d"</span>, $i<span class="k2">)</span><span class="k2">;</span>
+    my $filename <span class="k3">=</span> $targetdir.$num_str.<span class="s">'.png'</span><span class="k2">;</span>
+    my $command3 <span class="k3">=</span> $command1.<span class="s">' save file://'</span>.$filename<span class="k2">;</span>
+    `$command2`<span class="k2">;</span>
+    `$command3`<span class="k2">;</span>
+    <a href="http://www.delorie.com/djgpp/doc/libc/libc_731.html" target="_blank">sleep</a> <span class="n">15</span><span class="k2">;</span>
+<span class="k2">}</span></pre></div><br />
+It is my first encounter with perl so be gentle <img src="http://www.allegro.cc/forums/smileys/smiley.gif" alt=":)"><br />
+All and any comments and critics are welcome.<br />
+<br />
+<br />
+What is needed:<br />
+ksnapshot<br />
+dcop<br />
+<br />
+First open up ksnapshot and minimize it. <br />
+Then modify the sleep variable and the path and/or filename of saved images.<br />
+Next run the script. It starts saving screenshots in the given directory.<br />
+<br />
+Unfortunately it seems like ksnapshot doesn&#39;t support saving to gif. If it would then creating &quot;movies&quot; would be much easier.<br />
+Sure, I could create a mng but it would probably be huge and creating it would take a looooong time. On 96 png&#39;s my 3.2G p4 crunched for about five minutes.<br />
+<br />
+Btw, if you ever need to conver several images from one format to another (e.g png-&gt;gif) then don&#39;t do it with ~100 large images at once. Last night I tried converting 96 1280x1024 24bit png&#39;s to gifs with KDE(select all images, rightclik, actions-&gt;convert-&gt;gif) and my PC was practically dead for 20mins. After waiting it had successfully converted all but ~7 files.<br />
+<br />
+*)I created the first version last night just before I started this massive file conversion. I even wrote a forum post but couldn&#39;t submit it. Apparently 1G of ram +1G of swap wasn&#39;t enough for keeping FF, Kdevelop, amarok and several other apps in memory together with all those conversions. It closed FF just before I could post it here.  3BAF2981 31Fri, 12 Aug 2005 11:07:05 +0000267 How about a windows script for that? <img src="http://www.allegro.cc/forums/smileys/tongue.gif" alt=":P"><br />
+<br />
+Using myDesktop online (some free thing - google it).<br />
+<br />
+See sig <img src="http://www.allegro.cc/forums/smileys/smiley.gif" alt=":)">  4HoHo4534 31Fri, 12 Aug 2005 11:30:44 +0000378 <div class="quote_container"><div class="title">Quote:</div><div class="quote">How about a windows script for that? <img src="http://www.allegro.cc/forums/smileys/tongue.gif" alt=":P"></div></div>I don&#39;t use windows <img src="http://www.allegro.cc/forums/smileys/smiley.gif" alt=":)"><br />
+Getting windows on mu PC would require time that I currently don&#39;t have much.  3BAF2981 31Fri, 12 Aug 2005 11:34:31 +000034 myDesktop works pretty good, IMO.  4HoHo4534 31Fri, 12 Aug 2005 11:55:56 +000099 Could you give a link? I tried google but you can guess what it gives when searching for mydesktop  

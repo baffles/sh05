@@ -1,0 +1,327 @@
+30re: Separating words in string43http://www.allegro.cc/rss/thread.xml/51789710 6Maikol4997 31Tue, 09 Aug 2005 20:13:04 +0000479 Hi! I&#39;m making a function that displays a string into a rectangular box, with several lines of text. The problem cames here: when a word surpasses the end of the box, I must find the first space at the beginning of it and then move that word and the rest to the next line.<br />
+<br />
+The question is: how to do it? What code would you write? Is there some way to wrap around automatically? I&#39;ve looked up routine <i>textout_justify</i> but that doesn&#39;t solve it.  8ReyBrujo1210 31Tue, 09 Aug 2005 20:20:57 +0000168 The dirty solution is using <i>text_length</i> to see if the line fits the box. If the length is longer than the width of the box, remove the last word and check again. 15Nial Giacomelli3157 31Tue, 09 Aug 2005 20:24:02 +00001000 Perhaps you could use strtok in a while loop, adding each seperate word to linestring until it is decided that the string is too large.<br />
+<br />
+ <div class='snippet'><code><a href="http://www.delorie.com/djgpp/doc/libc/libc_779.html" target="_blank">strtok</a><span class="k2">(</span>string, <span class="s">" "</span><span class="k2">)</span><span class="k2">;</span><br />
+<br />
+<span class="k1">while</span><span class="k2">(</span><a href="http://www.delorie.com/djgpp/doc/libc/libc_779.html" target="_blank">strtok</a><span class="k2">(</span>NULL, <span class="s">" "</span><span class="k2">)</span><span class="k2">)</span> <span class="k2">{</span><br />
+<br />
+&nbsp;&nbsp; <span class="c">/* does it fit on this line? */</span><br />
+&nbsp;&nbsp; <a href="http://www.delorie.com/djgpp/doc/libc/libc_752.html" target="_blank">strcat</a><span class="k2">(</span>linestring, string<span class="k2">)</span><span class="k2">;</span><br />
+<br />
+<span class="k2">}</span></code></div>  11Steve Terry1989 31Tue, 09 Aug 2005 20:36:03 +0000391 You can get the width in pixels of a single character, just use a pointer, now when you run over the end of the line check if you are on a &#39; &#39; (space) character, if so just move to the next line, if you are on anythign else, loop backwards until you hit space and move to the next line and start again from there.  Oh and to keep track of what to print have a start and end pointer.  6Maikol4997 31Tue, 09 Aug 2005 20:37:04 +0000529 I&#39;ve already thought about that; the problem, Nial Giacomelli, is that <i>strotk</i> introduces a &#39;\0&#39; in the spaces. Then if I call <i>text_lenth</i> it&#39;ll return me the first word length. So if I want the real one, I&#39;ll have to substitute every &#39;\0&#39; for spaces, but how can I know what&#39;s the last one? I should keep the length of the original text... thus, very complicated<br />
+<br />
+Steve Terry, I&#39;ve thought about that as well. But character&#39;s length changes from one to another!  5razor2256 31Tue, 09 Aug 2005 20:46:22 +0000252 <div class="quote_container"><div class="title">Quote:</div><div class="quote">Steve Terry, I&#39;ve thought about that as well. But character&#39;s length changes from one to another!<br />
+</div></div>text_length can get you the length of a string.  6Maikol4997 31Tue, 09 Aug 2005 21:05:42 +00004325 What about this code?<br />
+ <div class='source-code'><pre><span class="k1">void</span> PrintTextBetween<span class="k2">(</span><span class="k1">int</span> x1, <span class="k1">int</span> x2, <span class="k1">int</span> y, <span class="k1">char</span> <span class="k3">*</span>text<span class="k2">)</span>
+<span class="k2">{</span>
+    <span class="k1">char</span> buffer<span class="k2">[</span><span class="n">256</span><span class="k2">]</span><span class="k2">;</span>
+    <span class="k1">int</span> pos, lines<span class="k2">;</span>
+
+pos <span class="k3">=</span> <span class="n">0</span><span class="k2">;</span>
+lines <span class="k3">=</span> <span class="n">0</span><span class="k2">;</span>
+<span class="k1">while</span> <span class="k2">(</span>pos <span class="k3">+</span> lines <span class="k3">&lt;</span> <a href="http://www.delorie.com/djgpp/doc/libc/libc_764.html" target="_blank">strlen</a><span class="k2">(</span>text<span class="k2">)</span><span class="k2">)</span> <span class="k2">{</span>
+    buffer<span class="k2">[</span>pos<span class="k2">]</span><span class="k3">=</span><span class="s">'\0'</span><span class="k2">;</span>
+    <span class="k1">while</span> <span class="k2">(</span><a href="http://www.allegro.cc?text_length" title="int text_length(const FONT *f, const char *str);
+
+Returns the length (in pixels) of a string in the specified font." target="_blank"><span class="a">text_length</span></a><span class="k2">(</span>buffer<span class="k2">)</span> <span class="k3">&lt;</span> <a href="http://www.delorie.com/djgpp/doc/libc/libc_38.html" target="_blank">abs</a><span class="k2">(</span>x2-x1<span class="k2">)</span><span class="k2">)</span> <span class="k2">{</span>
+        <span class="k1">if</span> <span class="k2">(</span>lines <span class="k3">+</span> pos <span class="k3">&lt;</span> <a href="http://www.delorie.com/djgpp/doc/libc/libc_764.html" target="_blank">strlen</a><span class="k2">(</span>text<span class="k2">)</span><span class="k2">)</span> <span class="k2">{</span>
+            buffer<span class="k2">[</span>pos<span class="k2">]</span> <span class="k3">=</span> text<span class="k2">[</span>lines<span class="k3">+</span>pos<span class="k2">]</span><span class="k2">;</span>
+            pos<span class="k3">+</span><span class="k3">+</span><span class="k2">;</span>
+            <span class="k2">}</span>
+        <span class="k2">}</span>
+    <span class="k1">while</span> <span class="k2">(</span>buffer<span class="k2">[</span>pos<span class="k2">]</span> <span class="k3">!</span><span class="k3">=</span> <span class="s">' '</span><span class="k2">)</span>
+        pos--<span class="k2">;</span>
+    buffer<span class="k2">[</span>pos<span class="k2">]</span> <span class="k3">=</span> <span class="s">'\0'</span><span class="k2">;</span>
+    lines <span class="k3">=</span> pos<span class="k2">;</span>
+    <a href="http://www.allegro.cc?textout" title="void textout(BITMAP *bmp, const FONT *f, const char *s, int x, y, int color);
+
+Writes the string s onto the bitmap at position x, y, using the current  text mode and the specified font and foreground color. If the color is -1  ..." target="_blank"><span class="a">textout</span></a><span class="k2">(</span><a href="http://www.allegro.cc?screen" title="extern BITMAP *screen;
+
+Global pointer to a bitmap, sized VIRTUAL_W x VIRTUAL_H. This is created  by set_gfx_mode(), and represents the hardware video memory. Only a part  of ..." target="_blank"><span class="a">screen</span></a>,<a href="http://www.allegro.cc?font" title="extern FONT *font;
+
+A simple 8x8 fixed size font (the mode 13h BIOS default). If you want to  alter the font used by the GUI routines, change this to point to one of  ..." target="_blank"><span class="a">font</span></a>,buffer,x1,y,<a href="http://www.allegro.cc?makecol" title="int makecol(int r, int g, int b);
+
+Converts colors from a hardware independent format (red, green, and blue  values ranging 0-255) to the pixel format required by the current video  ..." target="_blank"><span class="a">makecol</span></a><span class="k2">(</span><span class="n">255</span>,<span class="n">255</span>,<span class="n">255</span><span class="k2">)</span><span class="k2">)</span><span class="k2">;</span>
+    <span class="k2">}</span>
+<span class="k2">}</span></pre></div>  3A J3025 31Tue, 09 Aug 2005 22:01:02 +00007248 try my code <div class='source-code'><pre>
+<span class="c">// XO,YO offsets into your bitmap</span>
+<span class="c">// YS = y step (in pixels)</span>
+<span class="p">#define TXO        6</span>
+<span class="p">#define TYO        5</span>
+<span class="p">#define TYS        12</span>
+    
+<span class="c">// ___________ word wrap algo ____________________</span>
+
+<span class="c">// the pRead goes ahead of the write, when it comes to a SPACE char ASCII[32] and it fits on the</span>
+<span class="c">// current line, it tells the pWrite to catch up to it, then the pRead goes ahead again.</span>
+<span class="c">// if the pRead goes beyond the draw line, it does a CR and then the pWrite dumps the word on the</span>
+<span class="c">// next line at the 1st position.</span>
+
+    <span class="k1">const</span> <span class="k1">char</span><span class="k3">*</span> ph <span class="k3">=</span> getText<span class="k2">(</span><span class="k2">)</span><span class="k2">;</span>
+
+    <span class="k1">if</span> <span class="k2">(</span> NULL <span class="k3">=</span><span class="k3">=</span> ph <span class="k2">)</span>
+        <span class="k1">return</span><span class="k2">;</span>
+
+    <span class="k1">if</span> <span class="k2">(</span> <span class="n">0</span> <span class="k3">=</span><span class="k3">=</span> ph<span class="k2">[</span><span class="n">0</span><span class="k2">]</span> <span class="k2">)</span>
+        <span class="k1">return</span><span class="k2">;</span>
+
+    <span class="k1">const</span> <span class="k1">char</span><span class="k3">*</span> pRead <span class="k3">=</span> ph<span class="k2">;</span>
+    <span class="k1">const</span> <span class="k1">char</span><span class="k3">*</span> pWrite <span class="k3">=</span> ph<span class="k2">;</span>
+
+    <span class="k1">int</span> x <span class="k3">=</span> TXO<span class="k2">;</span>
+    <span class="k1">int</span> y <span class="k3">=</span> TYO<span class="k2">;</span>
+    <span class="k1">bool</span> b_dump <span class="k3">=</span> <span class="k1">false</span><span class="k2">;</span>
+    <span class="k1">while</span> <span class="k2">(</span> <span class="n">1</span> <span class="k2">)</span>
+    <span class="k2">{</span>
+        <span class="k1">if</span> <span class="k2">(</span> <span class="n">0</span> <span class="k3">=</span><span class="k3">=</span> <span class="k3">*</span>pRead <span class="k2">)</span>
+            b_dump <span class="k3">=</span> <span class="k1">true</span><span class="k2">;</span>
+
+        <span class="k1">if</span> <span class="k2">(</span><span class="k2">(</span> <span class="n">32</span> <span class="k3">=</span><span class="k3">=</span> <span class="k3">*</span>pRead <span class="k2">)</span> <span class="k3">|</span><span class="k3">|</span>
+            <span class="k2">(</span>  <span class="n">0</span> <span class="k3">=</span><span class="k3">=</span> <span class="k3">*</span>pRead <span class="k2">)</span><span class="k2">)</span>
+        <span class="k2">{</span>
+            <span class="k1">const</span> <span class="k1">int</span> chars_to_write <span class="k3">=</span> pRead <span class="k3">-</span> pWrite<span class="k2">;</span>
+            <span class="k1">const</span> <span class="k1">int</span> pixels_available <span class="k3">=</span> getW<span class="k2">(</span><span class="k2">)</span><span class="k3">-</span><span class="n">2</span><span class="k3">-</span>x<span class="k2">;</span>
+            <span class="k1">const</span> <span class="k1">int</span> pixels_required <span class="k3">=</span> chars_to_write <span class="k3">*</span> <span class="n">8</span><span class="k2">;</span>
+            <span class="k1">if</span> <span class="k2">(</span> pixels_required <span class="k3">&gt;</span> pixels_available <span class="k2">)</span>
+            <span class="k2">{</span>    <span class="c">// word does not fit on line, do a CR</span>
+                x <span class="k3">=</span> TXO-6<span class="k2">;</span>    <span class="c">// 8; // the -8 removes the 'ASCII space char'</span>
+                y <span class="k3">+</span><span class="k3">=</span> TYS<span class="k2">;</span>
+                <span class="k1">if</span> <span class="k2">(</span> y <span class="k3">&gt;</span><span class="k3">=</span> getH<span class="k2">(</span><span class="k2">)</span><span class="k3">-</span><span class="n">4</span> <span class="k2">)</span>
+                    <span class="k1">return</span><span class="k2">;</span>
+            <span class="k2">}</span>
+            b_dump <span class="k3">=</span> <span class="k1">true</span><span class="k2">;</span>
+        <span class="k2">}</span>
+
+        <span class="k1">if</span> <span class="k2">(</span> b_dump <span class="k2">)</span>
+        <span class="k2">{</span>    <span class="c">// dump the word</span>
+            <span class="k1">while</span> <span class="k2">(</span> pWrite <span class="k3">&lt;</span> pRead <span class="k2">)</span>
+            <span class="k2">{</span>
+                <span class="k1">if</span> <span class="k2">(</span> x <span class="k3">&lt;</span> getW<span class="k2">(</span><span class="k2">)</span> <span class="k2">)</span>
+                <span class="k2">{</span>
+                    <span class="k1">char</span> txt<span class="k2">[</span><span class="n">2</span><span class="k2">]</span><span class="k2">;</span>
+                    txt<span class="k2">[</span><span class="n">0</span><span class="k2">]</span> <span class="k3">=</span> <span class="k3">*</span>pWrite<span class="k2">;</span>
+                    txt<span class="k2">[</span><span class="n">1</span><span class="k2">]</span> <span class="k3">=</span> <span class="n">0</span><span class="k2">;</span>
+                    alg.alg_textout<span class="k2">(</span> map, <a href="http://www.allegro.cc?font" title="extern FONT *font;
+
+A simple 8x8 fixed size font (the mode 13h BIOS default). If you want to  alter the font used by the GUI routines, change this to point to one of  ..." target="_blank"><span class="a">font</span></a>, txt, x, y, WHITE <span class="k2">)</span><span class="k2">;</span>    <span class="c">// CYAN</span>
+                <span class="k2">}</span>
+                x <span class="k3">+</span><span class="k3">=</span> <span class="n">8</span><span class="k2">;</span>
+                pWrite<span class="k3">+</span><span class="k3">+</span><span class="k2">;</span>
+                <span class="k1">if</span> <span class="k2">(</span> <span class="n">0</span> <span class="k3">=</span><span class="k3">=</span> <span class="k3">*</span>pWrite <span class="k2">)</span>
+                    <span class="k1">return</span><span class="k2">;</span>
+            <span class="k2">}</span>
+            b_dump <span class="k3">=</span> <span class="k1">false</span><span class="k2">;</span>
+        <span class="k2">}</span>
+
+        <span class="k1">if</span> <span class="k2">(</span> <span class="n">0</span> <span class="k3">!</span><span class="k3">=</span> <span class="k3">*</span>pRead <span class="k2">)</span>
+            pRead<span class="k3">+</span><span class="k3">+</span><span class="k2">;</span>
+    <span class="k2">}</span>
+<span class="k2">}</span></pre></div><br />
+  11Steve Terry1989 31Tue, 09 Aug 2005 23:30:19 +0000676 You could always take a peek at how the allegro GUI handles it.  text_length will give you the length of a character, simply copy the character in to a two byte array, and always keep the second byte as &#39;\0&#39;, simple as that.  Keep a start and end pointer, increment endptr until you go over the length in pixels, then backtrack to a &#39; &#39; or until you hit startptr, in which you have to force a break in the middle of a very long word.  When you get done with a line print from startptr to endptr, and set the pointers accordingly, to the next word.<br />
+<br />
+Don&#39;t forget if you are going to support unicode you can&#39;t assume a character is a byte.  9juvinious5145 31Wed, 10 Aug 2005 00:51:22 +000011907 I wrote mine in C++ using a vector to keep track of every line. I made use of columns so I had the length figured out beforehand. You can calculate the text length however you choose.<br />
+<br />
+Here:<br />
+<br />
+ <div class='source-code'><pre>  <span class="c">//Wordwrap</span>
+
+            <span class="k1">if</span><span class="k2">(</span>wordwrap<span class="k2">)</span>
+
+            <span class="k2">{</span>
+
+                <span class="c">//Split the string up </span>
+                <span class="c">//text is the original string</span>
+                string temp1<span class="k3">=</span>text<span class="k2">;</span>
+
+                string temp2<span class="k3">=</span><span class="s">""</span><span class="k2">;</span>
+
+                <span class="c">//wordwrap flag to go next line</span>
+
+                <span class="k1">bool</span> end_line<span class="k3">=</span><span class="k1">false</span><span class="k2">;</span>
+
+                <span class="k1">for</span><span class="k2">(</span><span class="k1">unsigned</span> <span class="k1">int</span> pos <span class="k3">=</span> <span class="n">0</span><span class="k2">;</span>pos<span class="k3">&lt;</span>temp1.length<span class="k2">(</span><span class="k2">)</span><span class="k2">;</span><span class="k2">)</span>
+
+                <span class="k2">{</span>
+
+                    <span class="c">//Clear our string for the new line</span>
+
+                    temp2<span class="k3">=</span><span class="s">""</span><span class="k2">;</span>
+
+                    <span class="c">//Loop through to the end of the column and add text to the line</span>
+
+                    <span class="k1">for</span><span class="k2">(</span><span class="k1">unsigned</span> <span class="k1">int</span> i<span class="k3">=</span><span class="n">0</span><span class="k2">;</span>i<span class="k3">&lt;</span>column_num<span class="k2">;</span><span class="k3">+</span><span class="k3">+</span>i<span class="k2">)</span>
+
+                    <span class="k2">{</span>
+
+                        <span class="c">//Add character to the temp string</span>
+
+                        temp2 <span class="k3">+</span><span class="k3">=</span> temp1.c_str<span class="k2">(</span><span class="k2">)</span><span class="k2">[</span>pos<span class="k2">]</span><span class="k2">;</span>
+
+                        <span class="c">//If return than go to the next line</span>
+
+                        <span class="k1">if</span><span class="k2">(</span>temp2<span class="k2">[</span>i<span class="k2">]</span><span class="k3">=</span><span class="k3">=</span><span class="s">'\n'</span><span class="k2">)</span>
+
+                        <span class="k2">{</span>
+
+                            <span class="c">//Return go to the next line</span>
+
+                            temp2.erase<span class="k2">(</span>i<span class="k2">)</span><span class="k2">;</span>
+
+                            end_line<span class="k3">=</span><span class="k1">true</span><span class="k2">;</span>
+
+                        <span class="k2">}</span>
+
+                        <span class="c">//Lets check if we need to wrap</span>
+
+                        <span class="k1">if</span><span class="k2">(</span>i<span class="k3">=</span><span class="k3">=</span>column_num-1<span class="k2">)</span>
+
+                        <span class="k2">{</span>
+
+                            <span class="c">//If not a space then</span>
+
+                            <span class="k1">if</span><span class="k2">(</span>temp2<span class="k2">[</span>i<span class="k2">]</span><span class="k3">!</span><span class="k3">=</span><span class="s">' '</span><span class="k2">)</span>
+
+                            <span class="k2">{</span>
+
+                                <span class="c">//Go back and check for that last space occurance</span>
+
+                                <span class="k1">for</span><span class="k2">(</span><span class="k1">unsigned</span> <span class="k1">int</span> pos2 <span class="k3">=</span> i<span class="k2">;</span>pos2&gt;0<span class="k2">;</span><span class="k3">-</span><span class="k3">-</span>pos2<span class="k2">)</span>
+
+                                <span class="k2">{</span>
+
+                                    <span class="k1">if</span><span class="k2">(</span>temp2<span class="k2">[</span>pos2<span class="k2">]</span><span class="k3">=</span><span class="k3">=</span><span class="s">' '</span><span class="k2">)</span>
+
+                                    <span class="k2">{</span>
+
+                                        <span class="c">//Found our space now we go to the next line</span>
+
+                                        end_line<span class="k3">=</span><span class="k1">true</span><span class="k2">;</span>
+
+                                        <span class="k1">break</span><span class="k2">;</span>
+
+                                    <span class="k2">}</span>
+
+                                    <span class="k1">else</span> 
+
+                                    <span class="k2">{</span>
+
+                                        <span class="c">//Make sure we don't have a run on word</span>
+
+                                        <span class="c">//That spans greater than the width of window</span>
+
+                                        <span class="k1">if</span><span class="k2">(</span>temp2.find<span class="k2">(</span><span class="s">" "</span>,<span class="n">0</span><span class="k2">)</span><span class="k3">&lt;</span>pos2<span class="k2">)</span>
+
+                                        <span class="k2">{</span>
+
+                                            <span class="c">//Move our position back closer to the space</span>
+
+                                            temp2.erase<span class="k2">(</span>pos2<span class="k2">)</span><span class="k2">;</span>
+
+                                            <span class="k3">-</span><span class="k3">-</span>pos<span class="k2">;</span>
+
+                                        <span class="k2">}</span>    
+
+                                    <span class="k2">}</span>
+
+                                <span class="k2">}</span>    
+
+                            <span class="k2">}</span>            
+
+                        <span class="k2">}</span> 
+
+                        <span class="c">//Lets not continue if past the length</span>
+
+                        <span class="k1">if</span><span class="k2">(</span>pos<span class="k3">&lt;</span>temp1.length<span class="k2">(</span><span class="k2">)</span><span class="k2">)</span><span class="k3">+</span><span class="k3">+</span>pos<span class="k2">;</span>
+
+                        <span class="k1">else</span> <span class="k1">break</span><span class="k2">;</span>
+
+                        <span class="c">//Lets go to next line if we need to            </span>
+
+                        <span class="k1">if</span><span class="k2">(</span>end_line<span class="k2">)</span>
+
+                        <span class="k2">{</span>
+
+                            end_line<span class="k3">=</span><span class="k1">false</span><span class="k2">;</span>
+
+                            <span class="k1">break</span><span class="k2">;</span>
+
+                        <span class="k2">}</span>   
+
+                    <span class="k2">}</span>  
+
+                    <span class="c">//If the string isn't empty dump it in the vector</span>
+
+                    <span class="k1">if</span><span class="k2">(</span><span class="k3">!</span>temp2.empty<span class="k2">(</span><span class="k2">)</span><span class="k2">)</span>
+
+                    <span class="k2">{</span>
+
+                        <span class="c">//First lets format the string (remove un-needed spaces)</span>
+                        <span class="c">//This isn't necessary I used this for justification purposes, you can ignore this</span>
+                        <span class="k1">switch</span><span class="k2">(</span>justify<span class="k2">)</span>
+
+                        <span class="k2">{</span>
+
+                            <span class="c">//Remove spaces from the left side</span>
+
+                            <span class="k1">case</span> <span class="n">0</span><span class="k2">:</span>
+
+                                <span class="k1">while</span><span class="k2">(</span>temp2<span class="k2">[</span><span class="n">0</span><span class="k2">]</span><span class="k3">=</span><span class="k3">=</span><span class="s">' '</span><span class="k2">)</span>
+
+                                <span class="k2">{</span>
+
+                                    temp2.erase<span class="k2">(</span><span class="n">0</span><span class="k2">)</span><span class="k2">;</span>
+
+                                <span class="k2">}</span>    
+
+                                <span class="k1">break</span><span class="k2">;</span>
+
+                            <span class="c">//Remove spaces on left and right side</span>
+
+                            <span class="k1">case</span> <span class="n">1</span><span class="k2">:</span>
+
+                                <span class="k1">while</span><span class="k2">(</span>temp2<span class="k2">[</span><span class="n">0</span><span class="k2">]</span><span class="k3">=</span><span class="k3">=</span><span class="s">' '</span><span class="k2">)</span>
+
+                                <span class="k2">{</span>
+
+                                    temp2.erase<span class="k2">(</span><span class="n">0</span><span class="k2">)</span><span class="k2">;</span>
+
+                                <span class="k2">}</span>
+
+                                <span class="k1">while</span><span class="k2">(</span>temp2<span class="k2">[</span>temp2.length<span class="k2">(</span><span class="k2">)</span><span class="k3">-</span><span class="n">1</span><span class="k2">]</span><span class="k3">=</span><span class="k3">=</span><span class="s">' '</span><span class="k2">)</span>
+
+                                <span class="k2">{</span>
+
+                                    temp2.erase<span class="k2">(</span>temp2.length<span class="k2">(</span><span class="k2">)</span><span class="k3">-</span><span class="n">1</span><span class="k2">)</span><span class="k2">;</span>
+
+                                <span class="k2">}</span>    
+
+                                <span class="k1">break</span><span class="k2">;</span>
+
+                            <span class="c">//Remove spaces from the right side</span>
+
+                            <span class="k1">case</span> <span class="n">2</span><span class="k2">:</span>
+
+                                <span class="k1">while</span><span class="k2">(</span>temp2<span class="k2">[</span>temp2.length<span class="k2">(</span><span class="k2">)</span><span class="k3">-</span><span class="n">1</span><span class="k2">]</span><span class="k3">=</span><span class="k3">=</span><span class="s">' '</span><span class="k2">)</span>
+
+                                <span class="k2">{</span>
+
+                                    temp2.erase<span class="k2">(</span>temp2.length<span class="k2">(</span><span class="k2">)</span><span class="k3">-</span><span class="n">1</span><span class="k2">)</span><span class="k2">;</span>
+
+                                <span class="k2">}</span>
+
+                                <span class="k1">break</span><span class="k2">;</span>
+
+                        <span class="k2">}</span>    
+
+                        <span class="c">//Finally add it to the vector</span>
+
+                        for_text.push_back<span class="k2">(</span>temp2<span class="k2">)</span><span class="k2">;</span>
+
+                        <span class="k3">+</span><span class="k3">+</span>line_total<span class="k2">;</span>
+
+                    <span class="k2">}</span>    
+
+                <span class="k2">}</span>    
+
+            <span class="k2">}</span></pre></div>  

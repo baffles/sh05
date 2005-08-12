@@ -1,0 +1,5 @@
+include makefile.ver
+include makefile.lst
+include $(MAKEFILE_INC)
+
+
