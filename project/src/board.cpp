@@ -6,50 +6,8 @@
 
 using namespace std;
 
-vector<Board*>* Board::boards = NULL;
-bool Board::initialized = false;
-
-void Board::Initialize()
-{
-	if(initialized)
-		return;
-	boards = new vector<Board*>;
-	initialized = true;
-}
-
-void Board::RegisterBoard(Board* c)
-{
-	Initialize();
-	boards->push_back(c);
-	c->id = boards->size() - 1;
-}
-
-void Board::StaticInitGraphics()
-{
-	Initialize();
-	vector<Board*>::iterator i = boards->begin();
-	while(i != boards->end())
-	{
-		if(!(*i)->InitGraphics())
-			i = boards->erase(i);
-		else
-			i++;
-	}
-}
-
-void Board::StaticDestroy()
-{
-	if(!initialized) return;
-	for(vector<Board*>::iterator i = boards->begin(); i != boards->end(); i++)
-		delete *i;
-	delete boards;
-	boards = NULL;
-	initialized = false;
-}
-
 Board::Board(): follow(NULL)
 {
-	Board::RegisterBoard(this);
 }
 
 EStatus Board::Tick(double dtime)

@@ -7,23 +7,9 @@
 #include <vector>
 #include "gamestate.h"
 
-#define ADD_BOARD(char) \
-	char* The##char = new char
-
 class Board: public GameState
 {
-	public: // Public static variables
-		static std::vector<Board*>* boards;
-		static bool initialized;
-		
-	public: // Public static functions
-		static void Initialize();
-		static void RegisterBoard(Board* c);
-		static void StaticInitGraphics();
-		static void StaticDestroy();
-		
 	public: // Public variables
-		uint32_t id;
 		int camx, camy;
 		/// Pawn to follow
 		Pawn* follow;
