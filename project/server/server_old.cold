@@ -92,8 +92,6 @@ struct player
 };
 player *players = NULL;
 
-FILE *log = stdout;
-
 player *find_player_by_sock(int sockid)
 {
 	player *cur = players;
@@ -126,6 +124,7 @@ int main(int argc, char *argv[])
 		printf("Error starting up socks :o\n");
 		exit(EXIT_FAILURE);
 	}
+	printf("%d\n", WSAGetLastError());
 	
 	FD_ZERO(&master);
 	FD_ZERO(&read_fds);
@@ -135,10 +134,12 @@ int main(int argc, char *argv[])
 		perror("socket");
 		exit(EXIT_FAILURE);
 	}
+	printf("%d\n", WSAGetLastError());
 	
 	if(setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
 	{
 		perror("setsockopt");
+		printf("%d %d\n", listener, WSAGetLastError());
 		exit(EXIT_FAILURE);
 	}
 	

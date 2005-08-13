@@ -1,0 +1,152 @@
+Allegro Battle Ground client/server protocol
+
+Messages can be up to 2kb each. Message format (<> denotes mandatory, [] denotes server only):
+
+[prefix] <COMMAND> <options>\r\n
+
+Commands are 3 chars long, so chop off the first 4 chars, 3 for the command and
+1 for its trailing space. The prefix is only specified when the server sends the
+client games messages. The prefix format is <name>!<socket>
+
+The socket file descripter (int) shall be used also as a user id, as there will
+be a unique sockfd for each user.
+
+
+Games last for 15 minutes each. If we have time there will be some AI on the server to ensure there
+are at least x bots playing.
+
+
+
+Commands shall be:
+
+
+Basic Commands
+--------------
+Reg
+ Registers you on the server, and fills in information for your connection.
+ You provide the name (preferably an a.cc username).
+  Reg <name>
+
+Chat Commands
+-------------
+Msg
+ Sends a message to everyone.
+  Msg <message>
+
+Internal Gameplay Commands
+--------------------------
+Sck
+ Sync check, checks that all clients are still in sync.
+  Sck <some sort of checksum>
+
+Key
+ Sends a key from another user.
+  Key <key id>
+
+Misc
+----
+Png
+ Simple ping. Specify some sort of tracking var (probably a timestamp) and the server echoes it back.
+ Does NOT contain a prefix.
+  Png <blah>
+
+
+
+
+____too advanced :P____
+
+
+Allegro Battle Ground client/server protocol
+
+Messages can be up to 2kb each. Message format (<> denotes mandatory, [] denotes server only):
+
+[prefix] <COMMAND> <options>\r\n
+
+Commands are 3 chars long, so chop off the first 4 chars, 3 for the command and
+1 for its trailing space. The prefix is only specified when the server sends the
+client games messages. The prefix format is <name>!<socket>
+
+The socket file descripter (int) shall be used also as a user id, as there will
+be a unique sockfd for each user.
+
+
+Games last for 15 minutes each. If we have time there will be some AI on the server to ensure there
+are at least x bots playing.
+
+
+
+Commands shall be:
+
+
+Basic Commands
+--------------
+Reg
+ Registers you on the server, and fills in information for your connection.
+ You provide the name (preferably an a.cc username).
+  Reg <name>
+
+Chat Commands
+-------------
+Msg
+ Sends a message to everyone.
+  Msg <message>
+
+Internal Gameplay Commands
+--------------------------
+Req
+ Requests the move to (x,y)
+  Req <x>,<y>
+
+Mov
+ Originates from server only. Tells the clients the user in the prefix moved to the
+ specified coordinates
+  Mov <x>,<y>
+
+Sht
+ Requests to shoot a bullet of the gun specified by id. When sent from the server, it will
+ include a bullet ID that will be updated by subsequent Sht messages.
+  Sht <id> <direction> [bullet_id]
+
+Kbt
+ Originates from server only. Tells client that the specified bullet is no longer valid.
+  Kbt <id>
+
+Dmg
+ Originates from server only. Tells client that the user specified in the prefix took damage,
+ and their new health is specified.
+  Dmg <health>
+
+Puh
+ Originates from server only. Tells client they picked up health. Their new health level is
+ specified
+  Puh <health>
+
+Puw
+ Originates from server only. Tells client they picked up a weapon. The weapon they got is
+ specified
+  Puw <weapon_id>
+
+Scr
+ Originates from server only. Sent periodically to the client telling them their score (score
+ prediction will be used)
+  Scr <score>
+
+Fup
+ Originates from server only. Gives client a full status update. Weapon information will follow
+ using Puw, and health info will follow using Puh, then Fue is sent signalling update is over.
+  Fup <x>,<y> blah
+ ** not in use unless testing shows that prediction will have to be used in the clients due to lag. **
+
+Fue
+ Originates from server only. Tells that the full update is over.
+  Fue
+
+
+Ngi
+ Originates from server only. Specifies how many seconds until the next game.
+  Ngi <seconds>
+
+Gei
+ Originates from server only. Specifies how many seconds until the current game
+ is over.
+  Gei <seconds>

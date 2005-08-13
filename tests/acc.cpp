@@ -5,9 +5,7 @@
 
 #include <stdio.h>
 
-#include <curl/curl.h>
-#include <curl/types.h>
-#include <curl/easy.h>
+#include "curl.h"
 
 typedef struct avalist avalist;
 struct avalist
@@ -18,8 +16,9 @@ struct avalist
 };
 
 avalist *avatars = NULL;
-CURL *curl_handle = NULL;
-FILE *temp = NULL;
+/*CURL *curl_handle = NULL;
+FILE *temp = NULL;*/
+Curl curl;
 
 BITMAP *get_avatar(int uid)
 {
@@ -38,24 +37,22 @@ BITMAP *get_avatar(int uid)
   {
     char request[256], pngfname[128];
     BITMAP *ret;
-    //CURL *curl_handle;
     avalist *newa; // http://www.bafsoft.net/acc_cache/user.php
     sprintf(request, "http://www.bafsoft.net/acc_cache/user.php?usr=%d&cmd=avapng", uid);
     sprintf(pngfname, "temp/%d.png", uid);
     
     printf("\nDownloading avatar for user #%d [%s]\n", uid, request);
     
-    temp = fopen(pngfname, "wb");
+    /*temp = fopen(pngfname, "wb");
     curl_easy_setopt(curl_handle, CURLOPT_URL, request);
     curl_easy_perform(curl_handle);
     //curl_easy_cleanup(curl_handle);
-    fclose(temp);
+    fclose(temp);*/
+		curl.download(request, pngfname);
     
     newa = (avalist *)malloc(sizeof(avalist));
     newa->id = uid;
     newa->bmp = load_png(pngfname, NULL);
-    if(!newa->bmp)
-      printf("Ack! WTF @ %s\n", pngfname);
     newa->next = NULL;
     
     cur = avatars;
@@ -211,10 +208,10 @@ int main(int argc, char **argv)
   sprintf(rfpname, "temp/%s.rfp", argv[1]);
   printf("%s\n", request);
   
-  temp = fopen(rfpname, "wb");
+  /*temp = fopen(rfpname, "wb");
   curl_global_init(CURL_GLOBAL_ALL);
   curl_handle = curl_easy_init();
-  curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 0);
+  curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 1);
   curl_easy_setopt(curl_handle, CURLOPT_HEADER, 0);
   curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, fwrite);
   curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)temp);
@@ -222,7 +219,8 @@ int main(int argc, char **argv)
 	curl_easy_setopt(curl_handle, CURLOPT_URL, request);
   curl_easy_perform(curl_handle);
   //curl_easy_cleanup(curl_handle);
-  fclose(temp);
+  fclose(temp);*/
+	curl.download(request, rfpname);
   
   /** printf("%d%s", strlen($rfp['title']), $rfp['title']);
   printf("%d%s", strlen($rfp['xml']), $rfp['xml']);
@@ -254,7 +252,6 @@ int main(int argc, char **argv)
   
   fscanf(rfptmp, "%d ", &num_posts);
   posts = (postlist *)malloc(sizeof(postlist) * num_posts);
-    printf("Title: %s    XML: %s    Num posts: %d", title, xml, num_posts);
   for(i = 0; i < num_posts; ++i)
   {
     posts[i].id = i;
@@ -268,8 +265,7 @@ int main(int argc, char **argv)
     fscanf(rfptmp, "%d ", &len);
     posts[i].post = (char *)malloc(len + 1);
     fread(posts[i].post, len, 1, rfptmp); posts[i].post[len] = 0;
-    printf("   Post %d  Poster: %s [%d]  Post Date: %s \n", i, posts[i].poster, posts[i].posterid, posts[i].postdate);
-    printf("    Gotta get Avatar for post %d [%d]\n", i, posts[i].posterid);
+    printf("Avatar %d\n", i);
     posts[i].avatar = get_avatar(posts[i].posterid);
     
     //printf("DOWNLOADING AVATARS... (%d/%d) %d%% done\r", i + 1, num_posts, (int)(((float)(i + 1) / (float)num_posts) * 100));
@@ -281,8 +277,8 @@ int main(int argc, char **argv)
     rectfill(buffer, 413, 101, 412 + (2 * (int)(((float)(i + 1) / (float)num_posts) * 100)), 149, makecol(0,0,255));
     blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
   }
-	curl_easy_perform(curl_handle);
-  curl_easy_cleanup(curl_handle);
+	//curl_easy_perform(curl_handle);
+  //curl_easy_cleanup(curl_handle);
   clear_bitmap(screen);
   
   //set_gfx_mode(GFX_AUTODETECT, 1024, 768, 0, 0);
