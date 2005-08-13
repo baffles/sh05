@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include "plat.h"
 
-using namespace std;
-
 #ifdef __linux__
 TimeType GetNow()
 {

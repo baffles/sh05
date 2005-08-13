@@ -2,6 +2,7 @@
 //  Characters!!!
 
 #include <iostream>
+#include <math.h>
 #include "character.h"
 
 using namespace std;

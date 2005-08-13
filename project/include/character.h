@@ -5,8 +5,8 @@
 #define CHARACTER_H_INCLUDED
 
 #include <vector>
-#include <stdint.h>
 #include <allegro.h>
+#include "plat.h"
 #include "gamestate.h"
 
 #define ADD_CHARACTER(char) \

@@ -2,6 +2,7 @@
 //  Player Pawns
 
 #include <stdlib.h>
+#include <math.h>
 #include "pawn.h"
 #include "abg.h"
 
