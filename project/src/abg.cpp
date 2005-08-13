@@ -5,6 +5,7 @@
 
 #include "abg.h"
 #include "gamestate.h"
+#include "game.h"
 
 using namespace std;
 
@@ -55,17 +56,17 @@ int main(int argc, char* argv[])
 	install_keyboard();
 	srand(time(NULL));
 
-	GameState::StaticInitGraphics(UM_SystemBuffer, true, 320, 240, 32, GFX_AUTODETECT_WINDOWED);
+	GameState::StaticInitGraphics(UM_TripleBufferWMB, true, 320, 200, 8, GFX_AUTODETECT_WINDOWED);
 	
 	Character::StaticInitGraphics();
 	
-	GGame.board = NULL;
+	GGame.board = new Board;
 	
-	/*GameState::rootstate = new Menu;
+	GameState::rootstate = new Game;
 	GameState::rootstate->InitGraphics();
 	GameState::rootstate->InitLogic();
 	GameState::AddRoot(GameState::rootstate);
-	GameState::Run();*/
+	GameState::Run();
 	
 	ResetGame();
 

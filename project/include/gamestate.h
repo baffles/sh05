@@ -147,7 +147,7 @@ class GameState
 		GameState();
 		virtual ~GameState() = 0;
 		
-		/// Debugging functions
+		// Debugging functions
 		friend std::ostream& operator <<(std::ostream& l, GameState* r);
 		virtual void CheckValid();
 		virtual void Dump(std::ostream& str);

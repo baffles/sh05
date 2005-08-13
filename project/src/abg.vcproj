@@ -131,6 +131,9 @@
 				RelativePath=".\enrender.cpp">
 			</File>
 			<File
+				RelativePath=".\game.cpp">
+			</File>
+			<File
 				RelativePath=".\gamestate.cpp">
 			</File>
 			<File
@@ -155,6 +158,9 @@
 			</File>
 			<File
 				RelativePath="..\include\debug.h">
+			</File>
+			<File
+				RelativePath="..\include\game.h">
 			</File>
 			<File
 				RelativePath="..\include\gameinfo.h">

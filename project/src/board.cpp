@@ -6,31 +6,69 @@
 
 using namespace std;
 
-Board::Board(): follow(NULL)
+Board::Board(): camx(160), camy(1), _camy(100), background(NULL), state(BS_Normal)
 {
 }
 
-EStatus Board::Tick(double dtime)
+Board::~Board()
 {
-	if(follow)
-	{
-		TRACE_VALID(follow);
-		camx = follow->x;
-		camy = -follow->y;
-	}
-
-	EStatus s = GameState::Tick(dtime);
-	if(s != S_Continue) return s;
-	return S_ContinueNoWait;
+	destroy_bitmap(background);
 }
 
 void Board::RealToScreen(int w, int h, int inx, int iny, int& x, int& y)
 {
 	// Convert absolute to screen
-	int tlx = camx - (w / 2);
-	int tly = camy - (h / 2);
-	x = inx - tlx;
-	y = -iny - tly;
+	int left = camx - (w / 2);
+	int top = _camy - (h / 2);
+	x = inx - left;
+	y = -iny - top;
 }
+
+void Board::ScrollToLevel(int newlevel)
+{
+	if(newlevel < 1 || newlevel > 3)
+		return;
+	state = BS_Scrolling;
+	camy = newlevel;
+}
+
+EStatus Board::Tick(double dtime)
+{
+	EStatus s = GameState::Tick(dtime);
+	if(s != S_Continue) return s;
+	
+	if(state == BS_Scrolling)
+	{
+		if(camy * 200 - 100 > _camy)
+			_camy += 2;
+		else if(camy * 200 - 100 < _camy)
+			_camy -= 2;
+		else
+			state = BS_Normal;
+	}
+	
+	return S_ContinueNoWait;
+}
+
+void Board::Draw(BITMAP* dest)
+{
+	if(background)
+	{
+		int bgx = camx / 3;
+		int bgy = BoardHeight - _camy - (dest->h / 2);
+		blit(background, dest, bgx, bgy, 0, 0, dest->w, dest->h);
+	}
+}
+		
+bool Board::InitLogic()
+{
+	return true;
+}
+
+bool Board::InitGraphics()
+{
+	return background = load_bitmap("../../media/Assets/Actual/Parallax/NightSky.bmp", NULL);
+}
+
 
 // The end
