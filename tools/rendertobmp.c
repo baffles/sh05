@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <allegro.h>
+#include <loadpng.h>
 
 #define BPP 32
 #define TRCOLORS 2
@@ -44,6 +45,7 @@ exit(0);
 void pinit(){
 if(allegro_init()) pexit();
 set_color_depth(BPP);
+register_png_file_type();
 }
 
 void main(int argc, char *argv[]){
