@@ -57,12 +57,16 @@ fprintf(stderr,"Usage: %s Source_Bitmap Dest_Bitmap R G B Levels",argv[0]);
 pexit();
 }
 src=load_bitmap(argv[1],NULL); //Source Filename
+if(src)  {
 r=atoi(argv[3]); //Red
 g=atoi(argv[4]); //Green
 b=atoi(argv[5]); //Blue
 level=atoi(argv[6]); //Levels
 MakeColored(src, r, g, b, level-1);
 save_bitmap(argv[2],src,NULL);
+destroy_bitmap(src);
+src=NULL;
+}
 pexit();
 }
 

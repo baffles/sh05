@@ -1,4 +1,4 @@
 @set SFILENAME=%1%
-@set TFILENAME=%SFILENAME%_new.bmp
+@set TFILENAME=%SFILENAME%.bmp
 @render %SFILENAME% %TFILENAME% 255 255 255 6
 @pause
