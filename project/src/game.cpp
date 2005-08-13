@@ -23,9 +23,9 @@ EStatus Game::Tick(double dtime)
 		Finish();
 		return S_Finished;
 	}
-	if(key[KEY_UP])
+	if(key[KEY_UP] && GGame.board->camy * 200 - 100 == GGame.board->_camy)
 		GGame.board->ScrollToLevel(GGame.board->camy + 1);
-	if(key[KEY_DOWN])
+	if(key[KEY_DOWN] && GGame.board->camy * 200 - 100 == GGame.board->_camy)
 		GGame.board->ScrollToLevel(GGame.board->camy - 1);
 	if(key[KEY_RIGHT])
 	{

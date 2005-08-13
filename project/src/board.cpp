@@ -61,7 +61,20 @@ void Board::Draw(BITMAP* dest)
 	}
 	if(floor)
 	{
-		int left = camx - (dest->w / 2);
+		int fy = -floor->h + _camy + (dest->h / 2);
+		if(fy < dest->h)
+		{	// Visible
+			int left = (camx - (dest->w / 2)) % floor->w;
+			// Blit the leftmost floor pane
+			masked_blit(floor, dest, left, 0, 0, fy, floor->w - left, floor->h);
+			// Blit those further right
+			int i = 0;
+			while(i * floor->w + (floor->w - left) < dest->w)
+			{
+				masked_blit(floor, dest, 0, 0, (floor->w - left) + i * floor->w, fy, floor->w, floor->h);
+				i++;
+			}
+		}
 	}
 }
 		

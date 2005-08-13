@@ -6,10 +6,6 @@
 
 #include "gamestate.h"
 
-/*
-Goals for when I get home: add floor support and platform support, then begin on the other object support
-*/
-
 class Game: public GameState
 {
 	public: // Public functions

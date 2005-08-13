@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 	install_keyboard();
 	srand(time(NULL));
 
-	GameState::StaticInitGraphics(UM_TripleBufferWMB, true, 320, 200, 8, GFX_AUTODETECT_WINDOWED);
+	GameState::StaticInitGraphics(UM_TripleBufferWMB, true, 320, 200, 24, GFX_AUTODETECT_WINDOWED);
 	
 	Character::StaticInitGraphics();
 	
