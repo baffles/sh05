@@ -26,6 +26,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+  #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <unistd.h>
+    #include <sys/types.h>
+
 #define PORT 21870
 // this WILL be moved later
 #define NUM_WEAPONS 2
@@ -56,9 +62,10 @@ int sockstart()
 typedef struct player player;
 struct player
 {
-	char *name;
-	int sock;
+	char name[256];
+	int sock; struct sockaddr_in addr;
 	int score, health;
+	unsigned char registered;
 	
 	struct
 	{
@@ -78,6 +85,22 @@ struct player
 };
 player *players = NULL;
 
+player *find_player_by_sock(int sockid)
+{
+	player *cur = players;
+		printf("->checking for %d\n", sockid);
+	while(cur)
+	{
+		printf("l ");
+		if(cur->sock == sockid)
+			return cur;
+		
+		cur = cur->next;
+	}
+		printf("\n->didnt find %d\n", sockid);
+	return NULL;
+}
+
 int main(int argc, char *argv[])
 {
 	struct timeval tv;
@@ -85,7 +108,7 @@ int main(int argc, char *argv[])
 	struct sockaddr_in remoteaddr;
 	fd_set master;
 	fd_set read_fds;
-	int fdmax, listener, newfd, nbytes, addrlen, i, j;
+	int fdmax, listener, newfd, nbytes, addrlen, i, j, k, l;
 	char buf[512];
 	const char yes = 1;
 	
@@ -99,7 +122,7 @@ int main(int argc, char *argv[])
 	FD_ZERO(&master);
 	FD_ZERO(&read_fds);
 	
-	if((listener = socket(AF_INET, SOCK_STREAM, 0) == -1))
+	if((listener = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 	{
 		perror("socket");
 		exit(EXIT_FAILURE);
@@ -156,8 +179,32 @@ int main(int argc, char *argv[])
 					}
 					else
 					{
+						player *np;
+						
 						FD_SET(newfd, &master);
 						fdmax = newfd > fdmax ? newfd : fdmax;
+						
+						np = (player *)malloc(sizeof(player));
+						np->sock = newfd;
+						np->addr = remoteaddr;
+						np->score = 0;
+						np->health = 0;
+						np->registered = 0;
+						np->position.x = 0;
+						np->position.y = 0;
+						np->flags = 0;
+						np->next = NULL;
+						
+						if(!players)
+							players = np;
+						else
+						{
+							player *cur = players;
+							while(cur->next)
+								cur = cur->next;
+							cur->next = np;
+						}
+						
 						printf("new connection - %s on socket %d\n", inet_ntoa(remoteaddr.sin_addr), newfd);
 					}
 				}
@@ -165,9 +212,16 @@ int main(int argc, char *argv[])
 				{
 					if((nbytes = recv(i, buf, sizeof(buf), 0)) <= 0)
 					{
-						if(nbytes == 0)
+						if(nbytes == 0 || nbytes == -1)
 						{
+							player *todel, *cur = players;
+							
 							printf("socket %d hung up\n", i);
+							todel = find_player_by_sock(i);
+							while(cur->next  && cur->next != todel)
+								cur = cur->next;
+							cur->next = todel->next;
+							free(todel);
 						}
 						else
 						{
@@ -178,7 +232,49 @@ int main(int argc, char *argv[])
 					}
 					else
 					{
+						player *cur;
 						// HANDLE HERE
+						printf("\"%s\"\n", buf);
+						if(strstr(buf, "\n"))
+							*(strstr(buf, "\n")) = 0;
+						if(strstr(buf, "\r"))
+							*(strstr(buf, "\r")) = 0;
+						buf[nbytes] = 0;
+						
+						if((cur = find_player_by_sock(i)) == NULL)
+							printf("Uhh...\n");
+						else
+						{
+							printf("Data from a player %s!\n", cur->registered ? cur->name : "Unregistered User");
+							if(!cur->registered && buf[0] == 'R')
+							{
+								printf(" Registration: %s\n", buf + 1);
+								strncpy(cur->name, buf + 1, 256);
+								cur->name[255] = 0;
+								cur->registered = 1;
+								
+								for(k = 0; k < strlen(buf); )
+								{
+									if((l = send(cur->sock, buf + k, strlen(buf) - k, 0)) > 0)
+										k += l;
+									else
+										perror("send");
+								}
+							}
+							
+							if(buf[0] == 'P')
+							{
+								printf("-Ping from %s!  [%s]\n", cur->name, buf);
+								for(k = 0; k < strlen(buf); )
+								{
+									if((l = send(cur->sock, buf + k, strlen(buf) - k, 0)) > 0)
+										k += l;
+									else
+										perror("send");
+								}
+							}
+						}
+						
 						for(j = 0; j <= fdmax; ++j)
 						{
 							if(FD_ISSET(j, &master))
