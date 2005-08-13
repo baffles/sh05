@@ -5,6 +5,7 @@
 #define ABG_H_INCLUDED
 
 #include "gameinfo.h"
+#include "ini.h"
 
 // Global variables
 /// The current running game
@@ -17,6 +18,8 @@ extern uint32_t caret_height;
 extern BITMAP* caret;
 /// Number of seconds the game has been running for
 extern uint32_t GTime;
+/// The main configuration file
+extern Ini::File settings;
 
 void GlobalTick(double dtime);
 void ResetGame();

@@ -3,10 +3,11 @@
 
 #include "board.h"
 #include "pawn.h"
+#include "abg.h"
 
 using namespace std;
 
-Board::Board(): camx(160), camy(1), _camy(100), background(NULL), state(BS_Normal)
+Board::Board(): camx(160), camy(1), _camy(100), background(NULL), floor(NULL), state(BS_Normal)
 {
 }
 
@@ -58,6 +59,10 @@ void Board::Draw(BITMAP* dest)
 		int bgy = BoardHeight - _camy - (dest->h / 2);
 		blit(background, dest, bgx, bgy, 0, 0, dest->w, dest->h);
 	}
+	if(floor)
+	{
+		int left = camx - (dest->w / 2);
+	}
 }
 		
 bool Board::InitLogic()
@@ -67,7 +72,9 @@ bool Board::InitLogic()
 
 bool Board::InitGraphics()
 {
-	return background = load_bitmap("../../media/Assets/Actual/Parallax/NightSky.bmp", NULL);
+	string datadir = Ini::GetString(settings, "data", "dir", "../../media/Assets/Rendered");
+	return (background = load_bitmap((datadir + "/Parallax/NightSky.bmp").c_str(), NULL)) &&
+		(floor = load_bitmap((datadir + "/Scenery/Grass2.bmp").c_str(), NULL));
 }
 
 

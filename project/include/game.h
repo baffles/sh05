@@ -7,13 +7,7 @@
 #include "gamestate.h"
 
 /*
-What exactly happens in the game?
-People are all on different stages, killing each other, and trying to get to the exit
-
-Meaning:
-The Board holds a bunch of objects (platforms) which are interacted with via the Pawns on the Board.
-Board needs a list of child objects
-Pawns are not chlidren of the Board
+Goals for when I get home: add floor support and platform support, then begin on the other object support
 */
 
 class Game: public GameState

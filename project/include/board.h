@@ -29,6 +29,10 @@ class Board: public GameState
 		Pawn* follow;
 		/// Parallax background
 		BITMAP* background;
+		/// Floor tile
+		BITMAP* floor;
+		/// Palette we're using
+		PALETTE pal;
 		/// State the baord is in
 		EBoardState state;
 		

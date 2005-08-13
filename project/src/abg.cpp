@@ -6,11 +6,13 @@
 #include "abg.h"
 #include "gamestate.h"
 #include "game.h"
+#include "connection.h"
 
 using namespace std;
 
 GameInfo GGame;
 uint32_t GTime = 0;
+Ini::File settings;
 
 static double this_second = 0;
 
@@ -51,8 +53,11 @@ void GlobalTick(double dtime)
 
 int main(int argc, char* argv[])
 {
+	Connection::GlobalInit();
+	Ini::Load("abg.ini", settings);
+	
 	allegro_init();
-	set_config_file("data/tinparty.ini");
+	set_config_file("abg.ini");
 	install_keyboard();
 	srand(time(NULL));
 
@@ -73,6 +78,9 @@ int main(int argc, char* argv[])
 	GameState::StaticDestroyGraphics();
 	
 	Character::StaticDestroy();
+	
+	Ini::Save("abg.ini", settings);
+	Connection::GlobalClose();
 	
 	TRACE_END();
 	

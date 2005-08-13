@@ -12,13 +12,17 @@ typedef timeval TimeType;
 #ifdef __MINGW32__
 #	include <stdint.h>
 #	include <allegro.h>
+#	define WIN32_LEAN_AND_MEAN
 #	include <winalleg.h>
+#	define ABG_WINDOWS
 typedef LARGE_INTEGER TimeType;
 #endif
 
 #ifdef _MSC_VER
 #	include <allegro.h>
+#	define WIN32_LEAN_AND_MEAN
 #	include <winalleg.h>
+#	define ABG_WINDOWS
 #	undef min
 #	undef max
 #	define DEBUG_BREAK() DebugBreak()
@@ -35,6 +39,8 @@ typedef LARGE_INTEGER TimeType;
 
 TimeType GetNow();
 TimeType GetDiff(TimeType _then, double& dtime);
-void Sleep(uint32_t msecs);
+#ifndef ABG_WINDOWS
+	void Sleep(uint32_t msecs);
+#endif
 
 // The end
