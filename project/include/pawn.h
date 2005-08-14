@@ -30,7 +30,6 @@ class Pawn: public Object
 		int place;
 		EPawnState pstate;
 		
-		int x,y;
 		int sx, sy;
 		int dx, dy;
 		double progress;

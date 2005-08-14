@@ -34,6 +34,8 @@ EStatus Game::Tick(double dtime)
 	if(key[KEY_DOWN] && GGame.board->camy * 200 - 100 == GGame.board->_camy)
 		GGame.board->ScrollToLevel(GGame.board->camy - 1);
 	GGame.board->camx = localpawn->x;
+	//if(ABS(localpawn->y - GGame.board->camy) > 100)
+	//	GGame.board->ScrollToLevel(localpawn->y / 200);
 		
 	return S_Continue;
 }
@@ -81,7 +83,7 @@ bool Game::InitLogic()
 	localpawn->Move(20, PawnHeight + 10);
 	localpawn->InitGraphics();
 	AddManagedChild(localpawn);
-	return GGame.board->InitLogic() & p->InitLogic() & localpawn->InitLogic();
+	return GGame.board->InitLogic() & localpawn->InitLogic();
 }
 
 bool Game::InitGraphics()

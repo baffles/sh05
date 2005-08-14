@@ -5,6 +5,7 @@
 #include <math.h>
 #include "pawn.h"
 #include "abg.h"
+#include "bullet.h"
 
 using namespace std;
 
@@ -89,6 +90,9 @@ EStatus Pawn::Tick(double dtime)
 		xs = MAX(xs - (physstate == PHYS_Falling ? WalkSpeed / 3 : WalkSpeed), 0);
 	else if(xs < 0)
 		xs = MIN(xs + (physstate == PHYS_Falling ? WalkSpeed / 3 : WalkSpeed), 0);
+		
+	//if(x < 0) x = 0;
+	//if(x + w > BoardWidth) x = BoardWidth - w;
 	
 	switch(pstate)
 	{
@@ -129,39 +133,46 @@ void Pawn::Draw(BITMAP* dest)
 
 EStatus HumanPawn::Tick(double dtime)
 {
-	if(pstate == PS_None || pstate == PS_Walking)
+	switch(physstate)
 	{
-		if(key[KEY_RIGHT])
-		{
-			xs = MIN(xs + WalkSpeed, WalkSpeed * 3);
-			//GotoState(PS_Walking);
-		}
-		else if(key[KEY_LEFT])
-		{
-			xs = MAX(xs - WalkSpeed, -WalkSpeed * 3);
-			//GotoState(PS_Walking);
-		}
-		if(key[KEY_SPACE] && physstate == PHYS_Normal)
-		{
-			cout << this << endl;
-			GotoState(PS_Jumping);
-		}
+		case PHYS_Normal:
+			if(key[KEY_RIGHT])
+			{
+				xs = MIN(xs + WalkSpeed, WalkSpeed * 3);
+				instance->Face(D_Right);
+			}
+			else if(key[KEY_LEFT])
+			{
+				xs = MAX(xs - WalkSpeed, -WalkSpeed * 3);
+				instance->Face(D_Left);
+			}
+			if(key[KEY_SPACE] && physstate == PHYS_Normal)
+			{
+				GotoState(PS_Jumping);
+			}
+			break;
+		case PHYS_Falling:
+			if(key[KEY_RIGHT])
+			{
+				xs = MIN(xs + WalkSpeed, WalkSpeed * 3) / 3;
+				instance->Face(D_Right);
+			}
+			else if(key[KEY_LEFT])
+			{
+				xs = MAX(xs - WalkSpeed, -WalkSpeed * 3) / 3;
+				instance->Face(D_Left);
+			}
+			break;
 	}
-	if(pstate == PS_Jumping)
+	if(key[KEY_A] || key[KEY_S] || key[KEY_D] || key[KEY_F])
 	{
-		if(key[KEY_RIGHT])
-		{
-			xs = MIN(xs + WalkSpeed, WalkSpeed * 3) / 3;
-			//GotoState(PS_Walking);
-		}
-		else if(key[KEY_LEFT])
-		{
-			xs = MAX(xs - WalkSpeed, -WalkSpeed * 3) / 3;
-			//GotoState(PS_Walking);
-		}
+		Bullet* b = new Bullet;
+		b->x = x + (instance->dir == D_Left ? 0 : PawnWidth * 2 / 3);
+		b->y = y - (PawnWidth * 2 / 3);
+		b->xs = 5 * (instance->dir == D_Left ? -1 : 1);
+		b->InitGraphics();
+		parent->AddManagedChild(b);
 	}
-	//if(!key[KEY_LEFT] && !key[KEY_RIGHT] && pstate == PS_Walking)
-		//GotoState(PS_None);
 
 	return Pawn::Tick(dtime);
 }
