@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 
+#include "plat.h"
 #include "client.h"
 #include "abg.h"
 #include "game.h"
@@ -41,39 +42,43 @@ Client::Client(string host, int port)
 	peer = NULL;
 	enet_address_set_host(&address, host.c_str());
 	address.port = port;
+	lag = 0;
+	progress = 0;
+	connected = false;
 }
 
 Client::~Client()
 {
 	if(Game::local->client == this)
 		Game::local->client = NULL;
-	ENetEvent event;
-	
-	enet_peer_disconnect(&client->peers[0]);
-	
-	// 3 seconds to disconnect before we force it
-	while(enet_host_service(client, &event, 3000) > 0)
 	{
-		switch(event.type)
+		ENetEvent event;
+		
+		enet_peer_disconnect(&client->peers[0]);
+		
+		// 3 seconds to disconnect before we force it
+		while(enet_host_service(client, &event, 3000) > 0)
 		{
-			case ENET_EVENT_TYPE_RECEIVE:
-				enet_packet_destroy(event.packet);
-				break;
-			
-			case ENET_EVENT_TYPE_DISCONNECT:
-				enet_host_destroy(client);
-				return;
-			
-			case ENET_EVENT_TYPE_NONE:
-			case ENET_EVENT_TYPE_CONNECT:
-			default:
-				break;
+			switch(event.type)
+			{
+				case ENET_EVENT_TYPE_RECEIVE:
+					enet_packet_destroy(event.packet);
+					break;
+				
+				case ENET_EVENT_TYPE_DISCONNECT:
+					enet_host_destroy(client);
+					return;
+				
+				case ENET_EVENT_TYPE_NONE:
+				case ENET_EVENT_TYPE_CONNECT:
+				default:
+					break;
+			}
 		}
+		
+		// welp, we have to force it :(
+		enet_peer_reset(&client->peers[0]);
 	}
-	
-	// welp, we have to force it :(
-	enet_peer_reset(&client->peers[0]);
-	enet_host_destroy(client);
 }
 
 void Client::CheckValid()
@@ -104,6 +109,13 @@ EStatus Client::Tick(double dtime)
 	EStatus s = GameState::Tick(dtime);
 	if(s != S_Continue) return s;
 	
+	progress += dtime;
+	if(progress > 3)
+	{
+		Ping();
+		progress -= 3;
+	}
+	
 	ENetEvent event;
 	
 	while(enet_host_service(client, &event, 0) > 0)
@@ -111,6 +123,7 @@ EStatus Client::Tick(double dtime)
 		if(event.type == ENET_EVENT_TYPE_DISCONNECT)
 		{
 			// disconnection
+			connected = false;
 			enet_host_destroy(client);
 			Finish();
 			return S_Finished;
@@ -119,9 +132,13 @@ EStatus Client::Tick(double dtime)
 		if(event.type == ENET_EVENT_TYPE_RECEIVE)
 		{
 			// data
-			stringstream data((char *)event.packet->data);
+			stringstream data;
+			data.write((char *)event.packet->data, event.packet->dataLength);
+			// debug
+			//cout << "Packet (len " << event.packet->dataLength << ") channel " << (unsigned int)event.channelID << " contents: " << data.str();
 			
 			string cmd;
+			ws(data);
 			data >> cmd;
 			if(event.channelID == CSystem)
 			{
@@ -130,9 +147,11 @@ EStatus Client::Tick(double dtime)
 					string name;
 					int id;
 					
+					ws(data);
 					if(data.peek() != ':') // should be id
 						data >> id;
 					
+					ws(data);
 					if(data.peek() != ':') // one word name....
 						data >> name;
 					else
@@ -149,6 +168,7 @@ EStatus Client::Tick(double dtime)
 				{
 					string reason;
 					
+					ws(data);
 					if(data.peek() != ':') // one word reason
 						data >> reason;
 					else
@@ -167,8 +187,10 @@ EStatus Client::Tick(double dtime)
 					int id;
 					string name;
 					
+					ws(data);
 					data >> id;
 					
+					ws(data);
 					if(data.peek() != ':')
 						data >> name;
 					else
@@ -186,14 +208,23 @@ EStatus Client::Tick(double dtime)
 					int id;
 					string reason;
 					
+					cout << "We have a quit.... " << data.str();
+					stringbuf temp;
+					data.get(temp);
+					cout << "This is left of it: " << temp.str();
+					
+					ws(data);
 					data >> id;
 					
+					//ws(data); // Booted(system(Excess Flood))
+					cout << "PEEK! " << data.peek() << endl;
 					if(data.peek() == ':')
 					{
 						data.get();
 						stringbuf temp;
 						data.get(temp);
 						reason = temp.str();
+						cout << "Hmm = " << temp.str() << endl;;
 					}
 					else
 						data >> reason;
@@ -206,12 +237,14 @@ EStatus Client::Tick(double dtime)
 				if(cmd == "Join")
 				{
 					int id;
+					ws(data);
 					data >> id;
 					OnJoin(id);
 				}
 				if(cmd == "Leave")
 				{
 					int id;
+					ws(data);
 					data >> id;
 					OnLeave(id);
 				}
@@ -220,7 +253,9 @@ EStatus Client::Tick(double dtime)
 				{
 					int id, nx, ny;
 					
+					ws(data);
 					data >> id;
+					ws(data);
 					data >> nx; data.get(); data >> ny;
 					
 					OnMove(id, nx, ny);
@@ -235,6 +270,7 @@ EStatus Client::Tick(double dtime)
 				{
 					int score, health, x, y, flags, state, serverstate, timeleft;
 					
+					ws(data);
 					data >> score >> health >> x; data.get(); data >> y >> flags >> state >> serverstate >> timeleft;
 					
 					OnStatusUpdate(score, health, x, y, flags, state, serverstate, timeleft);
@@ -247,6 +283,7 @@ EStatus Client::Tick(double dtime)
 					string lb;
 					
 					stringbuf temp;
+					ws(data);
 					data.get(temp);
 					lb = temp.str();
 					
@@ -260,8 +297,10 @@ EStatus Client::Tick(double dtime)
 					int fromid;
 					string msg;
 					
+					ws(data);
 					data >> fromid;
 					
+					ws(data);
 					if(data.peek() != ':')
 						data >> msg;
 					else
@@ -282,6 +321,7 @@ EStatus Client::Tick(double dtime)
 			enet_packet_destroy(event.packet);
 		}
 	}
+	
 	return s;
 }
 
@@ -308,7 +348,10 @@ bool Client::InitLogic()
 	// give it 5 seconds to connect
 	ENetEvent event;
 	if(enet_host_service(client, &event, 5000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT)
+	{
+		connected = true;
 		return true;
+	}
 	else
 	{
 		char host[512];
@@ -395,6 +438,7 @@ void Client::OnRegisterConfirm(int id, string name)
 
 void Client::OnBoot(string reason)
 {
+	cout << "I got booted for " << reason << "  :(" << endl;
 }
 
 
@@ -404,6 +448,7 @@ void Client::OnNew(int id, string name)
 
 void Client::OnQuit(int id, string reason)
 {
+	cout << "<-- " << id << " Quit (" << reason << ")" << endl;
 }
 
 // Game
@@ -427,6 +472,7 @@ void Client::OnStatusUpdate(int score, int health, int x, int y, int flags, int 
 void Client::OnPong(string pd)
 {
 	lag = timeGetTime() - atol(pd.c_str());
+	cout << "MMMM, pong, lag is... " << lag << "ms." << endl;
 }
 
 // Chat
