@@ -136,6 +136,7 @@ EStatus Client::Tick(double dtime)
 			// data
 			stringstream data;
 			data.write((char *)event.packet->data, event.packet->dataLength);
+			cerr << data.str();
 			// debug
 			//cout << "Packet (len " << event.packet->dataLength << ") channel " << (unsigned int)event.channelID << " contents: " << data.str();
 			
@@ -443,12 +444,20 @@ void Client::OnRegisterConfirm(int id, string name)
 
 void Client::OnBoot(string reason)
 {
-	cout << "I got booted for " << reason << "  :(" << endl;
+	cout << "-- Booted with reason " << reason << endl;
 }
 
 
 void Client::OnNew(int id, string name)
 {
+	TRACE_ASSERT(Game::local);
+	TRACE_ASSERT(Game::local->localpawn);
+	if(id == Game::local->localpawn->pnum)
+		return;
+	Pawn* p = new Pawn(id);
+	p->instance = Character::GetByName("CGamesPlay");
+	GGame->AddPlayer(p);
+	cout << "-- " << name << " joined the game (" << id << ")" << endl;
 }
 
 void Client::OnQuit(int id, string reason)
@@ -477,7 +486,6 @@ void Client::OnStatusUpdate(int score, int health, int x, int y, int flags, int 
 void Client::OnPong(string pd)
 {
 	lag = timeGetTime() - atol(pd.c_str());
-	cout << "MMMM, pong, lag is... " << lag << "ms." << endl;
 }
 
 // Chat

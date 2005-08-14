@@ -24,8 +24,8 @@ class CharacterCGP: public Character
 #ifndef DEDICATED_SERVER
 		virtual bool InitGraphics()
 		{
-			string datadir = Ini::GetString(settings, "data", "dir", "../../media/Assets/Rendered");
-			return (standard = load_bitmap((datadir + "/Sprites/CG/Stand.bmp").c_str(), NULL));
+			string datadir = Ini::GetString(settings, "data", "character", "../../media/Assets/Rendered/Sprites/CG");
+			return (standard = load_bitmap((datadir + "/Stand.bmp").c_str(), NULL));
 		}
 		virtual void DrawSelf(BITMAP* dest, int x, int y, int w, int h)
 		{

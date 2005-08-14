@@ -77,9 +77,6 @@ int main(int argc, char* argv[])
 	if(c->InitLogic())
 	{
 		c->Register("CGames");
-		c->Ping();
-		c->Msg("weeeee");
-		cout << c->GetLag() << endl;
 		GameState::AddManagedRoot(c);
 		g->client = c;
 		c->game = g;

@@ -35,6 +35,10 @@ class Board: public GameState
 		BITMAP* floor;
 		/// Palette we're using
 		PALETTE pal;
+		/// Platform graphics
+		BITMAP* platleft, *platmiddle, *platright;
+		/// Amount to shift platforms by when drawing
+		int platoffset;
 #endif
 		/// State the baord is in
 		EBoardState state;

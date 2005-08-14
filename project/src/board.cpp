@@ -4,20 +4,25 @@
 #include "board.h"
 #include "pawn.h"
 #include "abg.h"
+#include "zipfile.h"
 
 using namespace std;
 
 Board::Board(): camx(160), camy(1), _camy(100),
 #ifndef DEDICATED_SERVER
-	background(NULL), floor(NULL),
+	background(NULL), floor(NULL), platleft(NULL), platmiddle(NULL), platright(NULL),
 #endif
-	state(BS_Normal)
+	platoffset(0), state(BS_Normal)
 {
 }
 
 Board::~Board()
 {
 	destroy_bitmap(background);
+	destroy_bitmap(floor);
+	destroy_bitmap(platleft);
+	destroy_bitmap(platmiddle);
+	destroy_bitmap(platright);
 }
  
 void Board::CheckValid()
@@ -28,7 +33,7 @@ void Board::CheckValid()
 void Board::Dump(std::ostream& str)
 {
 	GameState::Dump(str);
-	str << TRACE_VAR(camx) << TRACE_VAR(camy) << TRACE_VAR(_camy) << endl;
+	str << TRACE_VAR(background) << TRACE_VAR(floor) << TRACE_VAR(platleft) << TRACE_VAR(platmiddle) << TRACE_VAR(platright) << TRACE_VAR(platoffset) << TRACE_VAR(camx) << TRACE_VAR(camy) << TRACE_VAR(_camy) << endl;
 }
 
 void Board::RealToScreen(int w, int h, int inx, int iny, int& x, int& y)
@@ -112,9 +117,51 @@ void Board::Draw(BITMAP* dest)
 
 bool Board::InitGraphics()
 {
-	string datadir = Ini::GetString(settings, "data", "dir", "../../media/Assets/Rendered");
-	return (background = load_bitmap((datadir + "/Parallax/NightSky.bmp").c_str(), NULL)) &&
-		(floor = load_bitmap((datadir + "/Scenery/Grass2.bmp").c_str(), NULL));
+	string file = Ini::GetString(settings, "data", "level", "../../media/NightSky.zip");
+	PACKFILE* data = pack_fopen_zip_dir(file.c_str());
+	if(!data)
+		return false;
+		
+	PACKFILE* temp;
+	
+	temp = pack_fopen_zip(data, "BG.bmp");
+	if(temp)
+	{
+		background = load_bmp_pf(temp, NULL);
+		pack_fclose(temp);
+	}
+	
+	temp = pack_fopen_zip(data, "Floor.bmp");
+	if(temp)
+	{
+		floor = load_bmp_pf(temp, NULL);
+		pack_fclose(temp);
+	}
+	
+	temp = pack_fopen_zip(data, "PlatL.bmp");
+	if(temp)
+	{
+		platleft = load_bmp_pf(temp, NULL);
+		pack_fclose(temp);
+	}
+	
+	temp = pack_fopen_zip(data, "PlatM.bmp");
+	if(temp)
+	{
+		platmiddle = load_bmp_pf(temp, NULL);
+		pack_fclose(temp);
+	}
+	
+	temp = pack_fopen_zip(data, "PlatR.bmp");
+	if(temp)
+	{
+		platright = load_bmp_pf(temp, NULL);
+		pack_fclose(temp);
+	}
+	
+	pack_fclose(data);
+	
+	return background && floor;
 }
 #endif
 		

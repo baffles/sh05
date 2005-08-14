@@ -74,7 +74,6 @@ bool Game::InitLogic()
 	p->y = 240;
 	p->w = BoardWidth - 600;
 	p->h = 60;
-	p->drawoffset = 30;
 	GGame->board->AddManagedChild(p);
 	GGame->board->geometry.push_back(p);
 	p->InitGraphics();
@@ -84,7 +83,6 @@ bool Game::InitLogic()
 	p->y = 60;
 	p->w = BoardWidth - 600;
 	p->h = 40;
-	p->drawoffset = 30;
 	GGame->board->AddManagedChild(p);
 	GGame->board->geometry.push_back(p);
 	p->InitGraphics();
@@ -94,7 +92,6 @@ bool Game::InitLogic()
 	p->y = 120;
 	p->w = BoardWidth - 600;
 	p->h = 40;
-	p->drawoffset = 30;
 	GGame->board->AddManagedChild(p);
 	GGame->board->geometry.push_back(p);
 	p->InitGraphics();
@@ -104,7 +101,6 @@ bool Game::InitLogic()
 	p->y = 180;
 	p->w = BoardWidth - 600;
 	p->h = 40;
-	p->drawoffset = 30;
 	GGame->board->AddManagedChild(p);
 	GGame->board->geometry.push_back(p);
 	p->InitGraphics();
