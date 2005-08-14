@@ -20,9 +20,9 @@ void Board::RealToScreen(int w, int h, int inx, int iny, int& x, int& y)
 {
 	// Convert absolute to screen
 	int left = camx - (w / 2);
-	int top = _camy - (h / 2);
+	int top = _camy + (h / 2);
 	x = inx - left;
-	y = -iny - top;
+	y = -iny + top;
 }
 
 void Board::ScrollToLevel(int newlevel)

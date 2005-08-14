@@ -3,6 +3,9 @@
 
 #include "abg.h"
 #include "game.h"
+#include "platform.h"
+
+using namespace std;
 
 Game::Game()
 {
@@ -44,11 +47,19 @@ EStatus Game::Tick(double dtime)
 void Game::Draw(BITMAP* dest)
 {
 	GGame.board->Draw(dest);
+	GameState::Draw(dest);
 }
 		
 bool Game::InitLogic()
 {
-	return GGame.board->InitLogic();
+	Platform* p = new Platform;
+	p->x = 300;
+	p->y = 230;
+	p->w = BoardWidth - 600;
+	p->h = 40;
+	AddManagedChild(p);
+	p->InitGraphics();
+	return GGame.board->InitLogic() & p->InitLogic();
 }
 
 bool Game::InitGraphics()
