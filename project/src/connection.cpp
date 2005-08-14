@@ -29,11 +29,11 @@ void Connection::GlobalInit()
 	sockVersion = MAKEWORD(1, 1);
 	WSAStartup(sockVersion, &wsaData);
 #	endif
-	if(enet_initialize() != 0)
+	/*if(enet_initialize() != 0)
 	{
 		error = true;
 		strerror = "Failed to initialize enet.";
-	}
+	}*/
 }
 
 void Connection::GlobalClose()
@@ -41,7 +41,7 @@ void Connection::GlobalClose()
 #	ifdef ABG_WINDOWS
 	WSACleanup();
 #	endif
-	enet_deinitialize();
+	//enet_deinitialize();
 }
 
 Connection::Connection(): sock(0), connected(false), error(false)
