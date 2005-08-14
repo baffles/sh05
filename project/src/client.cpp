@@ -51,7 +51,9 @@ Client::~Client()
 {
 	if(Game::local->client == this)
 		Game::local->client = NULL;
+	if(connected)
 	{
+		connected = false;
 		ENetEvent event;
 		
 		enet_peer_disconnect(&client->peers[0]);
@@ -208,7 +210,9 @@ EStatus Client::Tick(double dtime)
 					int id;
 					string reason;
 					
-					cout << "We have a quit.... " << data.str();
+					stringbuf temp1;
+					data.get(temp1);
+					cout << "This is left of it: " << temp1.str();
 					stringbuf temp;
 					data.get(temp);
 					cout << "This is left of it: " << temp.str();
@@ -228,6 +232,7 @@ EStatus Client::Tick(double dtime)
 					}
 					else
 						data >> reason;
+					
 					
 					OnQuit(id, reason);
 				}
