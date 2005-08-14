@@ -122,6 +122,19 @@ bool Client::Send(ENetPeer *p, string data, UDPChannel chan)
 	return true;
 }
 
+void Client::CheckValid()
+{
+	Object::CheckValid();
+	TRACE_ASSERT(client);
+	TRACE_ASSERT(peer);
+}
+
+void Client::Dump(ostream& str)
+{
+	Object::Dump(str);
+	str << TRACE_VAR(address) << TRACE_VAR(client) << TRACE_VAR(peer) << TRACE_VAR(lag);
+}
+
 
 EStatus Client::Tick(double dtime)
 {

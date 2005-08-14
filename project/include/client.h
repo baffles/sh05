@@ -42,6 +42,10 @@ class Client: public GameState
 		
 		bool Send(ENetPeer *p, std::string data, UDPChannel chan);
 		
+		// Debugging functions
+		virtual void CheckValid();
+		virtual void Dump(std::ostream& str);
+		
 		EStatus Tick(double dtime);
 		bool ClientTick();
 		
