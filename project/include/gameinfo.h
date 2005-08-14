@@ -22,8 +22,6 @@ class GameInfo
 {
 	public: // Public variables
 		EGameType type;
-		uint32_t turn, nturns;
-		uint32_t curplayerturn;
 		std::vector<Pawn*> players;
 		Board* board;
 };

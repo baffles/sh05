@@ -4,6 +4,7 @@
 #include "abg.h"
 #include "game.h"
 #include "platform.h"
+#include "pawn.h"
 
 using namespace std;
 
@@ -30,16 +31,7 @@ EStatus Game::Tick(double dtime)
 		GGame.board->ScrollToLevel(GGame.board->camy + 1);
 	if(key[KEY_DOWN] && GGame.board->camy * 200 - 100 == GGame.board->_camy)
 		GGame.board->ScrollToLevel(GGame.board->camy - 1);
-	if(key[KEY_RIGHT])
-	{
-		if(GGame.board->camx < BoardWidth)
-			GGame.board->camx++;
-	}
-	if(key[KEY_LEFT])
-	{
-		if(GGame.board->camx > 0)
-			GGame.board->camx--;
-	}
+	GGame.board->camx = localpawn->x;
 		
 	return S_Continue;
 }
@@ -59,7 +51,12 @@ bool Game::InitLogic()
 	p->h = 40;
 	AddManagedChild(p);
 	p->InitGraphics();
-	return GGame.board->InitLogic() & p->InitLogic();
+	localpawn = new HumanPawn(1);
+	localpawn->instance = Character::GetByName("TINS");
+	localpawn->Move(20, 60);
+	localpawn->InitGraphics();
+	AddManagedChild(localpawn);
+	return GGame.board->InitLogic() & p->InitLogic() & localpawn->InitLogic();
 }
 
 bool Game::InitGraphics()

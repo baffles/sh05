@@ -35,10 +35,7 @@ void ResetGame()
 void NewGame()
 {
 	ResetGame();
-	GGame.turn = 0;
-	GGame.nturns = 1;
 	GGame.players.clear();
-	GGame.curplayerturn = 0;
 }
 
 void GlobalTick(double dtime)

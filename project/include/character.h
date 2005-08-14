@@ -14,8 +14,7 @@
 
 enum EDirection
 {
-	D_Down, D_Up, D_Left, D_Right,
-	D_DownLeft, D_DownRight, D_UpLeft, D_UpRight
+	D_Left, D_Right
 };
 
 enum EState
@@ -37,7 +36,6 @@ class Character
 		static Character* GetByName(const char* name);
 		
 	public: // Public variables
-		bool playable;
 		const char* name;
 		const char* flavor;
 		uint32_t id;

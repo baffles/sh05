@@ -15,8 +15,8 @@ const char* PrintEPawnState(EPawnState s)
 	{
 		PRINT_EPS(PS_None);
 		PRINT_EPS(PS_Walking);
-		PRINT_EPS(PS_Rolling);
-		PRINT_EPS(PS_RollingInAir);
+		PRINT_EPS(PS_Jumping);
+		PRINT_EPS(PS_Falling);
 		default: return "Unknown";
 	}
 #	undef PRINT_EGS
@@ -103,13 +103,6 @@ EStatus Pawn::Tick(double dtime)
 				s = S_ContinueNoWait;
 			}
 			break;
-		case PS_RollingInAir:
-			if(instance && instance->progress >= 1)
-			{
-				s = S_ContinueNoWait;
-				GotoState(PS_None);
-			}
-			break;
 		default:
 			break;
 	}
@@ -121,32 +114,23 @@ void Pawn::Draw(BITMAP* dest)
 {
 	int sx, sy;
 	GGame.board->RealToScreen(dest->w, dest->h, x, y, sx, sy);
-	if(instance) instance->DrawSelf(dest, sx - (PawnSize / 2), sy - PawnSize, PawnSize, PawnSize);
-}
-
-void HumanPawn::GotoState(EPawnState news)
-{
-	Pawn::GotoState(news);
-	clear_keybuf();
+	if(instance) instance->DrawSelf(dest, sx, sy, PawnWidth, PawnHeight);
 }
 
 EStatus HumanPawn::Tick(double dtime)
 {
-	switch(pstate)
+	if(pstate == PS_None)
 	{
-		case PS_Rolling:
-			if(keypressed() && instance && instance->state == S_Standing)
-			{
-				int key = readkey();
-				if(key >> 8 == KEY_SPACE)
-				{
-					instance->Animate(S_Jumping, 1);
-					pstate = PS_RollingInAir;
-				}
-			}
-			break;
-		default:
-			break;
+		if(key[KEY_RIGHT])
+		{
+			MoveTo(dx + 3, y, .05);
+			GotoState(PS_Walking);
+		}
+		if(key[KEY_LEFT])
+		{
+			MoveTo(dx - 3, y, .05);
+			GotoState(PS_Walking);
+		}
 	}
 	return Pawn::Tick(dtime);
 }
@@ -161,20 +145,6 @@ void ComputerPawn::GotoState(EPawnState news)
 EStatus ComputerPawn::Tick(double dtime)
 {
 	progress += dtime;
-	switch(pstate)
-	{
-		case PS_Rolling:
-			if(progress >= timetoreact && instance && instance->state == S_Standing)
-			{
-				instance->Animate(S_Jumping, 1);
-				pstate = PS_RollingInAir;
-			}
-			if(instance && instance->state != S_Standing)
-				progress = 0;
-			break;
-		default:
-			break;
-	}
 	return Pawn::Tick(dtime);
 }
 

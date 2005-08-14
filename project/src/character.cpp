@@ -58,7 +58,7 @@ Character* Character::GetByName(const char* name)
 	return NULL;
 }
 
-Character::Character(): playable(true), name(""), flavor("")
+Character::Character(): name(""), flavor("")
 {
 	Character::RegisterCharacter(this);
 }

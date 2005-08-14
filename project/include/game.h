@@ -5,9 +5,13 @@
 #define GAME_H_INCLUDED
 
 #include "gamestate.h"
+#include "pawn.h"
 
 class Game: public GameState
 {
+	public: // Public variables
+		Pawn* localpawn;
+		
 	public: // Public functions
 		Game();
 		virtual ~Game();

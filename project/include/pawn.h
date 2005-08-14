@@ -4,22 +4,22 @@
 #ifndef PAWN_H_INCLUDED
 #define PAWN_H_INCLUDED
 
-#include "gamestate.h"
+#include "object.h"
 #include "character.h"
 
-/// Pawn size
-enum { PawnSize = 64 };
+enum { PawnHeight = 64 };
+enum { PawnWidth = 24 };
 
 enum EPawnState
 {
 	PS_None,
 	PS_Walking,			// Bouncing happily along
-	PS_Rolling,			// Need to jump sometime
-	PS_RollingInAir,	// Watch for when to stop the block
+	PS_Jumping,			// Going up
+	PS_Falling,			// Going down
 };
 const char* PrintEPawnState(EPawnState s);
 
-class Pawn: public GameState
+class Pawn: public Object
 {
 	public: // Public variables
 		Character* instance;
@@ -31,7 +31,6 @@ class Pawn: public GameState
 		
 		int sx, sy;
 		int dx, dy;
-		int x, y;
 		double progress;
 		double timedialation;
 		
@@ -59,7 +58,6 @@ class HumanPawn: public Pawn
 	public: // Public functions
 		HumanPawn(uint32_t pnum): Pawn(pnum)
 		{ }
-		virtual void GotoState(EPawnState news);
 		virtual EStatus Tick(double dtime);
 };
 
