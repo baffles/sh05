@@ -1,0 +1,26 @@
+Protocol notes
+
+c->s
+R = register
+P = ping
+M = message
+S = get state info
+Q = quit
+E = request move
+
+J = join game
+L = leave game
+
+s->c
+R = echoed register to confirm it
+P = echoed ping
+M = message (M userid :message)
+U = update
+S = state information (reply to S from client) - (S score health x,y flags state serverstate timeleft)
+J = new user joins (J id :newuser)
+Q = user quits (Q id)
+
+E = new user enters game (E id)
+L = user leaves game (Q id)
+
+O = user moves (O id x,y)

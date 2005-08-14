@@ -1,0 +1,30 @@
+Protocol notes
+
+[] = optional
+<> = required
+
+c->s
+Reg = register - "Reg [pass] :<name>" where pass has no spaces [system]
+Ping = ping - "Ping <loopback>" loops back what is in loopback [misc]
+Msg = message - "Msg [dest] :<message>" destination hasn't been worked in yet, but sends that message. [chat]
+Sti = get state info - "Sti" returns state information [game]
+Quit = quit - "Quit [:reason]"  [system]
+Req = request move - "Req <x>,<y>"; [game]
+
+Join = join game - "Join" [game]
+Leave = leave game - "Leave" [game]
+
+s->c
+Reg = confirmation of a successful registration - "Reg <id> :<name>" [system]
+Pong = echoed ping - "Pong whateveryousent" [misc]
+Msg = message - "Msg <fromuser(id)> :message" [chat]
+Upd = update info [game]
+Sti = state information - "Sti score health x,y flags state serverstate timeleft" [game]
+New = new user joins - "New <id> :<name>" [system]
+Quit = user quits - "Quit <id> [:reason]" [system]
+Boot = booted for reason - "Boot :<reason>" [system]
+
+Join = new user enters game - "Join <id>" [game]
+Leave = user leaves game - "Leave <id>" [game]
+
+Mov = user moves - "Mov <id> <x>,<y>" [game]

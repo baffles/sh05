@@ -11,17 +11,26 @@ typedef timeval TimeType;
 
 #ifdef __MINGW32__
 #	include <stdint.h>
-#	include <allegro.h>
-#	define WIN32_LEAN_AND_MEAN
-#	include <winalleg.h>
+# ifndef DEDICATED_SERVER
+#  include <allegro.h>
+#	 define WIN32_LEAN_AND_MEAN
+#	 include <winalleg.h>
+# else
+#	 define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
+# endif
 #	define ABG_WINDOWS
 typedef LARGE_INTEGER TimeType;
 #endif
 
 #ifdef _MSC_VER
-#	include <allegro.h>
-#	define WIN32_LEAN_AND_MEAN
-#	include <winalleg.h>
+# ifndef DEDICATED_SERVER
+#  include <allegro.h>
+#	 define WIN32_LEAN_AND_MEAN
+#	 include <winalleg.h>
+# else
+#  include <windows.h>
+# endif
 #	define ABG_WINDOWS
 #	undef min
 #	undef max

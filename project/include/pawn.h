@@ -30,6 +30,7 @@ class Pawn: public Object
 		int place;
 		EPawnState pstate;
 		
+		int x,y;
 		int sx, sy;
 		int dx, dy;
 		double progress;
@@ -42,7 +43,7 @@ class Pawn: public Object
 		
 	public: // Public functions
 		Pawn(uint32_t pnum);
-		virtual ~Pawn() = 0;
+		virtual ~Pawn();
 		
 		/// Debugging functions
 		virtual void CheckValid();
@@ -55,7 +56,9 @@ class Pawn: public Object
 		void MoveTo(int x, int y, double timetoarrive, bool isspeed = false);
 		
 		virtual EStatus Tick(double dtime);
+#ifndef DEDICATED_SERVER
 		virtual void Draw(BITMAP* dest);
+#endif
 };
 
 #ifndef DEDICATED_SERVER

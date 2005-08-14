@@ -13,7 +13,7 @@
 #	define GFX_AUTODETECT 0
 #	define GFX_AUTODETECT_WINDOWED 0
 #	define END_OF_MAIN()
-#	define BITMAP void
+//#	define BITMAP void
 #	define destroy_bitmap(b)
 #	define load_bitmap(f, p) (void*) 1
 	typedef int PALETTE[256];
@@ -99,9 +99,11 @@ class GameState
 	private: // Private static variables
 		static int curpage;
 		static EUpdateMode updmode;
+#ifndef DEDICATED_SERVER
 		static BITMAP *pages[3];
 		static BITMAP* active_page;
 		static BITMAP* buffer;
+#endif
 		
 	public: // Public static functions
 #ifndef DEDICATED_SERVER
@@ -137,9 +139,11 @@ class GameState
 
 	private: // Private static functions
 		/// Get the current surface
+#ifndef DEDICATED_SERVER
 		static BITMAP* StaticGetScreenBitmap();
 		/// Refresh the screen
 		static void StaticUpdateScreen();
+#endif
 		
 	public: // Public variables
 		/// Higher values of this will be drawn and ticked later.
@@ -177,7 +181,9 @@ class GameState
 		/// Ticks the game one time only.
 		/// @param dtime Is set to the amount of time elapsed
 		/// @return The value of the tick
+#ifndef DEDICATED_SERVER
 		EStatus DoTickOnce(double& dtime);
+#endif
 		/// Wait for the children states to finish for time seconds.
 		/// @param time Number of seconds to wait for. <0 means no limit.
 		/// @return true if the wait finished successfully, false otherwise
@@ -196,7 +202,9 @@ class GameState
 		{ return true; }
 		
 		virtual EStatus Tick(double dtime);
+#ifndef DEDICATED_SERVER
 		virtual void Draw(BITMAP* dest);
+#endif
 		
 	private: // Private functions
 };
@@ -226,7 +234,9 @@ class SubStateText: public GameState
 		void SetText(const char* text);
 		
 		virtual EStatus Tick(double dtime);
+#ifndef DEDICATED_SERVER
 		virtual void Draw(BITMAP* dest);
+#endif
 };
 
 /// Waits while moving a pawn to the given point and deletes itself when done.

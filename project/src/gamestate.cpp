@@ -400,10 +400,12 @@ bool GameState::RemoveRoot(GameState* state)
 	return false;
 }
 
+#ifndef DEDICATED_SERVER
 BITMAP* GameState::StaticGetScreenBitmap()
 {
 	return buffer;
 }
+#endif
 
 #ifndef DEDICATED_SERVER
 void GameState::StaticUpdateScreen()
@@ -550,6 +552,7 @@ void GameState::ClearChildren()
 	children.clear();
 }
 
+#ifndef DEDICATED_SERVER
 EStatus GameState::DoTickOnce(double& dtime)
 {
 	TimeType then = now;
@@ -568,6 +571,7 @@ EStatus GameState::DoTickOnce(double& dtime)
 	StaticUpdateScreen();
 	return s;
 }
+#endif
 
 bool GameState::WaitChildren(double time)
 {
@@ -679,6 +683,7 @@ EStatus GameState::Tick(double dtime)
 	return S_Continue;
 }
 
+#ifndef DEDICATED_SERVER
 void GameState::Draw(BITMAP* dest)
 {
 	for(list<StateRef>::iterator i = children.begin(); i != children.end(); i++)
@@ -686,6 +691,7 @@ void GameState::Draw(BITMAP* dest)
 		(*i)->Draw(dest);
 	}
 }
+#endif
 
 SubStateText::SubStateText(const char* text, int x, int y, int w, int h, ETextboxMode mode, bool waitonme): text(text), tnl(0), pos(0), lastword(0), thisline(0), waitonme(waitonme), x(x), y(y), w(w), h(h), mode(mode)
 {
@@ -819,9 +825,9 @@ EStatus SubStateText::Tick(double dtime)
 	return s;
 }
 
+#ifndef DEDICATED_SERVER
 void SubStateText::Draw(BITMAP* dest)
 {
-#ifndef DEDICATED_SERVER
 	if(mode == TM_Filled)
 	{
 		rectfill(dest, x, y, x + w - 1, y + h - 1, makecol(255, 255, 255));
@@ -830,8 +836,8 @@ void SubStateText::Draw(BITMAP* dest)
 	}
 	else
 		en_renderf(dest, font, x, y, "$aa0000%s", buffer);
-#endif
 }
+#endif
 
 SubStateWalkPawn::SubStateWalkPawn(Pawn* p, int x, int y, double _timetoarrive, bool isspeed): p(p), timetoarrive(_timetoarrive)
 {
