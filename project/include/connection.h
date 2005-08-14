@@ -8,6 +8,7 @@
 #ifdef ABG_WINDOWS
 #	include <winsock.h>
 #endif
+#include "enet/enet.h"
 #include <string>
 
 /// Socket abstraction class
@@ -17,7 +18,7 @@ class Connection
 		static void GlobalInit();
 		static void GlobalClose();
 		
-	private: // Private variables
+	protected: // Protected variables
 #		ifdef ABG_WINDOWS
 		SOCKET sock;
 #		else
@@ -32,14 +33,14 @@ class Connection
 		virtual ~Connection();
 		
 		/// Initiate a connection to the specified server
-		bool Connect(const std::string& host, int port);
+		virtual bool Connect(const std::string& host, int port);
 		/// Close a connection to a server
-		void Disconnect();
+		virtual void Disconnect();
 		
 		/// Read data on the socket
-		bool Recv(void* buf, size_t len, bool wait = false);
+		virtual bool Recv(void* buf, size_t len, bool wait = false);
 		/// Write data to the socket
-		bool Send(const void* buf, size_t len);
+		virtual bool Send(const void* buf, size_t len);
 		
 		bool IsConnected()
 		{ return connected; }

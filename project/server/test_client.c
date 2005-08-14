@@ -74,7 +74,7 @@ int sockstart()
 
 int main(int argc, char *argv[])
 {
-	int sockfd, i, j;
+	int sockfd, i, j,k;
 	uint32_t qpc1, qpc2, qpf;
 	int lag;
 	struct sockaddr_in dest_addr;
@@ -111,11 +111,12 @@ int main(int argc, char *argv[])
 	Sleep(1000);
 	
 	printf("Testing lag...\n");
-	while(1) {
+	//while(1) {
+	for(k = 0; k < 10; k++) {
 //	sprintf(msg, "P %d:", time(NULL));
 	//QueryPerformanceCounter((PLARGE_INTEGER)&qpc1);
 	//sprintf(msg, "P %llu:", qpc1);
-	sprintf(msg, "P %lu:", timeGetTime());
+	sprintf(msg, "P %lu:\n", timeGetTime());
 	printf(" --> %s\n", msg);
 	i = send(sockfd, msg, strlen(msg), 0);
 	while(i < strlen(msg))
@@ -144,7 +145,13 @@ int main(int argc, char *argv[])
 	//lag = qpc2 - atoll(buf + 2);
 	lag = timeGetTime() - atol(buf + 2);
 //	printf("Lag: %f [%s] [now %llu][then %llu][then should be %llu]\n", (float)(lag / qpf), buf, qpc2, atoll(buf + 2), qpc1);
-	printf("Lag: %dms [%s] [now %lu][then %lu]\n", lag, buf, timeGetTime(), atol(buf + 2)); Sleep(10);}
+	printf("Lag: %dms [%s] [now %lu][then %lu]\n", lag, buf, timeGetTime(), atol(buf + 2)); Sleep(10);
+	
+	// do some chat testing
+	sprintf(msg, "M sup! this is loop # %d\n", k);
+	send(sockfd, msg, strlen(msg), 0);
+	
+	}
 	
 	Sleep(1000);
 	closesocket(sockfd);
