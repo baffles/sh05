@@ -91,24 +91,12 @@ EStatus Pawn::Tick(double dtime)
 	else if(xs < 0)
 		xs = MIN(xs + (physstate == PHYS_Falling ? WalkSpeed / 3 : WalkSpeed), 0);
 		
-	//if(x < 0) x = 0;
-	//if(x + w > BoardWidth) x = BoardWidth - w;
+	if(x < 0) x = 0;
+	if(x + w > BoardWidth) x = BoardWidth - w;
 	
 	switch(pstate)
 	{
 		case PS_Walking:
-			/*if(x != dx)
-			{
-				x = sx + (int) ((dx - sx) * progress);
-				progress += dtime * timedialation;
-				if(progress >= 1)
-					sx = x = dx;
-			}
-			if(x == dx)
-			{
-				if(instance) instance->Animate(S_Standing, 1);
-				GotoState(PS_None);
-			}*/
 			break;
 		case PS_Jumping:
 			y += (int) (SpeedOfGravity * 1.25);

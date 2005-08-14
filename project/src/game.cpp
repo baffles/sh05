@@ -29,13 +29,11 @@ EStatus Game::Tick(double dtime)
 		Finish();
 		return S_Finished;
 	}
-	if(key[KEY_UP] && GGame.board->camy * 200 - 100 == GGame.board->_camy)
-		GGame.board->ScrollToLevel(GGame.board->camy + 1);
-	if(key[KEY_DOWN] && GGame.board->camy * 200 - 100 == GGame.board->_camy)
-		GGame.board->ScrollToLevel(GGame.board->camy - 1);
+	
 	GGame.board->camx = localpawn->x;
-	//if(ABS(localpawn->y - GGame.board->camy) > 100)
-	//	GGame.board->ScrollToLevel(localpawn->y / 200);
+
+	if(ABS(((localpawn->y + 200) / 200) - GGame.board->camy) > 0)
+		GGame.board->ScrollToLevel((localpawn->y + 200) / 200);
 		
 	return S_Continue;
 }
@@ -50,7 +48,7 @@ bool Game::InitLogic()
 {
 	Platform* p = new Platform;
 	p->x = 300;
-	p->y = 200;
+	p->y = 240;
 	p->w = BoardWidth - 600;
 	p->h = 60;
 	p->drawoffset = 30;
@@ -60,7 +58,7 @@ bool Game::InitLogic()
 	
 	p = new Platform;
 	p->x = 300;
-	p->y = 100;
+	p->y = 60;
 	p->w = BoardWidth - 600;
 	p->h = 40;
 	p->drawoffset = 30;
@@ -70,7 +68,17 @@ bool Game::InitLogic()
 	
 	p = new Platform;
 	p->x = 300;
-	p->y = 160;
+	p->y = 120;
+	p->w = BoardWidth - 600;
+	p->h = 40;
+	p->drawoffset = 30;
+	GGame.board->AddManagedChild(p);
+	GGame.board->geometry.push_back(p);
+	p->InitGraphics();
+	
+	p = new Platform;
+	p->x = 300;
+	p->y = 180;
 	p->w = BoardWidth - 600;
 	p->h = 40;
 	p->drawoffset = 30;

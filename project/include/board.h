@@ -9,7 +9,7 @@
 #include "platform.h"
 
 enum { BoardHeight = 600 };
-enum { BoardWidth = 2880 };
+enum { BoardWidth = 1920 };
 
 enum EBoardState
 {
