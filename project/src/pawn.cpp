@@ -115,7 +115,7 @@ EStatus Pawn::Tick(double dtime)
 void Pawn::Draw(BITMAP* dest)
 {
 	int sx, sy;
-	GGame.board->RealToScreen(dest->w, dest->h, x, y, sx, sy);
+	GGame->board->RealToScreen(dest->w, dest->h, x, y, sx, sy);
 	if(instance) instance->DrawSelf(dest, sx, sy, PawnWidth, PawnHeight);
 }
 
@@ -155,11 +155,11 @@ EStatus HumanPawn::Tick(double dtime)
 	if(key[KEY_A] || key[KEY_S] || key[KEY_D] || key[KEY_F])
 	{
 		Bullet* b = new Bullet;
+		GGame->AddObject(b);
 		b->x = x + (instance->dir == D_Left ? 0 : PawnWidth * 2 / 3);
 		b->y = y - (PawnWidth * 2 / 3);
 		b->xs = 5 * (instance->dir == D_Left ? -1 : 1);
 		b->InitGraphics();
-		parent->AddManagedChild(b);
 	}
 
 	return Pawn::Tick(dtime);

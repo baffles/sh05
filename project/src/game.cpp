@@ -26,7 +26,9 @@ EStatus Game::Tick(double dtime)
 {
 	EStatus s = GameState::Tick(dtime);
 	if(s != S_Continue) return s;
-	GGame.board->Tick(dtime);
+	
+	for(vector<Pawn*>::iterator i = GGame->players.begin(); i != GGame->players.end(); i++)
+		(*i)->Tick(dtime);
 	
 	if(key[KEY_ESC])
 	{
@@ -34,21 +36,20 @@ EStatus Game::Tick(double dtime)
 		return S_Finished;
 	}
 	
-	GGame.board->camx = localpawn->x;
+	GGame->board->camx = localpawn->x;
 
-	if(ABS(((localpawn->y + 200) / 200) - GGame.board->camy) > 0)
-		GGame.board->ScrollToLevel((localpawn->y + 200) / 200);
+	if(ABS(((localpawn->y + 200) / 200) - GGame->board->camy) > 0)
+		GGame->board->ScrollToLevel((localpawn->y + 200) / 200);
 		
 	return S_Continue;
 }
 
 void Game::Draw(BITMAP* dest)
 {
-	if(GGame.board->camx - dest->w / 2 < 0)
-		GGame.board->camx = dest->w / 2;
-	if(GGame.board->camx + dest->w / 2 > BoardWidth)
-		GGame.board->camx = BoardWidth - dest->w / 2;
-	GGame.board->Draw(dest);
+	if(GGame->board->camx - dest->w / 2 < 0)
+		GGame->board->camx = dest->w / 2;
+	if(GGame->board->camx + dest->w / 2 > BoardWidth)
+		GGame->board->camx = BoardWidth - dest->w / 2;
 	GameState::Draw(dest);
 	if(chat[0].length())
 		en_renderf(dest, font, 0, 0, "%s", chat[0].c_str());
@@ -62,14 +63,20 @@ void Game::Draw(BITMAP* dest)
 		
 bool Game::InitLogic()
 {
+	GGame = new GameInfo;
+	AddManagedChild(GGame);
+	
+	GGame->SetBoard(new Board);
+	GGame->board->InitGraphics();
+	
 	Platform* p = new Platform;
 	p->x = 300;
 	p->y = 240;
 	p->w = BoardWidth - 600;
 	p->h = 60;
 	p->drawoffset = 30;
-	GGame.board->AddManagedChild(p);
-	GGame.board->geometry.push_back(p);
+	GGame->board->AddManagedChild(p);
+	GGame->board->geometry.push_back(p);
 	p->InitGraphics();
 	
 	p = new Platform;
@@ -78,8 +85,8 @@ bool Game::InitLogic()
 	p->w = BoardWidth - 600;
 	p->h = 40;
 	p->drawoffset = 30;
-	GGame.board->AddManagedChild(p);
-	GGame.board->geometry.push_back(p);
+	GGame->board->AddManagedChild(p);
+	GGame->board->geometry.push_back(p);
 	p->InitGraphics();
 	
 	p = new Platform;
@@ -88,8 +95,8 @@ bool Game::InitLogic()
 	p->w = BoardWidth - 600;
 	p->h = 40;
 	p->drawoffset = 30;
-	GGame.board->AddManagedChild(p);
-	GGame.board->geometry.push_back(p);
+	GGame->board->AddManagedChild(p);
+	GGame->board->geometry.push_back(p);
 	p->InitGraphics();
 	
 	p = new Platform;
@@ -98,21 +105,22 @@ bool Game::InitLogic()
 	p->w = BoardWidth - 600;
 	p->h = 40;
 	p->drawoffset = 30;
-	GGame.board->AddManagedChild(p);
-	GGame.board->geometry.push_back(p);
+	GGame->board->AddManagedChild(p);
+	GGame->board->geometry.push_back(p);
 	p->InitGraphics();
 	
 	localpawn = new HumanPawn(1);
 	localpawn->instance = Character::GetByName("CGamesPlay");
 	localpawn->Move(20, PawnHeight + 10);
 	localpawn->InitGraphics();
-	AddManagedChild(localpawn);
-	return GGame.board->InitLogic() & localpawn->InitLogic();
+	GGame->AddPlayer(localpawn);
+	
+	return true;
 }
 
 bool Game::InitGraphics()
 {
-	return GGame.board->InitGraphics();
+	return true;
 }
 
 #endif

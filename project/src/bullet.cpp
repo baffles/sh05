@@ -48,7 +48,7 @@ EStatus Bullet::Tick(double dtime)
 void Bullet::Draw(BITMAP* dest)
 {
 	int x, y;
-	GGame.board->RealToScreen(dest->w, dest->h, this->x, this->y, x, y);
+	GGame->board->RealToScreen(dest->w, dest->h, this->x, this->y, x, y);
 	masked_blit(sprite, dest, 0, 0, x, y, sprite->w, sprite->h);
 }
 

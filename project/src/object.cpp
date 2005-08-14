@@ -50,7 +50,7 @@ EStatus Object::Tick(double dtime)
 		if(fell == 0)
 			fell = 1;
 		if(flags & OF_Interactive)
-			fell = GGame.board->Drop(x, y - h, fell);
+			fell = GGame->board->Drop(x, y - h, fell);
 		if(fell != 0)
 		{
 			y -= fell;

@@ -8,22 +8,24 @@
 #include "pawn.h"
 #include "board.h"
 
-/// Possible gametypes
-enum EGameType
-{
-	GT_FreeForAll,
-	GT_Teams,
-	GT_OddManOut,
-	GT_OneOnOne,
-	GT_SinglePlayer,
-};
-
-class GameInfo
+class GameInfo: public GameState
 {
 	public: // Public variables
-		EGameType type;
 		std::vector<Pawn*> players;
+		std::vector<Object*> objects;
 		Board* board;
+		
+	public: // Public functions
+		GameInfo();
+		virtual ~GameInfo();
+		
+		// Debugging funtions
+		void CheckValid();
+		void Dump(std::ostream& str);
+		
+		void AddPlayer(Pawn* p);
+		void AddObject(Object* o);
+		void SetBoard(Board* b);
 };
 
 #endif

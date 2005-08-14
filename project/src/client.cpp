@@ -45,6 +45,8 @@ Client::Client(string host, int port)
 
 Client::~Client()
 {
+	if(Game::local->client == this)
+		Game::local->client = NULL;
 	ENetEvent event;
 	
 	enet_peer_disconnect(&client->peers[0]);

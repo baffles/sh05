@@ -9,7 +9,7 @@
 
 // Global variables
 /// The current running game
-extern class GameInfo GGame;
+extern class GameInfo* GGame;
 /// Width of the caret, for DRSes
 extern uint32_t caret_width;
 /// Height of the caret, for DRSes
