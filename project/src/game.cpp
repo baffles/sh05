@@ -7,6 +7,7 @@
 #include "game.h"
 #include "platform.h"
 #include "pawn.h"
+#include "board.h"
 
 using namespace std;
 
@@ -40,6 +41,10 @@ EStatus Game::Tick(double dtime)
 
 void Game::Draw(BITMAP* dest)
 {
+	if(GGame.board->camx - dest->w / 2 < 0)
+		GGame.board->camx = dest->w / 2;
+	if(GGame.board->camx + dest->w / 2 > BoardWidth)
+		GGame.board->camx = BoardWidth - dest->w / 2;
 	GGame.board->Draw(dest);
 	GameState::Draw(dest);
 }
