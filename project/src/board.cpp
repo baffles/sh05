@@ -7,7 +7,11 @@
 
 using namespace std;
 
-Board::Board(): camx(160), camy(1), _camy(100), background(NULL), floor(NULL), state(BS_Normal)
+Board::Board(): camx(160), camy(1), _camy(100),
+#ifndef DEDICATED_SERVER
+	background(NULL), floor(NULL),
+#endif
+	state(BS_Normal)
 {
 }
 
@@ -51,6 +55,7 @@ EStatus Board::Tick(double dtime)
 	return S_ContinueNoWait;
 }
 
+#ifndef DEDICATED_SERVER
 void Board::Draw(BITMAP* dest)
 {
 	if(background)
@@ -77,17 +82,18 @@ void Board::Draw(BITMAP* dest)
 		}
 	}
 }
-		
-bool Board::InitLogic()
-{
-	return true;
-}
 
 bool Board::InitGraphics()
 {
 	string datadir = Ini::GetString(settings, "data", "dir", "../../media/Assets/Rendered");
 	return (background = load_bitmap((datadir + "/Parallax/NightSky.bmp").c_str(), NULL)) &&
 		(floor = load_bitmap((datadir + "/Scenery/Grass2.bmp").c_str(), NULL));
+}
+#endif
+		
+bool Board::InitLogic()
+{
+	return true;
 }
 
 

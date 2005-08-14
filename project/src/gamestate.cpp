@@ -45,11 +45,13 @@ TimeType GameState::now;
 	bool GameState::trace_initialized = false;
 #endif
 
+#ifndef DEDICATED_SERVER
 int GameState::curpage = 0;
 BITMAP* GameState::pages[3] = { NULL, NULL, NULL };
 BITMAP* GameState::buffer = NULL;
 BITMAP* GameState::active_page = NULL;
 EUpdateMode GameState::updmode = UM_None;
+#endif
 
 StateRef::StateRef(GameState* ref): ref(ref)
 {
@@ -75,6 +77,7 @@ StateRef::operator GameState*()
 	return ref;
 }
 
+#ifndef DEDICATED_SERVER
 bool GameState::StaticInitGraphics(EUpdateMode umode, bool windowed, uint32_t screenw, uint32_t screenh, uint32_t depth, int mode)
 {
 	set_color_depth(depth);
@@ -253,6 +256,7 @@ void GameState::StaticDestroyGraphics()
 	
 	updmode = UM_None;
 }
+#endif
 
 void GameState::Run()
 {
@@ -336,9 +340,11 @@ EStatus GameState::TickAllOnce(double& dtime)
 		}
 		i++;
 	}
+#ifndef DEDICATED_SERVER
 	BITMAP* p = StaticGetScreenBitmap();
 	rootstate->Draw(p);
 	StaticUpdateScreen();
+#endif
 	
 	return S_Continue;
 }
@@ -399,6 +405,7 @@ BITMAP* GameState::StaticGetScreenBitmap()
 	return buffer;
 }
 
+#ifndef DEDICATED_SERVER
 void GameState::StaticUpdateScreen()
 {
 	switch(updmode)
@@ -455,6 +462,7 @@ void GameState::StaticUpdateScreen()
 			return;
 	}
 }
+#endif
 
 GameState::GameState(): zorder(0), state(GS_Normal), destroyself(false), parent(NULL)
 #ifdef TRACE_IDENTITY
@@ -715,6 +723,7 @@ void SubStateText::SetText(const char* _text)
 	buffer[0] = '\0';
 }
 
+#ifndef DEDICATED_SERVER
 static int32_t en_text_width(FONT* font, const char* msg)
 {
 	uint32_t count = 0;
@@ -736,6 +745,7 @@ static int32_t en_text_width(FONT* font, const char* msg)
 	}
 	return count;
 }
+#endif
 
 EStatus SubStateText::Tick(double dtime)
 {
@@ -743,6 +753,7 @@ EStatus SubStateText::Tick(double dtime)
 	if(s != S_Continue && s != S_ContinueNoWait) return s;
 	if(!waitonme) s = S_ContinueNoWait;
 	
+#ifndef DEDICATED_SERVER
 	tnl += dtime * TypingRate;
 	if(keypressed())
 	{
@@ -803,12 +814,14 @@ EStatus SubStateText::Tick(double dtime)
 				cout << "Can't wrap" << endl;
 		}
 	}
-	
+#endif
+
 	return s;
 }
 
 void SubStateText::Draw(BITMAP* dest)
 {
+#ifndef DEDICATED_SERVER
 	if(mode == TM_Filled)
 	{
 		rectfill(dest, x, y, x + w - 1, y + h - 1, makecol(255, 255, 255));
@@ -817,6 +830,7 @@ void SubStateText::Draw(BITMAP* dest)
 	}
 	else
 		en_renderf(dest, font, x, y, "$aa0000%s", buffer);
+#endif
 }
 
 SubStateWalkPawn::SubStateWalkPawn(Pawn* p, int x, int y, double _timetoarrive, bool isspeed): p(p), timetoarrive(_timetoarrive)

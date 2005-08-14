@@ -25,14 +25,14 @@ class Board: public GameState
 		int camy;
 		/// World y position of camera
 		int _camy;
-		/// Pawn to follow
-		Pawn* follow;
+#ifndef DEDICATED_SERVER
 		/// Parallax background
 		BITMAP* background;
 		/// Floor tile
 		BITMAP* floor;
 		/// Palette we're using
 		PALETTE pal;
+#endif
 		/// State the baord is in
 		EBoardState state;
 		
@@ -45,10 +45,12 @@ class Board: public GameState
 		
 		virtual EStatus Tick(double dtime);
 		
+#ifndef DEDICATED_SERVER
 		virtual void Draw(BITMAP* dest);
+		virtual bool InitGraphics();
+#endif
 		
 		virtual bool InitLogic();
-		virtual bool InitGraphics();
 };
 
 #endif

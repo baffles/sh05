@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <strings.h>
 #include "character.h"
 
 using namespace std;
@@ -52,7 +53,7 @@ Character* Character::GetByName(const char* name)
 {
 	for(vector<Character*>::iterator i = chars->begin(); i != chars->end(); i++)
 	{
-		if(stricmp((*i)->name, name) == 0)
+		if(strcasecmp((*i)->name, name) == 0)
 			return *i;
 	}
 	return NULL;
@@ -63,6 +64,7 @@ Character::Character(): name(""), flavor("")
 	Character::RegisterCharacter(this);
 }
 
+#ifndef DEDICATED_SERVER
 void Character::StandardStates(BITMAP* dest, int x, int y, int w, int h, BITMAP* frame)
 {
 	switch(state)
@@ -85,6 +87,7 @@ void Character::StandardStates(BITMAP* dest, int x, int y, int w, int h, BITMAP*
 			cout << "Character " << name << ": StandardStates with unknown state " << state << endl;
 	}
 }
+#endif
 
 EStatus Character::Tick(double dtime)
 {

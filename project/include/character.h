@@ -5,7 +5,9 @@
 #define CHARACTER_H_INCLUDED
 
 #include <vector>
-#include <allegro.h>
+#ifndef DEDICATED_SERVER
+#	include <allegro.h>
+#endif
 #include "plat.h"
 #include "gamestate.h"
 
@@ -53,13 +55,15 @@ class Character
 		
 		virtual bool InitGraphics()
 		{ return true; }
-		
+
+#ifndef DEDICATED_SERVER
 		virtual void DrawPortrait(BITMAP* dest, int x, int y, int w, int h) = 0;
 		
 		virtual void DrawSelf(BITMAP* dest, int x, int y, int w, int h) = 0;
 		
 		void StandardStates(BITMAP* dest, int x, int y, int w, int h, BITMAP* frame);
-		
+#endif
+
 		virtual EStatus Tick(double dtime);
 		virtual void Animate(EState animation, double timetoarrive);
 		virtual void Face(EDirection newdir);

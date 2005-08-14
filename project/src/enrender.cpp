@@ -14,6 +14,7 @@
 //     instead. Note that the maximum length of an expanded string can be no
 //     more than strlen(msg) + 2048
 
+#ifndef DEDICATED_SERVER
 #include <allegro.h>
 #include <stdio.h>
 #include <string.h>
@@ -94,5 +95,7 @@ void en_renderf(BITMAP* dest, const FONT* font, int x, int y, const char* msg, .
 		++pos;
 	}
 }
+
+#endif
 
 // The end

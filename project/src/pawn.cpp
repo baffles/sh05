@@ -110,6 +110,7 @@ EStatus Pawn::Tick(double dtime)
 	return s;
 }
 
+#ifndef DEDICATED_SERVER
 void Pawn::Draw(BITMAP* dest)
 {
 	int sx, sy;
@@ -147,5 +148,6 @@ EStatus ComputerPawn::Tick(double dtime)
 	progress += dtime;
 	return Pawn::Tick(dtime);
 }
+#endif
 
 // The end

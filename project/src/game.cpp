@@ -1,6 +1,8 @@
 // game.cpp
 //  Base game class for the main game
 
+#ifndef DEDICATED_SERVER
+
 #include "abg.h"
 #include "game.h"
 #include "platform.h"
@@ -63,5 +65,7 @@ bool Game::InitGraphics()
 {
 	return GGame.board->InitGraphics();
 }
+
+#endif
 
 // The end

@@ -18,6 +18,7 @@ class CharacterX: public Character
 		}
 		virtual ~CharacterX()
 		{ destroy_bitmap(thex); }
+#ifndef DEDICATED_SERVER
 		virtual bool InitGraphics()
 		{
 			BITMAP* temp = create_bitmap(text_length(font, "TIN"), text_height(font));
@@ -36,6 +37,7 @@ class CharacterX: public Character
 		{
 			StandardStates(dest, x, y, w, h, thex);
 		}
+#endif
 };
 ADD_CHARACTER(CharacterX);
 

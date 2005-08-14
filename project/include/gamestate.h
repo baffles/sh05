@@ -7,7 +7,17 @@
 #include <map>
 #include <list>
 #include <iostream>
-#include <allegro.h>
+#ifndef DEDICATED_SERVER
+#	include <allegro.h>
+#else
+#	define GFX_AUTODETECT 0
+#	define GFX_AUTODETECT_WINDOWED 0
+#	define END_OF_MAIN()
+#	define BITMAP void
+#	define destroy_bitmap(b)
+#	define load_bitmap(f, p) (void*) 1
+	typedef int PALETTE[256];
+#endif
 #include "debug.h"
 #include "plat.h"
 
@@ -94,6 +104,7 @@ class GameState
 		static BITMAP* buffer;
 		
 	public: // Public static functions
+#ifndef DEDICATED_SERVER
 		/// Initialize the graphics system
 		/// @param umode Screen update mode to attempt to use.
 		/// @param windowed whether or not to run the game in a window. Ignored if mode != GFX_AUTODETECT
@@ -104,6 +115,7 @@ class GameState
 		static bool StaticInitGraphics(EUpdateMode umode = UM_TripleBufferWMB, bool windowed = true, uint32_t screenw = 800, uint32_t screenh = 600, uint32_t depth = 32, int mode = GFX_AUTODETECT);
 		/// Shut down the graphics system
 		static void StaticDestroyGraphics();
+#endif
 		/// Runs through the states, ticking them
 		static void Run();
 		/// Ticks the states one time only.

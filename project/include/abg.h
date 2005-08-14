@@ -24,7 +24,9 @@ extern Ini::File settings;
 void GlobalTick(double dtime);
 void ResetGame();
 void NewGame();
-void en_renderf(BITMAP* dest, const FONT* font, int x, int y, const char* msg, ...);
+#ifndef DEDICATED_SERVER
+	void en_renderf(BITMAP* dest, const FONT* font, int x, int y, const char* msg, ...);
+#endif
 
 #endif
 

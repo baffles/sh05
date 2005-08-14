@@ -52,6 +52,7 @@ class Pawn: public Object
 		virtual void Draw(BITMAP* dest);
 };
 
+#ifndef DEDICATED_SERVER
 /// Local, human player
 class HumanPawn: public Pawn
 {
@@ -73,6 +74,7 @@ class ComputerPawn: public Pawn
 		virtual void GotoState(EPawnState news);
 		virtual EStatus Tick(double dtime);
 };
+#endif
 
 #endif
 

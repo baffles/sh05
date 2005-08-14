@@ -53,9 +53,11 @@ int main(int argc, char* argv[])
 	Connection::GlobalInit();
 	Ini::Load("abg.ini", settings);
 	
-	allegro_init();
-	set_config_file("abg.ini");
-	install_keyboard();
+#	ifndef DEDICATED_SERVER
+		allegro_init();
+		set_config_file("abg.ini");
+		install_keyboard();
+#	endif
 	srand(time(NULL));
 
 	GameState::StaticInitGraphics(UM_TripleBufferWMB, true, 320, 200, 24, GFX_AUTODETECT_WINDOWED);
