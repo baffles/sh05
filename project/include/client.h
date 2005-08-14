@@ -38,7 +38,7 @@ class Client: public GameState
 		bool Send(ENetPeer *p, std::string data, UDPChannel chan);
 		
 		EStatus Tick(double dtime);
-		void ClientTick();
+		bool ClientTick();
 		
 		// System
 		void OnRegisterConfirm(int id, std::string name);

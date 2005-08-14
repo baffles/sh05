@@ -2,11 +2,19 @@
 //  Client system
 
 #include "client.h"
+#include "abg.h"
+
+#include <iostream>
+#include <fstream>
+
+using namespace std;
 
 Client::Client(string host, int port)
 {
 	client = NULL;
 	peer = NULL;
+	enet_address_set_host(&address, host.c_str());
+	address.port = port;
 }
 
 Client::~Client()
@@ -18,9 +26,9 @@ Client::~Client()
 	// 3 seconds to disconnect before we force it
 	while(enet_host_service(client, &event, 3000) > 0)
 	{
-		switch(event.eventtype)
+		switch(event.type)
 		{
-			case ENET_EVENT_TYPE_RECIEVE:
+			case ENET_EVENT_TYPE_RECEIVE:
 				enet_packet_destroy(event.packet);
 				break;
 			case ENET_EVENT_TYPE_DISCONNECT:
@@ -38,8 +46,6 @@ bool Client::InitLogic()
 {
 	int upspeed = atoi(Ini::GetString(settings, "udp", "ups", "0").c_str()) / 8;
 	int downspeed = atoi(Ini::GetString(settings, "udp", "downs", "0").c_str()) / 8;
-	enet_address_set_host(&address, host.c_str());
-	address.port = port;
 	
 	client = enet_host_create(NULL, 1, downspeed, upspeed);
 	if(client == NULL)
@@ -58,13 +64,13 @@ bool Client::InitLogic()
 	
 	// give it 5 seconds to connect
 	ENetEvent event;
-	if(enet_host_service(client, &event, 5000) > 0 && event.type = ENET_EVENT_TYPE_CONNECT)
+	if(enet_host_service(client, &event, 5000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT)
 		return true;
 	else
 	{
 		char host[512];
 		if(enet_address_get_host(&address, host, 512) == 0)
-			cerr << "Connection to " << address << ":" << address.port << " failed." << endl;
+			cerr << "Connection to " << host << ":" << address.port << " failed." << endl;
 		else
 			cerr << "Connection failed." << endl;
 		
@@ -86,7 +92,7 @@ bool Client::Send(ENetPeer *p, string data, UDPChannel chan)
 }
 
 
-EStatus Server::Tick(double dtime)
+EStatus Client::Tick(double dtime)
 {
 	if(ClientTick())
 		return S_Continue;
@@ -97,11 +103,11 @@ EStatus Server::Tick(double dtime)
 	}
 }
 
-bool Server::ClientTick()
+bool Client::ClientTick()
 {
 	ENetEvent event;
 	
-	while(enet_host_service(server, &event, 1000) > 0)
+	while(enet_host_service(client, &event, 1000) > 0)
 	{
 		if(event.type == ENET_EVENT_TYPE_DISCONNECT)
 		{
@@ -153,7 +159,7 @@ bool Server::ClientTick()
 						reason = temp.str();
 					}
 					
-					OnBoot(string reason);
+					OnBoot(reason);
 				}
 				
 				if(cmd == "New");
@@ -266,7 +272,7 @@ bool Server::ClientTick()
 						msg = temp.str();
 					}
 					
-					OnMsg(id, msg);
+					OnMsg(fromid, msg);
 				}
 			}
 			else
@@ -278,5 +284,52 @@ bool Server::ClientTick()
 	}
 	return S_Continue;
 }
+
+
+// System
+void Client::OnRegisterConfirm(int id, string name)
+{
+}
+
+void Client::OnBoot(string reason)
+{
+}
+
+
+void Client::OnNew(int id, string name)
+{
+}
+
+void Client::OnQuit(int id, string reason)
+{
+}
+
+// Game
+void Client::OnJoin(int id)
+{
+}
+
+void Client::OnLeave(int id)
+{
+}
+
+void Client::OnMove(int id, int x, int y)
+{
+}
+
+void Client::OnStatusUpdate(int score, int health, int x, int y, int flags, int state, int serverstate, int timeleft)
+{
+}
+
+// Misc
+void Client::OnPong(string pd)
+{
+}
+
+// Chat
+void Client::OnMsg(int id, string message)
+{
+}
+
 
 // The end
