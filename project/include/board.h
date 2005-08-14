@@ -43,6 +43,10 @@ class Board: public GameState
 		Board();
 		virtual ~Board();
 		
+		// Debugging functions
+		virtual void CheckValid();
+		virtual void Dump(std::ostream& str);
+		
 		void RealToScreen(int w, int h, int inx, int iny, int& x, int& y);
 		void ScrollToLevel(int newlevel);
 		/// Finds the first encountered surface, returning maxdist if none

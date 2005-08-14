@@ -19,6 +19,17 @@ Board::~Board()
 {
 	destroy_bitmap(background);
 }
+ 
+void Board::CheckValid()
+{
+	GameState::CheckValid();
+}
+
+void Board::Dump(std::ostream& str)
+{
+	GameState::Dump(str);
+	str << TRACE_VAR(camx) << TRACE_VAR(camy) << TRACE_VAR(_camy) << endl;
+}
 
 void Board::RealToScreen(int w, int h, int inx, int iny, int& x, int& y)
 {

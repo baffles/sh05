@@ -63,7 +63,7 @@ EStatus Object::Tick(double dtime)
 		else
 			physstate = PHYS_Normal;
 		if(physstate == PHYS_Falling)
-			fallspeed += (double) SpeedOfGravity / 10;
+			fallspeed += (double) SpeedOfGravity * dtime * 6;
 	}
 	
 	return s;

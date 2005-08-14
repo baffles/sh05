@@ -52,13 +52,12 @@ int main(int argc, char* argv[])
 {
 	if(!Client::GlobalInit())
 		return -1;
+		
 	Ini::Load("abg.ini", settings);
-	
-#	ifndef DEDICATED_SERVER
-		allegro_init();
-		set_config_file("abg.ini");
-		install_keyboard();
-#	endif
+
+	allegro_init();
+	set_config_file("abg.ini");
+	install_keyboard();
 	srand(time(NULL));
 
 	GameState::StaticInitGraphics(UM_TripleBufferWMB, true, 320, 200, 24, GFX_AUTODETECT_WINDOWED);
@@ -67,10 +66,29 @@ int main(int argc, char* argv[])
 	
 	GGame.board = new Board;
 	
-	GameState::rootstate = new Game;
+	string host = Ini::GetString(settings, "server", "server", "bafsoft.ath.cx");
+	int port = atoi(Ini::GetString(settings, "server", "port", "21870").c_str());
+	if(!port)
+		port = 21870;
+	
+	en_renderf(screen, font, 0, 0, "Connecting...\n%s:%d", host.c_str(), port);
+	
+	Game* g = new Game;
+		
+	Client* c = new Client(host, port);
+	if(c->InitLogic())
+	{
+		c->Register("CGames");
+		c->Ping();
+		c->Msg("weeeee");
+		GameState::AddManagedRoot(c);
+		g->client = c;
+	}
+	
+	GameState::rootstate = g;
 	GameState::rootstate->InitGraphics();
 	GameState::rootstate->InitLogic();
-	GameState::AddRoot(GameState::rootstate);
+	GameState::AddManagedRoot(GameState::rootstate);
 	GameState::Run();
 	
 	ResetGame();
@@ -80,6 +98,7 @@ int main(int argc, char* argv[])
 	Character::StaticDestroy();
 	
 	Ini::Save("abg.ini", settings);
+	
 	Client::GlobalClose();
 	
 	TRACE_END();

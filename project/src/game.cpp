@@ -11,8 +11,11 @@
 
 using namespace std;
 
-Game::Game()
+Game* Game::local = NULL;
+
+Game::Game(): localpawn(NULL), client(NULL)
 {
+	Game::local = this;
 }
 
 Game::~Game()

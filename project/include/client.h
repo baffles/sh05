@@ -38,8 +38,6 @@ class Client: public GameState
 		Client(std::string host, int port);
 		~Client();
 		
-		bool InitLogic();
-		
 		bool Send(ENetPeer *p, std::string data, UDPChannel chan);
 		
 		// Debugging functions
@@ -47,7 +45,8 @@ class Client: public GameState
 		virtual void Dump(std::ostream& str);
 		
 		EStatus Tick(double dtime);
-		bool ClientTick();
+		
+		bool InitLogic();
 		
 		int GetLag() { return lag; }
 		

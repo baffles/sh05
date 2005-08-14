@@ -1,11 +1,12 @@
 // client.h
 //  Client system
 
-#include "client.h"
-#include "abg.h"
-
 #include <iostream>
 #include <fstream>
+
+#include "client.h"
+#include "abg.h"
+#include "game.h"
 
 #ifndef _WIN32
 int timeGetTime()
@@ -73,44 +74,18 @@ Client::~Client()
 	enet_host_destroy(client);
 }
 
-bool Client::InitLogic()
+void Client::CheckValid()
 {
-	int upspeed = atoi(Ini::GetString(settings, "udp", "ups", "0").c_str()) / 8;
-	int downspeed = atoi(Ini::GetString(settings, "udp", "downs", "0").c_str()) / 8;
-	
-	client = enet_host_create(NULL, 1, downspeed, upspeed);
-	if(client == NULL)
-	{
-		cerr << "An error occured while creating a client instance." << endl;
-		return false;
-	}
-	
-	peer = enet_host_connect(client, &address, CNumChans);
-	
-	if(peer == NULL)
-	{
-		cerr << "No avaliable peers for connection." << endl;
-		return false;
-	}
-	
-	// give it 5 seconds to connect
-	ENetEvent event;
-	if(enet_host_service(client, &event, 5000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT)
-		return true;
-	else
-	{
-		char host[512];
-		if(enet_address_get_host(&address, host, 512) == 0)
-			cerr << "Connection to " << host << ":" << address.port << " failed." << endl;
-		else
-			cerr << "Connection failed." << endl;
-		
-		enet_peer_reset(peer);
-	}
-	
-	return false;
+	GameState::CheckValid();
+	TRACE_ASSERT(client);
+	TRACE_ASSERT(peer);
 }
 
+void Client::Dump(ostream& str)
+{
+	GameState::Dump(str);
+	str << TRACE_VAR(client) << TRACE_VAR(peer) << TRACE_VAR(lag);
+}
 
 bool Client::Send(ENetPeer *p, string data, UDPChannel chan)
 {
@@ -122,42 +97,21 @@ bool Client::Send(ENetPeer *p, string data, UDPChannel chan)
 	return true;
 }
 
-void Client::CheckValid()
-{
-	Object::CheckValid();
-	TRACE_ASSERT(client);
-	TRACE_ASSERT(peer);
-}
-
-void Client::Dump(ostream& str)
-{
-	Object::Dump(str);
-	str << TRACE_VAR(address) << TRACE_VAR(client) << TRACE_VAR(peer) << TRACE_VAR(lag);
-}
-
-
 EStatus Client::Tick(double dtime)
 {
-	if(ClientTick())
-		return S_Continue;
-	else
-	{
-		Finish();
-		return S_Finished;
-	}
-}
-
-bool Client::ClientTick()
-{
+	EStatus s = GameState::Tick(dtime);
+	if(s != S_Continue) return s;
+	
 	ENetEvent event;
 	
-	while(enet_host_service(client, &event, 1000) > 0)
+	while(enet_host_service(client, &event, 0) > 0)
 	{
 		if(event.type == ENET_EVENT_TYPE_DISCONNECT)
 		{
 			// disconnection
 			enet_host_destroy(client);
-			return false;
+			Finish();
+			return S_Finished;
 		}
 		
 		if(event.type == ENET_EVENT_TYPE_RECEIVE)
@@ -326,9 +280,46 @@ bool Client::ClientTick()
 			enet_packet_destroy(event.packet);
 		}
 	}
-	return S_Continue;
+	return s;
 }
 
+bool Client::InitLogic()
+{
+	int upspeed = atoi(Ini::GetString(settings, "udp", "ups", "0").c_str()) / 8;
+	int downspeed = atoi(Ini::GetString(settings, "udp", "downs", "0").c_str()) / 8;
+	
+	client = enet_host_create(NULL, 1, downspeed, upspeed);
+	if(client == NULL)
+	{
+		cerr << "An error occured while creating a client instance." << endl;
+		return false;
+	}
+	
+	peer = enet_host_connect(client, &address, CNumChans);
+	
+	if(peer == NULL)
+	{
+		cerr << "No avaliable peers for connection." << endl;
+		return false;
+	}
+	
+	// give it 5 seconds to connect
+	ENetEvent event;
+	if(enet_host_service(client, &event, 5000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT)
+		return true;
+	else
+	{
+		char host[512];
+		if(enet_address_get_host(&address, host, 512) == 0)
+			cerr << "Connection to " << host << ":" << address.port << " failed." << endl;
+		else
+			cerr << "Connection failed." << endl;
+		
+		enet_peer_reset(peer);
+	}
+	
+	return false;
+}
 
 // Send Handlers
 void Client::Register(std::string name, std::string password)
@@ -381,7 +372,7 @@ void Client::Ping()
 	Send(peer, s.str(), CMisc);
 }
 
-void Client::Msg(std::string message, std::string dest = "chat")
+void Client::Msg(std::string message, std::string dest)
 {
 	stringstream s;
 	s << "Msg " << dest << " :" << message << endl;
@@ -394,6 +385,10 @@ void Client::Msg(std::string message, std::string dest = "chat")
 // System
 void Client::OnRegisterConfirm(int id, string name)
 {
+	TRACE_ASSERT(Game::local);
+	TRACE_ASSERT(Game::local->localpawn);
+	Game::local->localpawn->pnum = id;
+	cout << "I am " << name << ", player " << id << endl;
 }
 
 void Client::OnBoot(string reason)
