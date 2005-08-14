@@ -6,7 +6,7 @@
 #include "abg.h"
 #include "gamestate.h"
 #include "game.h"
-#include "connection.h"
+#include "client.h"
 
 using namespace std;
 
@@ -50,7 +50,8 @@ void GlobalTick(double dtime)
 
 int main(int argc, char* argv[])
 {
-	Connection::GlobalInit();
+	if(!Client::GlobalInit())
+		return -1;
 	Ini::Load("abg.ini", settings);
 	
 #	ifndef DEDICATED_SERVER
@@ -79,7 +80,7 @@ int main(int argc, char* argv[])
 	Character::StaticDestroy();
 	
 	Ini::Save("abg.ini", settings);
-	Connection::GlobalClose();
+	Client::GlobalClose();
 	
 	TRACE_END();
 	

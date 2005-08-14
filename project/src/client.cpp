@@ -9,6 +9,22 @@
 
 using namespace std;
 
+bool Client::GlobalInit()
+{
+	if(enet_initialize() != 0)
+	{
+		cerr << "Error initializing client networking system" << endl;
+		return false;
+	}
+	return true;
+}
+
+void Client::GlobalClose()
+{
+	enet_deinitialize();
+}
+
+
 Client::Client(string host, int port)
 {
 	client = NULL;

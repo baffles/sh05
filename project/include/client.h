@@ -24,6 +24,10 @@ enum UDPChannel
 
 class Client: public GameState
 {
+	public: // Public static functions
+		static bool GlobalInit();
+		static void GlobalClose();
+	
 	private: // Private vairables
 		ENetAddress address;
 		ENetHost *client;
