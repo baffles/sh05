@@ -31,9 +31,15 @@ Client::~Client()
 			case ENET_EVENT_TYPE_RECEIVE:
 				enet_packet_destroy(event.packet);
 				break;
+			
 			case ENET_EVENT_TYPE_DISCONNECT:
 				enet_host_destroy(client);
 				return;
+			
+			case ENET_EVENT_TYPE_NONE:
+			case ENET_EVENT_TYPE_CONNECT:
+			default:
+				break;
 		}
 	}
 	

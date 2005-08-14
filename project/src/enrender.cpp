@@ -90,7 +90,7 @@ void en_renderf(BITMAP* dest, const FONT* font, int x, int y, const char* msg, .
 		}
 		char msg2[2] = " ";
 		msg2[0] = buffer[pos];
-		textout(dest, font, msg2, px, py, color);
+		textout_ex(dest, font, msg2, px, py, color, -1);
 		px += text_length(font, msg2);
 		++pos;
 	}

@@ -73,7 +73,7 @@ bool Connection::Connect(const string& host, int port)
 		return false;
 	}
 	
-	if((sock = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+	if((sock = socket(AF_INET, SOCK_STREAM, 0)) <= 0)
 	{
 		error = true;
 		stringstream s;

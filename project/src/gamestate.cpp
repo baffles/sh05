@@ -82,7 +82,6 @@ bool GameState::StaticInitGraphics(EUpdateMode umode, bool windowed, uint32_t sc
 {
 	set_color_depth(depth);
 	set_gfx_mode(windowed && mode == GFX_AUTODETECT ? GFX_AUTODETECT_WINDOWED : mode, screenw, screenh, 0, 0);
-	text_mode(-1);
 	set_display_switch_mode(SWITCH_BACKGROUND);
 
 	if(updmode != UM_None) return false;

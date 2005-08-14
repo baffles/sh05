@@ -81,6 +81,11 @@ void ConnectionUDP::Disconnect()
 
 			case ENET_EVENT_TYPE_DISCONNECT:
 				return;
+			
+			case ENET_EVENT_TYPE_NONE:
+			case ENET_EVENT_TYPE_CONNECT:
+			default:
+				break;
 		}
 	}
 	
