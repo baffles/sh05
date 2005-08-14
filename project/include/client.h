@@ -13,6 +13,8 @@
 #include "enet/enet.h"
 #include "gamestate.h"
 
+using namespace std;
+
 enum UDPChannel
 {
 	CSystem = 0,
