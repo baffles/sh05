@@ -28,10 +28,11 @@ class Client: public GameState
 		static bool GlobalInit();
 		static void GlobalClose();
 	
-	private: // Private vairables
+	private: // Private variables
 		ENetAddress address;
 		ENetHost *client;
 		ENetPeer *peer;
+		int lag;
 	
 	public: // Public functions
 		Client(std::string host, int port);
@@ -44,6 +45,18 @@ class Client: public GameState
 		EStatus Tick(double dtime);
 		bool ClientTick();
 		
+		int GetLag() { return lag; }
+		
+		// Send Handlers
+		void Register(std::string name, std::string password = "");
+		void Join();
+		void Leave();
+		void Move(int x, int y);
+		void StatusUpdate();
+		void Ping();
+		void Msg(std::string message, std::string dest = "chat");
+		
+		// Recieve Handlers
 		// System
 		void OnRegisterConfirm(int id, std::string name);
 		void OnBoot(std::string reason);

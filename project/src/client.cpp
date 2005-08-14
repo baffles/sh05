@@ -7,6 +7,15 @@
 #include <iostream>
 #include <fstream>
 
+#ifndef _WIN32
+int timeGetTime()
+{
+	struct timeval t;
+	gettimeofday(&t, NULL);
+	return t.tv_usec / 1000;
+}
+#endif
+
 using namespace std;
 
 bool Client::GlobalInit()
@@ -308,6 +317,67 @@ bool Client::ClientTick()
 }
 
 
+// Send Handlers
+void Client::Register(std::string name, std::string password)
+{
+	stringstream s;
+	s << "Reg ";
+	if(password != "")
+		s << password << " ";
+	s << ":" << name << endl;
+	
+	Send(peer, s.str(), CSystem);
+}
+
+void Client::Join()
+{
+	stringstream s;
+	s << "Join" << endl;
+	
+	Send(peer, s.str(), CGame);
+}
+
+void Client::Leave()
+{stringstream s;
+	s << "Leave" << endl;
+	
+	Send(peer, s.str(), CGame);
+}
+
+void Client::Move(int x, int y)
+{
+	stringstream s;
+	s << "Req " << x << "," << y<< endl;
+	
+	Send(peer, s.str(), CGame);
+}
+
+void Client::StatusUpdate()
+{
+	stringstream s;
+	s << "Sti" << endl;
+	
+	Send(peer, s.str(), CGame);
+}
+
+void Client::Ping()
+{
+	stringstream s;
+	s << "Ping " << timeGetTime() << endl;
+	
+	Send(peer, s.str(), CMisc);
+}
+
+void Client::Msg(std::string message, std::string dest = "chat")
+{
+	stringstream s;
+	s << "Msg " << dest << " :" << message << endl;
+	
+	Send(peer, s.str(), CChat);
+}
+
+
+// Recieve Handlers
 // System
 void Client::OnRegisterConfirm(int id, string name)
 {
@@ -346,6 +416,7 @@ void Client::OnStatusUpdate(int score, int health, int x, int y, int flags, int 
 // Misc
 void Client::OnPong(string pd)
 {
+	lag = timeGetTime() - atol(pd.c_str());
 }
 
 // Chat
