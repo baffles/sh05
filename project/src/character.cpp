@@ -74,10 +74,7 @@ void Character::StandardStates(BITMAP* dest, int x, int y, int w, int h, BITMAP*
 			break;
 		case S_Walking:
 		{
-			double scale;
-			if(w > h) scale = (double) w / frame->w;
-			else scale = (double) h / frame->h;
-			rotate_scaled_sprite(dest, frame, x, y, ftofix(sin(animphase / timedialation * 30) * 256 / 36), ftofix(scale));
+			stretch_sprite(dest, frame, x, y, w, h);
 			break;
 		}
 		case S_Jumping:

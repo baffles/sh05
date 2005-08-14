@@ -48,14 +48,37 @@ bool Game::InitLogic()
 {
 	Platform* p = new Platform;
 	p->x = 300;
-	p->y = 230;
+	p->y = 200;
+	p->w = BoardWidth - 600;
+	p->h = 60;
+	p->drawoffset = 30;
+	GGame.board->AddManagedChild(p);
+	GGame.board->geometry.push_back(p);
+	p->InitGraphics();
+	
+	p = new Platform;
+	p->x = 300;
+	p->y = 100;
 	p->w = BoardWidth - 600;
 	p->h = 40;
-	AddManagedChild(p);
+	p->drawoffset = 30;
+	GGame.board->AddManagedChild(p);
+	GGame.board->geometry.push_back(p);
 	p->InitGraphics();
+	
+	p = new Platform;
+	p->x = 300;
+	p->y = 160;
+	p->w = BoardWidth - 600;
+	p->h = 40;
+	p->drawoffset = 30;
+	GGame.board->AddManagedChild(p);
+	GGame.board->geometry.push_back(p);
+	p->InitGraphics();
+	
 	localpawn = new HumanPawn(1);
-	localpawn->instance = Character::GetByName("TINS");
-	localpawn->Move(20, 60);
+	localpawn->instance = Character::GetByName("CGamesPlay");
+	localpawn->Move(20, PawnHeight + 10);
 	localpawn->InitGraphics();
 	AddManagedChild(localpawn);
 	return GGame.board->InitLogic() & p->InitLogic() & localpawn->InitLogic();

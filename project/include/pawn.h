@@ -9,6 +9,7 @@
 
 enum { PawnHeight = 64 };
 enum { PawnWidth = 24 };
+enum { WalkSpeed = 2 };
 
 enum EPawnState
 {
@@ -33,6 +34,11 @@ class Pawn: public Object
 		int dx, dy;
 		double progress;
 		double timedialation;
+		
+		/// Amount of time Pawn has been jumping for
+		double jumptime;
+		/// Movement speed
+		int xs;
 		
 	public: // Public functions
 		Pawn(uint32_t pnum);

@@ -37,6 +37,20 @@ void Board::ScrollToLevel(int newlevel)
 	camy = newlevel;
 }
 
+int Board::Drop(int x, int y, int maxdist)
+{
+	for(vector<Platform*>::iterator i = geometry.begin(); i != geometry.end(); i++)
+	{
+		if((*i)->x <= x && x <= (*i)->x + (*i)->w && y >= (*i)->y && y - maxdist <= (*i)->y)
+			return y - (*i)->y;
+	}
+	
+	if(y - maxdist <= 10)
+		return y - 10;
+	
+	return maxdist;
+}
+
 EStatus Board::Tick(double dtime)
 {
 	EStatus s = GameState::Tick(dtime);
@@ -81,6 +95,8 @@ void Board::Draw(BITMAP* dest)
 			}
 		}
 	}
+	
+	GameState::Draw(dest);
 }
 
 bool Board::InitGraphics()

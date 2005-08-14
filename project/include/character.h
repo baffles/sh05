@@ -57,8 +57,6 @@ class Character
 		{ return true; }
 
 #ifndef DEDICATED_SERVER
-		virtual void DrawPortrait(BITMAP* dest, int x, int y, int w, int h) = 0;
-		
 		virtual void DrawSelf(BITMAP* dest, int x, int y, int w, int h) = 0;
 		
 		void StandardStates(BITMAP* dest, int x, int y, int w, int h, BITMAP* frame);

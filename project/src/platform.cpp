@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Platform::Platform(): Object(OF_Interactive), left(NULL), middle(NULL), right(NULL), w(0), h(0)
+Platform::Platform(): Object(OF_Interactive), left(NULL), middle(NULL), right(NULL), w(0), h(0), drawoffset(0)
 {
 }
 
@@ -22,7 +22,7 @@ Platform::~Platform()
 void Platform::Draw(BITMAP* dest)
 {
 	int top, left;
-	GGame.board->RealToScreen(dest->w, dest->h, x, y, left, top);
+	GGame.board->RealToScreen(dest->w, dest->h, x, y + drawoffset, left, top);
 	if(dest->w <= left || dest->h <= top)
 		return;
 	int bottom = top + h, right = left + w;

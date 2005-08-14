@@ -11,7 +11,17 @@ enum EObjectFlags
 	OF_Unimportant	= 0x00000001, // Is not necessary to gameplay (i.e. a decoration)
 	OF_Dynamic		= 0x00000002, // Needs to be updated during gameplay
 	OF_Interactive	= 0x00000004, // Has the capacity to collide
+	OF_Physical		= 0x00000008, // Is affected by gravity
 };
+
+enum EPhysicsState
+{
+	PHYS_Normal,
+	PHYS_Falling
+};
+const char* PrintEPhysicsState(EPhysicsState s);
+
+enum { SpeedOfGravity = 10 };
 
 class Object: public GameState
 {
@@ -20,8 +30,14 @@ class Object: public GameState
 		uint32_t flags;
 		/// Position information
 		int x, y;
+		/// Size information
+		int w, h;
 		/// Type of object this object is
 		int cls;
+		/// Speed at which the object is falling presently
+		double fallspeed;
+		/// EPhysicsState representation
+		EPhysicsState physstate;
 		
 	public: // Public functions
 		Object();
@@ -33,8 +49,7 @@ class Object: public GameState
 		virtual void CheckValid();
 		virtual void Dump(std::ostream& str);
 		
-		EStatus Tick(double dtime)
-		{ return S_ContinueNoWait; }
+		EStatus Tick(double dtime);
 		
 		void Draw(BITMAP* dest)
 		{ }

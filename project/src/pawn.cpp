@@ -22,8 +22,10 @@ const char* PrintEPawnState(EPawnState s)
 #	undef PRINT_EGS
 }
 
-Pawn::Pawn(uint32_t pnum): instance(NULL), pnum(pnum), location(0), score(0), place(0), pstate(PS_None)
+Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), instance(NULL), pnum(pnum), location(0), score(0), place(0), pstate(PS_None), jumptime(0), xs(0)
 {
+	w = PawnWidth;
+	h = PawnHeight;
 }
 
 Pawn::~Pawn()
@@ -32,19 +34,21 @@ Pawn::~Pawn()
 
 void Pawn::CheckValid()
 {
-	GameState::CheckValid();
+	Object::CheckValid();
 	TRACE_ASSERT(instance);
 }
 
 void Pawn::Dump(ostream& str)
 {
-	GameState::Dump(str);
-	str << TRACE_VAR(instance) << TRACE_VAR(pnum) << TRACE_VAR(location) << " pstate " << PrintEPawnState(pstate) << TRACE_VAR(sx) << TRACE_VAR(sy) << TRACE_VAR(dx) << TRACE_VAR(dy) << TRACE_VAR(x) << TRACE_VAR(y) << TRACE_VAR(progress) << TRACE_VAR(timedialation);
+	Object::Dump(str);
+	str << TRACE_VAR(instance) << TRACE_VAR(pnum) << TRACE_VAR(location) << " pstate " << PrintEPawnState(pstate) << TRACE_VAR(sx) << TRACE_VAR(sy) << TRACE_VAR(dx) << TRACE_VAR(dy) << TRACE_VAR(x) << TRACE_VAR(y) << TRACE_VAR(progress) << TRACE_VAR(timedialation) << TRACE_VAR(xs);
 }
 
 void Pawn::GotoState(EPawnState news)
 {
 	pstate = news;
+	progress = 0;
+	jumptime = 0;
 }
 
 void Pawn::MoveTo(int _x, int _y, double timetoarrive, bool isspeed)
@@ -62,7 +66,6 @@ void Pawn::MoveTo(int _x, int _y, double timetoarrive, bool isspeed)
 	sy = y;
 	dx = _x;
 	dy = _y;
-	progress = 0;
 	timedialation = 1 / timetoarrive;
 	GotoState(PS_Walking);
 	double movespeed;
@@ -75,33 +78,39 @@ void Pawn::MoveTo(int _x, int _y, double timetoarrive, bool isspeed)
 
 EStatus Pawn::Tick(double dtime)
 {
-	EStatus s = GameState::Tick(dtime);
+	EStatus s = Object::Tick(dtime);
 	if(s != S_Continue && s != S_ContinueNoWait) return s;
 	s = S_ContinueNoWait;
 	
-	if(x != dx || y != dy)
-	{
-		x = sx + (int) ((dx - sx) * progress);
-		y = sy + (int) ((dy - sy) * progress);
-		progress += dtime * timedialation;
-		if(progress >= 1)
-		{
-			sx = x = dx;
-			sy = y = dy;
-		}
-	}
-	
 	if(instance) instance->Tick(dtime);
+	
+	x += xs;
+	if(xs > 0)
+		xs = MAX(xs - (physstate == PHYS_Falling ? WalkSpeed / 3 : WalkSpeed), 0);
+	else if(xs < 0)
+		xs = MIN(xs + (physstate == PHYS_Falling ? WalkSpeed / 3 : WalkSpeed), 0);
 	
 	switch(pstate)
 	{
 		case PS_Walking:
-			if(x == dx && y == dy)
+			/*if(x != dx)
+			{
+				x = sx + (int) ((dx - sx) * progress);
+				progress += dtime * timedialation;
+				if(progress >= 1)
+					sx = x = dx;
+			}
+			if(x == dx)
 			{
 				if(instance) instance->Animate(S_Standing, 1);
 				GotoState(PS_None);
-				s = S_ContinueNoWait;
-			}
+			}*/
+			break;
+		case PS_Jumping:
+			y += (int) (SpeedOfGravity * 1.25);
+			jumptime += dtime;
+			if(jumptime >= .2)
+				GotoState(PS_None);
 			break;
 		default:
 			break;
@@ -120,19 +129,40 @@ void Pawn::Draw(BITMAP* dest)
 
 EStatus HumanPawn::Tick(double dtime)
 {
-	if(pstate == PS_None)
+	if(pstate == PS_None || pstate == PS_Walking)
 	{
 		if(key[KEY_RIGHT])
 		{
-			MoveTo(dx + 3, y, .05);
-			GotoState(PS_Walking);
+			xs = MIN(xs + WalkSpeed, WalkSpeed * 3);
+			//GotoState(PS_Walking);
 		}
-		if(key[KEY_LEFT])
+		else if(key[KEY_LEFT])
 		{
-			MoveTo(dx - 3, y, .05);
-			GotoState(PS_Walking);
+			xs = MAX(xs - WalkSpeed, -WalkSpeed * 3);
+			//GotoState(PS_Walking);
+		}
+		if(key[KEY_SPACE] && physstate == PHYS_Normal)
+		{
+			cout << this << endl;
+			GotoState(PS_Jumping);
 		}
 	}
+	if(pstate == PS_Jumping)
+	{
+		if(key[KEY_RIGHT])
+		{
+			xs = MIN(xs + WalkSpeed, WalkSpeed * 3) / 3;
+			//GotoState(PS_Walking);
+		}
+		else if(key[KEY_LEFT])
+		{
+			xs = MAX(xs - WalkSpeed, -WalkSpeed * 3) / 3;
+			//GotoState(PS_Walking);
+		}
+	}
+	//if(!key[KEY_LEFT] && !key[KEY_RIGHT] && pstate == PS_Walking)
+		//GotoState(PS_None);
+
 	return Pawn::Tick(dtime);
 }
 

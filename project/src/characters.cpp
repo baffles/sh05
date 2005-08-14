@@ -3,42 +3,36 @@
 
 #include "pawn.h"
 #include "character.h"
+#include "abg.h"
 
 using namespace std;
 
-class CharacterX: public Character
+class CharacterCGP: public Character
 {
 	public: // Public variables
-		BITMAP* thex;
+		BITMAP* standard;
 	public: // Public functions
-		CharacterX()
+		CharacterCGP()
 		{
-			name = "TINS";
-			flavor = "This character is, well, the TINS name!";
+			name = "CGamesPlay";
+			flavor = "International Man of Mystery, in the flesh!";
 		}
-		virtual ~CharacterX()
-		{ destroy_bitmap(thex); }
+		virtual ~CharacterCGP()
+		{
+			destroy_bitmap(standard);
+		}
 #ifndef DEDICATED_SERVER
 		virtual bool InitGraphics()
 		{
-			BITMAP* temp = create_bitmap(text_length(font, "TIN"), text_height(font));
-			clear_to_color(temp, makecol(255, 255, 255));
-			textout(temp, font, "TIN", 0, 0, makecol(255, 0, 0));
-			thex = create_bitmap(PawnWidth, PawnHeight);
-			stretch_sprite(thex, temp, 0, 0, PawnWidth, PawnHeight);
-			destroy_bitmap(temp);
-			return true;
-		}
-		virtual void DrawPortrait(BITMAP* dest, int x, int y, int w, int h)
-		{
-			stretch_blit(thex, dest, 0,  0, thex->w, thex->h, x, y, w, h);
+			string datadir = Ini::GetString(settings, "data", "dir", "../../media/Assets/Rendered");
+			return (standard = load_bitmap((datadir + "/Sprites/CG/Stand.bmp").c_str(), NULL));
 		}
 		virtual void DrawSelf(BITMAP* dest, int x, int y, int w, int h)
 		{
-			StandardStates(dest, x, y, w, h, thex);
+			StandardStates(dest, x, y, w, h, standard);
 		}
 #endif
 };
-ADD_CHARACTER(CharacterX);
+ADD_CHARACTER(CharacterCGP);
 
 // The end

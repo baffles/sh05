@@ -12,6 +12,8 @@ class Platform: public Object
 		BITMAP* left, *middle, *right;
 		/// Size information
 		int w, h;
+		/// "Draw offset", amount that is "behind" the players
+		int drawoffset;
 		
 	public: // Public functions
 		Platform();

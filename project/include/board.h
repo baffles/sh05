@@ -6,6 +6,7 @@
 
 #include <vector>
 #include "gamestate.h"
+#include "platform.h"
 
 enum { BoardHeight = 600 };
 enum { BoardWidth = 2880 };
@@ -25,6 +26,8 @@ class Board: public GameState
 		int camy;
 		/// World y position of camera
 		int _camy;
+		/// List of platforms in the level
+		std::vector<Platform*> geometry;
 #ifndef DEDICATED_SERVER
 		/// Parallax background
 		BITMAP* background;
@@ -42,6 +45,8 @@ class Board: public GameState
 		
 		void RealToScreen(int w, int h, int inx, int iny, int& x, int& y);
 		void ScrollToLevel(int newlevel);
+		/// Finds the first encountered surface, returning maxdist if none
+		virtual int Drop(int x, int y, int maxdist);
 		
 		virtual EStatus Tick(double dtime);
 		
