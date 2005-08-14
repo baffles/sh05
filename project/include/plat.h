@@ -13,10 +13,8 @@ typedef timeval TimeType;
 #	include <stdint.h>
 # ifndef DEDICATED_SERVER
 #  include <allegro.h>
-#	 define WIN32_LEAN_AND_MEAN
 #	 include <winalleg.h>
 # else
-#	 define WIN32_LEAN_AND_MEAN
 #  include <windows.h>
 # endif
 #	define ABG_WINDOWS
@@ -26,7 +24,6 @@ typedef LARGE_INTEGER TimeType;
 #ifdef _MSC_VER
 # ifndef DEDICATED_SERVER
 #  include <allegro.h>
-#	 define WIN32_LEAN_AND_MEAN
 #	 include <winalleg.h>
 # else
 #  include <windows.h>

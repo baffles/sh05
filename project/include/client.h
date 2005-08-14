@@ -9,7 +9,6 @@
 #include <sstream>
 #include <time.h>
 
-#include "plat.h"
 #include "enet/enet.h"
 #include "gamestate.h"
 
@@ -36,6 +35,8 @@ class Client: public GameState
 		ENetHost *client;
 		ENetPeer *peer;
 		int lag;
+		double progress;
+		bool connected;
 	
 	public: // Public functions
 		Client(std::string host, int port);
