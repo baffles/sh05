@@ -309,7 +309,7 @@ static int zip_refill_buffer(ZIP_USERDATA *z)
 	{
 		long n = MIN(sizeof(z->inbuf), z->cSize - z->stream.total_in);
 
-		z->stream.next_in = z->inbuf;
+		z->stream.next_in = (Bytef*)z->inbuf;
 		z->stream.avail_in = n;
 
 		if (pack_fread(z->inbuf, n, z->f) != n)
@@ -343,7 +343,7 @@ static long zip_fread(void *p, long n, void *_f)
 
 	if (n)
 	{
-		z->stream.next_out = p;
+		z->stream.next_out = (Bytef*)p;
 		z->stream.avail_out = n;
 		z->err = Z_OK;
 
