@@ -224,14 +224,15 @@ class SubStateText: public GameState
 		ETextboxMode mode;
 		
 	public: // Public functions
-		SubStateText(const char* text, int x, int y, int w, int h, ETextboxMode mode = TM_Transparent, bool waitonme = false);
+		SubStateText(const std::string& text, int x, int y, int w, int h, ETextboxMode mode = TM_Transparent, bool waitonme = false);
 		virtual ~SubStateText();
 		
 		/// Debugging functions
 		virtual void CheckValid();
 		virtual void Dump(std::ostream& str);
 		
-		void SetText(const char* text);
+		void SetText(const std::string& text);
+		void SetTextFast(const std::string& newt);
 		
 		virtual EStatus Tick(double dtime);
 #ifndef DEDICATED_SERVER

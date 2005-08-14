@@ -50,6 +50,14 @@ void Game::Draw(BITMAP* dest)
 		GGame.board->camx = BoardWidth - dest->w / 2;
 	GGame.board->Draw(dest);
 	GameState::Draw(dest);
+	if(chat[0].length())
+		en_renderf(dest, font, 0, 0, "%s", chat[0].c_str());
+	if(chat[1].length())
+		en_renderf(dest, font, 0, text_height(font), "%s", chat[1].c_str());
+	if(chat[2].length())
+		en_renderf(dest, font, 0, 2 * text_height(font), "%s", chat[2].c_str());
+	if(chat[3].length())
+		en_renderf(dest, font, 0, 3 * text_height(font), "%s", chat[3].c_str());
 }
 		
 bool Game::InitLogic()

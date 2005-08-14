@@ -85,7 +85,7 @@ EStatus Pawn::Tick(double dtime)
 	
 	if(instance) instance->Tick(dtime);
 	
-	x += xs * dtime * 60;
+	x += xs * (int) (dtime * 60);
 	if(xs > 0)
 		xs = MAX(xs - (physstate == PHYS_Falling ? WalkSpeed / 3 : WalkSpeed), 0);
 	else if(xs < 0)

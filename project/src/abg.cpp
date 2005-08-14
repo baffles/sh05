@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	
 	GGame.board = new Board;
 	
-	string host = Ini::GetString(settings, "server", "server", "bafsoft.ath.cx");
+	string host = Ini::GetString(settings, "server", "server", "bafsoft.com");
 	int port = atoi(Ini::GetString(settings, "server", "port", "21870").c_str());
 	if(!port)
 		port = 21870;
@@ -74,15 +74,17 @@ int main(int argc, char* argv[])
 	en_renderf(screen, font, 0, 0, "Connecting...\n%s:%d", host.c_str(), port);
 	
 	Game* g = new Game;
-		
+
 	Client* c = new Client(host, port);
 	if(c->InitLogic())
 	{
 		c->Register("CGames");
 		c->Ping();
 		c->Msg("weeeee");
+		cout << c->GetLag() << endl;
 		GameState::AddManagedRoot(c);
 		g->client = c;
+		c->game = g;
 	}
 	
 	GameState::rootstate = g;

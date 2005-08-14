@@ -692,9 +692,9 @@ void GameState::Draw(BITMAP* dest)
 }
 #endif
 
-SubStateText::SubStateText(const char* text, int x, int y, int w, int h, ETextboxMode mode, bool waitonme): text(text), tnl(0), pos(0), lastword(0), thisline(0), waitonme(waitonme), x(x), y(y), w(w), h(h), mode(mode)
+SubStateText::SubStateText(const string& text, int x, int y, int w, int h, ETextboxMode mode, bool waitonme): text(text), tnl(0), pos(0), lastword(0), thisline(0), waitonme(waitonme), x(x), y(y), w(w), h(h), mode(mode)
 {
-	len = strlen(text);
+	len = text.length();
 	buffer = new char [len + 1];
 	buffer[0] = '\0';
 	zorder = 20;
@@ -718,7 +718,7 @@ void SubStateText::Dump(ostream& str)
 	str << TRACE_VAR(tnl) << TRACE_VAR(pos) << TRACE_VAR(len) << TRACE_VAR((void*) buffer) << TRACE_VAR(lastword) << TRACE_VAR(thisline) << TRACE_VAR(waitonme) << TRACE_VAR(x) << TRACE_VAR(y) << TRACE_VAR(w) << TRACE_VAR(h) << TRACE_VAR(mode);
 }
 
-void SubStateText::SetText(const char* _text)
+void SubStateText::SetText(const string& _text)
 {
 	text = _text;
 	tnl = pos = lastword = thisline = 0;
@@ -726,6 +726,15 @@ void SubStateText::SetText(const char* _text)
 	len = text.length();
 	buffer = new char [len + 1];
 	buffer[0] = '\0';
+}
+
+void SubStateText::SetTextFast(const string& _text)
+{
+	state = GS_Normal;
+	len = text.length() + _text.length();
+	buffer = new char [len + 1];
+	buffer[pos + 1] = '\0';
+	text += _text;
 }
 
 #ifndef DEDICATED_SERVER

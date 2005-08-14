@@ -430,6 +430,7 @@ void Client::OnPong(string pd)
 // Chat
 void Client::OnMsg(int id, string message)
 {
+	cout << "<" << id << "> " << message << endl;
 }
 
 

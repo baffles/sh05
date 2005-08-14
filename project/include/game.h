@@ -19,6 +19,8 @@ class Game: public GameState
 		Pawn* localpawn;
 		/// The Client we send messages to
 		Client* client;
+		/// The chat box lines
+		std::string chat[4];
 		
 	public: // Public functions
 		Game();

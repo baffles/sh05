@@ -27,6 +27,9 @@ class Client: public GameState
 	public: // Public static functions
 		static bool GlobalInit();
 		static void GlobalClose();
+		
+	public: // Public variables
+		class Game* game;
 	
 	private: // Private variables
 		ENetAddress address;

@@ -51,8 +51,10 @@ class Object: public GameState
 		
 		EStatus Tick(double dtime);
 		
+#ifndef DEDICATED_SERVER
 		void Draw(BITMAP* dest)
 		{ }
+#endif
 };
 
 #endif
