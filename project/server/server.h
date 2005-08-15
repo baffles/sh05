@@ -75,7 +75,7 @@ class Server : public GameState
 		Server(int port);
 		~Server();
 		
-		bool Send(ENetPeer *p, std::string data, UDPChannel chan, bool broadcast = false);
+		bool Send(ENetPeer *p, std::string data, UDPChannel chan, bool broadcast = false, bool reliable = true);
 		void Boot(UserData& usr, std::string reason);
 		
 		EStatus Tick(double dtime);
@@ -89,7 +89,7 @@ class Server : public GameState
 		void OnLeaveGame(UserData& usr);
 		void OnRequestMove(UserData& usr, int x, int y);
 		void OnRequestStateInfo(UserData& usr);
-		void OnUpdate(UserData& usr, int pstate, int face, int spritestate, int jumptime, int xs);
+		void OnUpdate(UserData& usr, int pstate, int face, int spritestate, int jumptime, int xs, int x, int y, int score, int health, int place, int ammo);
 		// Misc
 		void OnPing(UserData& usr, std::string pingdata);
 		// Chat

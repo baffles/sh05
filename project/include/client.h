@@ -80,7 +80,7 @@ class Client: public GameState
 		void OnLeave(Pawn* p);
 		void OnMove(unsigned int id, int x, int y);
 		void OnStatusUpdate(int score, int health, int x, int y, int flags, int state, int serverstate, int timeleft);
-		void OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumptime, int xs);
+		void OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumptime, int xs, int x, int y, int score, int health, int place, int ammo);
 		// Misc
 		void OnPong(std::string pd);
 		// Chat

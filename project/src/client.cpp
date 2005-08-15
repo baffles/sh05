@@ -269,12 +269,12 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 			if(cmd == "Upd")
 			{
 				unsigned int id;
-				int pstate, face, spritestate, jumptime, xs;
+				int pstate, face, spritestate, jumptime, xs, x, y, score, health, place, ammo;
 				
 				ws(data);
-				data >> id >> pstate >> face >> spritestate >> jumptime >> xs;
+				data >> id >> pstate >> face >> spritestate >> jumptime >> xs >> x >> y >> score >> health >> place >> ammo;
 				
-				OnUpdate(players[id], pstate, face, spritestate, jumptime, xs);
+				OnUpdate(players[id], pstate, face, spritestate, jumptime, xs, x, y, score, health, place, ammo);
 			}
 		}
 		else if(event.channelID == CMisc)
@@ -468,8 +468,8 @@ void Client::UpdateMyself()
 	TRACE_ASSERT(game->localpawn);
 	Pawn* p = game->localpawn;
 	
-	stringstream s;
-	s << "Upd " << p->pstate << " " << p->face << " " << p->spritestate << " " << p->jumptime << " " << p->xs << endl;
+	stringstream s; //  <x> <y> <score> <health> <place> <ammo>
+	s << "Upd " << p->pstate << " " << p->face << " " << p->spritestate << " " << p->jumptime << " " << p->xs << " " << p->x << " " << p->y << " " << p->health << " " << p->place << " " << p->score << " " << p->ammo << endl;
 	Send(peer, s.str(), CGame, false);
 }
 
@@ -531,7 +531,7 @@ void Client::OnStatusUpdate(int score, int health, int x, int y, int flags, int 
 {
 }
 
-void Client::OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumptime, int xs)
+void Client::OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumptime, int xs, int x, int y, int score, int health, int place, int ammo)
 {
 	if(p == game->localpawn)
 		return;
@@ -540,6 +540,12 @@ void Client::OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumpti
 	p->spritestate = (EState)spritestate;
 	p->jumptime = jumptime;
 	p->xs = xs;
+	p->x = x;
+	p->y = y;
+	p->score = score;
+	p->health = health;
+	p->place = place;
+	p->ammo = ammo;
 }
 
 // Misc

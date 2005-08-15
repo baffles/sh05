@@ -21,9 +21,14 @@ Server::~Server()
 }
 
 
-bool Server::Send(ENetPeer *p, string data, UDPChannel chan, bool broadcast)
+bool Server::Send(ENetPeer *p, string data, UDPChannel chan, bool broadcast, bool reliable)
 {
-	ENetPacket *packet = enet_packet_create(data.c_str(), data.length(), ENET_PACKET_FLAG_RELIABLE);
+	cout << "<--Packet (len " << data.length() << ") channel " << chan << " contents: " << data;
+	ENetPacket *packet;
+	if(reliable)
+		packet = enet_packet_create(data.c_str(), data.length(), ENET_PACKET_FLAG_RELIABLE);
+	else
+		packet = enet_packet_create(data.c_str(), data.length(), 0);
 	
 	if(broadcast)
 		enet_host_broadcast(server, chan, packet);
@@ -88,6 +93,13 @@ void Server::ServerTick()
 					break;
 				}
 			}*/
+			if(((ServerUser*)event.peer->data)->registered)
+			{
+				UserData ud;
+				ud.user = (ServerUser*)event.peer->data;
+				OnQuit(ud, "Client Quit");
+			}
+			
 			users.remove((ServerUser*)event.peer->data);
 			delete (ServerUser*)event.peer->data;
 			event.peer->data = NULL;
@@ -101,7 +113,7 @@ void Server::ServerTick()
 			stringstream data;
 			data.write((char *)event.packet->data, event.packet->dataLength);
 			// debug
-			cout << "Packet (len " << event.packet->dataLength << ") channel " << (unsigned int)event.channelID << " contents: " << data.str();
+			cout << "-->Packet (len " << event.packet->dataLength << ") channel " << (unsigned int)event.channelID << " contents: " << data.str();
 			
 			ServerUser *usr = (ServerUser *)event.peer->data;
 			UserData ud;
@@ -172,6 +184,13 @@ void Server::ServerTick()
 				{
 					OnRequestStateInfo(ud);
 				}
+				if(cmd == "Upd")
+				{
+					int pstate, face, spritestate, jumptime, xs, x, y, score, health, place, ammo;
+					ws(data);
+					data >> pstate >> face >> spritestate >> jumptime >> xs >> x >> y >> score >> health >> place >> ammo;
+					OnUpdate(ud, pstate, face, spritestate, jumptime, xs, x, y, score, health, place, ammo);
+				}
 			}
 			else if(event.channelID == CMisc)
 			{
@@ -239,8 +258,28 @@ void Server::OnRegister(UserData& usr, string name, string pass)
 	s.str("");
 	s << "New " << usr.user->pawn->pnum << " :" << name << endl;
 	Send(NULL, s.str(), CSystem, true);
+	s.str("");
+	s << "Join " << usr.user->pawn->pnum << endl;
+	Send(NULL, s.str(), CGame, true);
 	
 	cout << "Registration " << name << " reply: " << s.str();
+	
+	for(list<ServerUser*>::iterator i = users.begin(); i != users.end(); i++)
+	{
+		if((*i)->pawn->pnum != usr.user->pawn->pnum)
+		{
+			s.str("");
+			s << "New " << (*i)->pawn->pnum << " :" << (*i)->pawn->name << endl;
+			Send(usr.peer, s.str(), CSystem);
+			s.str("");
+			s << "Join " << (*i)->pawn->pnum << endl;
+			Send(usr.peer, s.str(), CGame);
+			s.str("");
+			cout << " - Pawn: " << (*i)->pawn << endl;
+			s << "Upd " << (*i)->pawn->pnum << " " << (*i)->pawn->pstate << " " << (*i)->pawn->face << " " << (*i)->pawn->spritestate << " " << (*i)->pawn->jumptime << " " << (*i)->pawn->xs << endl;
+			Send(usr.peer, s.str(), CGame);
+		}
+	}
 }
 
 void Server::OnQuit(UserData& usr, string reason)
@@ -289,7 +328,7 @@ void Server::OnRequestStateInfo(UserData& usr)
 	Send(usr.peer, s.str(), CGame);
 }
 
-void Server::OnUpdate(UserData& usr, int pstate, int face, int spritestate, int jumptime, int xs)
+void Server::OnUpdate(UserData& usr, int pstate, int face, int spritestate, int jumptime, int xs, int x, int y, int score, int health, int place, int ammo)
 {
 	// Upd = update info - "Upd <pstate> <face> <spritestate> <jumptime> <xs>" [game]
 	usr.user->pawn->pstate = (EPawnState)pstate;
@@ -299,8 +338,9 @@ void Server::OnUpdate(UserData& usr, int pstate, int face, int spritestate, int 
 	usr.user->pawn->xs = xs;
 	
 	stringstream s;
-	s << "Upd " << usr.user->pawn->pnum << " " << pstate << " " << face << " " << spritestate << " " << jumptime << " " << xs << endl;
-	Send(NULL, s.str(), CGame, true);
+	s << "Upd " << usr.user->pawn->pnum << " " << pstate << " " << face << " " << spritestate << " " << jumptime << " " << xs << " " << x << " " << y << " " << score << " " << health << " " << place << " " << ammo << endl;
+	Send(NULL, s.str(), CGame, true, false);
+	cout << "Sending Update" << endl;
 }
 
 // Misc stuff
