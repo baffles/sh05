@@ -45,7 +45,7 @@ class Client: public GameState
 		Client(std::string host, int port);
 		~Client();
 		
-		bool Send(ENetPeer *p, std::string data, UDPChannel chan);
+		bool Send(ENetPeer *p, std::string data, UDPChannel chan, bool reliable = true);
 		
 		// Debugging functions
 		virtual void CheckValid();
