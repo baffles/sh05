@@ -31,7 +31,7 @@ class Client: public GameState
 		
 	public: // Public variables
 		class Game* game;
-		std::map<int, Pawn*> players;
+		std::map<unsigned int, Pawn*> players;
 	
 	private: // Private variables
 		ENetAddress address;
@@ -70,15 +70,15 @@ class Client: public GameState
 		
 		// Recieve Handlers
 		// System
-		void OnRegisterConfirm(int id, std::string name);
+		void OnRegisterConfirm(unsigned int id, std::string name);
 		void OnBoot(std::string reason);
 		
-		void OnNew(int id, std::string name);
-		void OnQuit(int id, std::string reason);
+		void OnNew(unsigned int id, std::string name);
+		void OnQuit(unsigned int id, std::string reason);
 		// Game
 		void OnJoin(Pawn* p);
 		void OnLeave(Pawn* p);
-		void OnMove(int id, int x, int y);
+		void OnMove(unsigned int id, int x, int y);
 		void OnStatusUpdate(int score, int health, int x, int y, int flags, int state, int serverstate, int timeleft);
 		void OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumptime, int xs);
 		// Misc

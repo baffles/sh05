@@ -136,7 +136,7 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 			if(cmd == "Reg")
 			{
 				string name;
-				int id;
+				unsigned int id;
 				
 				ws(data);
 				if(data.peek() != ':') // should be id
@@ -175,7 +175,7 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 			
 			if(cmd == "New");
 			{
-				int id;
+				unsigned int id;
 				string name;
 				
 				ws(data);
@@ -196,7 +196,7 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 			}
 			if(cmd == "Quit")
 			{
-				int id;
+				unsigned int id;
 				string reason;
 				
 				stringbuf temp1;
@@ -230,14 +230,14 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 		{
 			if(cmd == "Join")
 			{
-				int id;
+				unsigned int id;
 				ws(data);
 				data >> id;
 				OnJoin(players[id]);
 			}
 			if(cmd == "Leave")
 			{
-				int id;
+				unsigned int id;
 				ws(data);
 				data >> id;
 				OnLeave(players[id]);
@@ -245,7 +245,8 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 			
 			if(cmd == "Mov")
 			{
-				int id, nx, ny;
+				unsigned int id;
+				int nx, ny;
 				
 				ws(data);
 				data >> id;
@@ -272,7 +273,8 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 			
 			if(cmd == "Upd")
 			{
-				int id, pstate, face, spritestate, jumptime, xs;
+				unsigned int id;
+				int pstate, face, spritestate, jumptime, xs;
 				
 				ws(data);
 				data >> id >> pstate >> face >> spritestate >> jumptime >> xs;
@@ -338,6 +340,7 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 		}
 		enet_packet_destroy(event.packet);
 	}
+	return s;
 }
 
 EStatus Client::Tick(double dtime)
@@ -478,7 +481,7 @@ void Client::UpdateMyself()
 
 // Recieve Handlers
 // System
-void Client::OnRegisterConfirm(int id, string name)
+void Client::OnRegisterConfirm(unsigned int id, string name)
 {
 	TRACE_ASSERT(game);
 	TRACE_ASSERT(game->localpawn);
@@ -494,7 +497,7 @@ void Client::OnBoot(string reason)
 }
 
 
-void Client::OnNew(int id, string name)
+void Client::OnNew(unsigned int id, string name)
 {
 	TRACE_ASSERT(game);
 	TRACE_ASSERT(game->localpawn);
@@ -504,7 +507,7 @@ void Client::OnNew(int id, string name)
 	players[id] = p;
 }
 
-void Client::OnQuit(int id, string reason)
+void Client::OnQuit(unsigned int id, string reason)
 {
 	cout << "<-- " << players[id]->name << " quit (" << reason << ")" << endl;
 	
@@ -525,7 +528,7 @@ void Client::OnLeave(Pawn* p)
 	cout << "<-- " << p->name << " left the game" << endl;
 }
 
-void Client::OnMove(int id, int x, int y)
+void Client::OnMove(unsigned int id, int x, int y)
 {
 }
 
@@ -533,7 +536,7 @@ void Client::OnStatusUpdate(int score, int health, int x, int y, int flags, int 
 {
 }
 
-void OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumptime, int xs)
+void Client::OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumptime, int xs)
 {
 	p->pstate = (EPawnState)pstate;
 	p->face = (EDirection)face;
