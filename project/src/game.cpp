@@ -109,7 +109,8 @@ bool Game::InitLogic()
 	localpawn->instance = Character::GetByName("CGamesPlay");
 	localpawn->Move(20, PawnHeight + 10);
 	localpawn->InitGraphics();
-	GGame->AddPlayer(localpawn);
+	if(!client)
+		GGame->AddPlayer(localpawn);
 	
 	return true;
 }

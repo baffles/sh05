@@ -154,6 +154,7 @@ EStatus HumanPawn::Tick(double dtime)
 	if((key[KEY_A] || key[KEY_S] || key[KEY_D] || key[KEY_F]) && nextshot <= 0)// && ammo > 0)
 	{
 		Bullet* b = new Bullet;
+		b->sender = this;
 		GGame->AddObject(b);
 		b->x = x + (face == D_Left ? 0 : PawnWidth * 2 / 3);
 		b->y = y - (PawnWidth * 2 / 3);

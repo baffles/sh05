@@ -482,8 +482,7 @@ void Client::OnRegisterConfirm(unsigned int id, string name)
 	TRACE_ASSERT(game->localpawn);
 	game->localpawn->pnum = id;
 	cout << "I am " << name << ", player " << id << endl;
-	Pawn* p = new Pawn(id);
-	players[id] = p;
+	players[id] = game->localpawn;
 }
 
 void Client::OnBoot(string reason)
@@ -534,6 +533,8 @@ void Client::OnStatusUpdate(int score, int health, int x, int y, int flags, int 
 
 void Client::OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumptime, int xs)
 {
+	if(p == game->localpawn)
+		return;
 	p->pstate = (EPawnState)pstate;
 	p->face = (EDirection)face;
 	p->spritestate = (EState)spritestate;

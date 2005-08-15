@@ -48,7 +48,10 @@ EStatus Bullet::Tick(double dtime)
 	
 	for(vector<Pawn*>::iterator i = GGame->players.begin(); i != GGame->players.end(); i++)
 	{
-		//if((*i)->x <= x
+		if((x + w >= (*i)->x && x <= (*i)->x + (*i)->w) && (y + h >= (*i)->y && y <= (*i)->y + (*i)->h))
+		{
+			cout << "I just killed " << *i << endl;
+		}
 	}
 	
 	if(x < 0 || x > BoardWidth || y < 0 || y > BoardHeight)
