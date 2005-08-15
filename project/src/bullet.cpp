@@ -49,10 +49,22 @@ EStatus Bullet::Tick(double dtime)
 	
 	for(vector<Pawn*>::iterator i = GGame->players.begin(); i != GGame->players.end(); i++)
 	{
-		if(*i != sender && (*i)->x <= x && x < (*i)->x + (*i)->w && (*i)->y <= y && y < (*i)->y + (*i)->h)
+		//cout << "Collision detection. BX = " << x << " BY = " << y << " IX = " << (*i)->x << " IY = " << (*i)->y << " IH = " << (*i)->h << " IW = " << (*i)->w << endl;
+		//cout << "Collision detection. BY = " << y << " IY = " << (*i)->y << " IH = " << (*i)->h << endl;
+		// Collision detection. BX = 96 BY = 42 IX = 92 IY = 58 IH = 48 IW = 24
+		//if(*i != sender && (*i)->x <= x && x < (*i)->x + (*i)->w && (*i)->y <= y && y < (*i)->y + (*i)->h)
+		/*if(*i != sender &&
+			(((x < (*i)->x + (*i)->w) && (x > (*i)->x)) || ((x > (*i)->x) && (x < (*i)->x + (*i)->w))) &&
+			((y > (*i)->y) && (y < (*i)->y + (*i)->h)))*/
+		if(*i != sender && (*i)->x <= x && x < (*i)->x + (*i)->w  &&  (*i)->y >= y && y < (*i)->y + (*i)->h)
 		{
 			(*i)->health -= 2;
-			cout << "hit " << (*i)->pnum << endl;
+			//cout << "hit " << (*i)->pnum << endl;
+			//if(*i == game->localpawn)
+			//{
+				// lets be good and update our damage
+				(*i)->needupdate = true;
+			//}
 			Finish();
 			return S_Finished;
 		}

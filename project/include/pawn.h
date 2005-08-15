@@ -37,6 +37,8 @@ class Pawn: public Object
 		EDirection face;
 		EState spritestate;
 		
+		/// Do we ahve to update?
+		bool needupdate;
 		/// Amount of time Pawn has been jumping for
 		double jumptime;
 		/// Movement speed

@@ -279,13 +279,13 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 			
 			if(cmd == "BulletShoot")
 			{
-				unsigned int id;
-				int x, y, xs, ys;
+				unsigned int uid;
+				int id, x, y, xs, ys;
 				
 				ws(data);
-				data >> id >> x >> y >> xs >> ys;
+				data >> id >> uid >> x >> y >> xs >> ys;
 				
-				OnBulletShoot(players[id], id, x, y, xs, ys);
+				OnBulletShoot(players[uid], id, x, y, xs, ys);
 			}
 			
 			if(cmd == "BulletKill")
@@ -365,6 +365,29 @@ EStatus Client::Tick(double dtime)
 		Ping();
 		progress -= 3;
 	}*/
+	
+	if(game->localpawn->needupdate)
+	{
+		UpdateMyself();
+		cout << "Health: " << game->localpawn->health << endl;
+		game->localpawn->needupdate = false;
+		if(game->localpawn->health <= 0)
+		{
+			cout << "DEAD" << endl;
+			Finish(false);
+			game->localpawn->x = 0;
+			game->localpawn->y = 0;
+			game->localpawn->score--;
+			game->localpawn->jumptime = 0;
+			game->localpawn->xs = 0;
+			game->localpawn->health = 100;
+			
+			Sleep(3000);
+			game->localpawn->x = rand() % (BoardWidth - PawnWidth);
+			game->localpawn->y = 10 + PawnHeight + (rand() % (BoardHeight - PawnHeight));
+			UpdateMyself();
+		}
+	}
 	
 	ENetEvent event;
 	
@@ -572,21 +595,6 @@ void Client::OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumpti
 	p->health = health;
 	p->place = place;
 	p->ammo = ammo;
-	
-	if(health < 0)
-	{
-		Finish(false);
-		p->x = 0;
-		p->y = 0;
-		p->score--;
-		p->jumptime = 0;
-		p->xs = 0;
-		p->health = 100;
-		
-		Sleep(3000);
-		p->x = rand() % (BoardWidth - PawnWidth);
-		p->y = 10 + PawnHeight + (rand() % (BoardHeight - PawnHeight));
-	}
 }
 
 void Client::OnBulletShoot(Pawn *p, int id, int x, int y, int xs, int ys)

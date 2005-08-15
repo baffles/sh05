@@ -29,6 +29,7 @@ Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), in
 {
 	w = PawnWidth;
 	h = PawnHeight;
+	needupdate = false;
 }
 
 Pawn::~Pawn()
