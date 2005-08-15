@@ -509,6 +509,7 @@ void Client::OnQuit(unsigned int id, string reason)
 {
 	cout << "<-- " << players[id]->name << " quit (" << reason << ")" << endl;
 	
+	GGame->DelPlayer(players[id]);
 	delete players[id];
 	players.erase(id);
 }
