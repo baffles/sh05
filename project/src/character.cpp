@@ -49,6 +49,8 @@ Character::Character(): name("")
 Character::~Character()
 {
 	destroy_bitmap(sprite);
+	for(vector<BITMAP*>::iterator i = rightwalk.begin(); i != rightwalk.end(); i++)
+		destroy_bitmap(*i);
 }
 
 bool Character::InitGraphics()
@@ -84,12 +86,53 @@ bool Character::InitGraphics()
 		pack_fclose(temp);
 	}
 	
+	vector<string>& section = manifest["graphics"]["walkleft"];
+	for(vector<string>::iterator i = section.begin(); i != section.end(); i++)
+	{
+		temp = pack_fopen_zip(data, i->c_str());
+		if(temp)
+		{
+			BITMAP* frame = load_bmp_pf(temp, NULL);
+			if(frame)
+				rightwalk.push_back(frame);
+			pack_fclose(temp);
+		}
+	}
+	
 	return sprite;
 }
 
 #ifndef DEDICATED_SERVER
 BITMAP* Character::GetFrame(EDirection dir, EState state, int frame)
 {
+	if(dir == D_Left)
+	{
+		switch(state)
+		{
+			case S_Jumping:
+				if(leftjump.size())
+					return leftjump[frame % leftjump.size()];
+			case S_Walking:
+				if(leftwalk.size())
+					return leftwalk[frame % leftwalk.size()];
+			default:
+				return sprite;
+		}
+	}
+	else
+	{
+		switch(state)
+		{
+			case S_Jumping:
+				if(rightjump.size())
+					return rightjump[frame % rightjump.size()];
+			case S_Walking:
+				if(rightwalk.size())
+					return rightwalk[frame % rightwalk.size()];
+			default:
+				return sprite;
+		}
+	}
 	return sprite;
 }
 #endif

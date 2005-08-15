@@ -36,6 +36,10 @@ class Character
 		
 #ifndef DEDICATED_SERVER
 		BITMAP* sprite;
+		std::vector<BITMAP*> rightwalk;
+		std::vector<BITMAP*> leftwalk;
+		std::vector<BITMAP*> rightjump;
+		std::vector<BITMAP*> leftjump;
 #endif
 		
 	public: // Public functions
