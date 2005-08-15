@@ -572,6 +572,17 @@ void Client::OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumpti
 	p->health = health;
 	p->place = place;
 	p->ammo = ammo;
+	
+	if(health < 0)
+	{
+		Finish(false);
+		p->x = 0;
+		p->y = 0;
+		p->score--;
+		p->jumptime = 0;
+		p->xs = 0;
+		p->health = 100;
+	}
 }
 
 void Client::OnBulletShoot(Pawn *p, int id, int x, int y, int xs, int ys)
