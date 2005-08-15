@@ -31,14 +31,11 @@ bool Ini::Load(const string& file, File& sections)
 bool Ini::Load(istream& inifile, File& sections)
 {
 	std::map<std::string, std::vector<std::string> >* cursection = NULL;
-	while(1)
+	while(inifile.good())
 	{
 		string line;
 		char c;
 		while((c = inifile.get()) != '\n' && inifile.good()) line += c;
-		
-		if(!inifile.good())
-			break;
 		
 		// Strip comment
 		if(line.find(';') != string::npos)
@@ -54,6 +51,7 @@ bool Ini::Load(istream& inifile, File& sections)
 		
 		if(line[0] == '[')
 		{	// A section
+			trim(line);
 			string name = line.substr(1, line.length() - 2);
 			if(name.length())
 			{

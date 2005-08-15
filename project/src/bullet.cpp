@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Bullet::Bullet(): Object(OF_Dynamic | OF_Interactive),
+Bullet::Bullet(): Object(OF_Dynamic | OF_Interactive), id(0),
 #ifndef DEDICATED_SERVER
 	sprite(NULL),
 #endif
@@ -34,7 +34,7 @@ void Bullet::Dump(ostream& str)
 #ifndef DEDICATED_SERVER
 	str << TRACE_VAR(sprite);
 #endif
-	str << TRACE_VAR(xs) << TRACE_VAR(ys) << TRACE_VAR(sender);
+	str << TRACE_VAR(id) << TRACE_VAR(xs) << TRACE_VAR(ys) << TRACE_VAR(sender);
 }
 
 EStatus Bullet::Tick(double dtime)
@@ -48,9 +48,12 @@ EStatus Bullet::Tick(double dtime)
 	
 	for(vector<Pawn*>::iterator i = GGame->players.begin(); i != GGame->players.end(); i++)
 	{
-		if((x + w >= (*i)->x && x <= (*i)->x + (*i)->w) && (y + h >= (*i)->y && y <= (*i)->y + (*i)->h))
+		if(*i != sender && (*i)->x <= x && x < (*i)->x + (*i)->w)
 		{
-			cout << "I just killed " << *i << endl;
+			(*i)->health -= 2;
+			cout << "hit " << (*i)->pnum << endl;
+			Finish();
+			return S_Finished;
 		}
 	}
 	

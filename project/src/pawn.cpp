@@ -25,7 +25,7 @@ const char* PrintEPawnState(EPawnState s)
 #	undef PRINT_EGS
 }
 
-Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), instance(NULL), pnum(pnum), score(0), place(0), ammo(0), health(100), pstate(PS_None), face(D_Right), spritestate(S_Standing), jumptime(0), xs(0), animphase(0), nextshot(0)
+Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), instance(NULL), pnum(pnum), score(0), place(0), ammo(0), health(100), pstate(PS_None), face(D_Right), spritestate(S_Standing), jumptime(0), xs(0), animphase(0), nextshot(0), num_bullets(0)
 {
 	w = PawnWidth;
 	h = PawnHeight;
@@ -47,7 +47,7 @@ void Pawn::CheckValid()
 void Pawn::Dump(ostream& str)
 {
 	Object::Dump(str);
-	str << TRACE_VAR(instance) << TRACE_VAR(pnum) << TRACE_VAR(score) << TRACE_VAR(place) << TRACE_VAR(ammo) << TRACE_VAR(health) << " pstate " << PrintEPawnState(pstate) << TRACE_VAR(face) << TRACE_VAR(spritestate) << TRACE_VAR(jumptime) << TRACE_VAR(xs) << TRACE_VAR(animphase) << TRACE_VAR(nextshot);
+	str << TRACE_VAR(instance) << TRACE_VAR(pnum) << TRACE_VAR(score) << TRACE_VAR(place) << TRACE_VAR(ammo) << TRACE_VAR(health) << " pstate " << PrintEPawnState(pstate) << TRACE_VAR(face) << TRACE_VAR(spritestate) << TRACE_VAR(jumptime) << TRACE_VAR(xs) << TRACE_VAR(animphase) << TRACE_VAR(nextshot) << TRACE_VAR(num_bullets);
 }
 
 void Pawn::GotoState(EPawnState news)
@@ -157,6 +157,7 @@ EStatus HumanPawn::Tick(double dtime)
 	{
 		Bullet* b = new Bullet;
 		b->sender = this;
+		b->id = ++num_bullets;
 		GGame->AddObject(b);
 		b->x = x + (face == D_Left ? 0 : PawnWidth * 2 / 3);
 		b->y = y - (PawnWidth * 2 / 3);
@@ -164,7 +165,11 @@ EStatus HumanPawn::Tick(double dtime)
 		b->InitGraphics();
 		nextshot = .1;
 		ammo--;
-		if(Game::local->client) Game::local->client->UpdateMyself();
+		if(Game::local->client)
+		{
+			Game::local->client->Shoot(b);
+			Game::local->client->UpdateMyself();
+		}
 	}
 
 	return Pawn::Tick(dtime);

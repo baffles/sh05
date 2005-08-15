@@ -8,7 +8,7 @@
 #include "object.h"
 #include "character.h"
 
-enum { PawnHeight = 64 };
+enum { PawnHeight = 48 };
 enum { PawnWidth = 24 };
 enum { WalkSpeed = 2 };
 
@@ -45,6 +45,8 @@ class Pawn: public Object
 		double animphase;
 		/// Delay before another shot can be fired
 		double nextshot;
+		/// Number of bullets I've fired
+		int num_bullets;
 		
 	public: // Public functions
 		Pawn(uint32_t pnum);
