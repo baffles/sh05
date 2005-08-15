@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "plat.h"
 #include "pawn.h"
 #include "abg.h"
 #include "bullet.h"

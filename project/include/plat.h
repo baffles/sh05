@@ -49,4 +49,12 @@ TimeType GetDiff(TimeType _then, double& dtime);
 	void Sleep(uint32_t msecs);
 #endif
 
+#ifdef DEDICATED_SERVER
+# ifdef __linux__
+#  define BITMAP void*
+# endif
+# define MAX(a, b) ((a) > (b) ? (a) : (b))
+# define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
 // The end

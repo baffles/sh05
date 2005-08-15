@@ -46,9 +46,8 @@ class Character
 		Character();
 		virtual ~Character();
 		
-		virtual bool InitGraphics();
-
 #ifndef DEDICATED_SERVER
+		virtual bool InitGraphics();
 		virtual BITMAP* GetFrame(EDirection dir, EState state, int frame);
 #endif
 };

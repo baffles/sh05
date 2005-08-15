@@ -31,11 +31,13 @@ Character* Character::GetByName(const string& name)
 	
 	Character* c = new Character;
 	c->name = name;
+#ifndef DEDICATED_SERVER
 	if(!c->InitGraphics())
 	{
 		delete c;
 		return NULL;
 	}
+#endif
 	
 	chars.push_back(c);
 	

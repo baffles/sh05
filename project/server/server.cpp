@@ -299,7 +299,7 @@ void Server::OnUpdate(UserData& usr, int pstate, int face, int spritestate, int 
 	usr.user->pawn->xs = xs;
 	
 	stringstream s;
-	s << "Upd " << usr->user->pawn->pnum << " " << pstate << " " << face << " " << spritestate << " " << jumptime << " " << xs << endl;
+	s << "Upd " << usr.user->pawn->pnum << " " << pstate << " " << face << " " << spritestate << " " << jumptime << " " << xs << endl;
 	Send(NULL, s.str(), CGame, true);
 }
 
