@@ -65,8 +65,6 @@ EStatus Pawn::Tick(double dtime)
 	animphase += dtime;
 	if(animphase >= 60)
 		animphase -= 60;
-	if(xs == 0)
-		spritestate = S_Standing;
 		
 	if(nextshot > 0)
 	{
@@ -112,6 +110,10 @@ void Pawn::Draw(BITMAP* dest)
 EStatus HumanPawn::Tick(double dtime)
 {
 	TRACE_ASSERT(Game::local);
+	
+	if(xs == 0)
+		spritestate = S_Standing;
+		
 	switch(physstate)
 	{
 		case PHYS_Normal:
