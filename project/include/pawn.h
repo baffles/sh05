@@ -31,6 +31,7 @@ class Pawn: public Object
 		uint32_t pnum;
 		int score;
 		int place;
+		int ammo;
 		EPawnState pstate;
 		EDirection face;
 		EState spritestate;

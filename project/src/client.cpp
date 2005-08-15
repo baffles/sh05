@@ -42,8 +42,6 @@ Client::Client(string host, int port)
 	peer = NULL;
 	enet_address_set_host(&address, host.c_str());
 	address.port = port;
-	//lag = 0;
-	//progress = 0;
 	connected = false;
 }
 

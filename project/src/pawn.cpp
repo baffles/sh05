@@ -7,6 +7,7 @@
 #include "pawn.h"
 #include "abg.h"
 #include "bullet.h"
+#include "game.h"
 
 using namespace std;
 
@@ -24,7 +25,7 @@ const char* PrintEPawnState(EPawnState s)
 #	undef PRINT_EGS
 }
 
-Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), instance(NULL), pnum(pnum), score(0), place(0), pstate(PS_None), face(D_Right), spritestate(S_Standing), jumptime(0), xs(0), animphase(0), nextshot(0)
+Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), instance(NULL), pnum(pnum), score(0), place(0), ammo(0), pstate(PS_None), face(D_Right), spritestate(S_Standing), jumptime(0), xs(0), animphase(0), nextshot(0)
 {
 	w = PawnWidth;
 	h = PawnHeight;
@@ -110,6 +111,7 @@ void Pawn::Draw(BITMAP* dest)
 
 EStatus HumanPawn::Tick(double dtime)
 {
+	TRACE_ASSERT(Game::local);
 	switch(physstate)
 	{
 		case PHYS_Normal:
@@ -118,16 +120,19 @@ EStatus HumanPawn::Tick(double dtime)
 				xs = MIN(xs + WalkSpeed, WalkSpeed * 3);
 				face = D_Right;
 				spritestate = S_Walking;
+				if(Game::local->client) Game::local->client->UpdateMyself();
 			}
 			else if(key[KEY_LEFT])
 			{
 				xs = MAX(xs - WalkSpeed, -WalkSpeed * 3);
 				face = D_Left;
 				spritestate = S_Walking;
+				if(Game::local->client) Game::local->client->UpdateMyself();
 			}
 			if(key[KEY_SPACE] && physstate == PHYS_Normal)
 			{
 				GotoState(PS_Jumping);
+				if(Game::local->client) Game::local->client->UpdateMyself();
 			}
 			break;
 		case PHYS_Falling:
@@ -136,15 +141,17 @@ EStatus HumanPawn::Tick(double dtime)
 			{
 				xs = MIN(xs + WalkSpeed, WalkSpeed * 3) / 3;
 				face = D_Right;
+				if(Game::local->client) Game::local->client->UpdateMyself();
 			}
 			else if(key[KEY_LEFT])
 			{
 				xs = MAX(xs - WalkSpeed, -WalkSpeed * 3) / 3;
 				face = D_Left;
+				if(Game::local->client) Game::local->client->UpdateMyself();
 			}
 			break;
 	}
-	if((key[KEY_A] || key[KEY_S] || key[KEY_D] || key[KEY_F]) && nextshot <= 0)
+	if((key[KEY_A] || key[KEY_S] || key[KEY_D] || key[KEY_F]) && nextshot <= 0 && ammo > 0)
 	{
 		Bullet* b = new Bullet;
 		GGame->AddObject(b);
@@ -153,6 +160,8 @@ EStatus HumanPawn::Tick(double dtime)
 		b->xs = 5 * (face == D_Left ? -1 : 1);
 		b->InitGraphics();
 		nextshot = .1;
+		ammo--;
+		if(Game::local->client) Game::local->client->UpdateMyself();
 	}
 
 	return Pawn::Tick(dtime);

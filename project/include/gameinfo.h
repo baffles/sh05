@@ -24,7 +24,9 @@ class GameInfo: public GameState
 		void Dump(std::ostream& str);
 		
 		void AddPlayer(Pawn* p);
+		void DelPlayer(Pawn* p);
 		void AddObject(Object* o);
+		void DelObject(Object* o);
 		void SetBoard(Board* b);
 };
 
