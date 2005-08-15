@@ -505,9 +505,12 @@ void Client::OnQuit(unsigned int id, string reason)
 {
 	cout << "<-- " << players[id]->name << " quit (" << reason << ")" << endl;
 	
-	GGame->DelPlayer(players[id]);
-	delete players[id];
-	players.erase(id);
+	map<uint32_t, Pawn*>::iterator p = players.find(id);
+	if(p == players.end())
+		return;
+	GGame->DelPlayer(p->second);
+	delete p->second;
+	players.erase(p);
 }
 
 // Game
