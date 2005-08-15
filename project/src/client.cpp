@@ -42,8 +42,8 @@ Client::Client(string host, int port)
 	peer = NULL;
 	enet_address_set_host(&address, host.c_str());
 	address.port = port;
-	lag = 0;
-	progress = 0;
+	//lag = 0;
+	//progress = 0;
 	connected = false;
 }
 
@@ -93,7 +93,7 @@ void Client::CheckValid()
 void Client::Dump(ostream& str)
 {
 	GameState::Dump(str);
-	str << TRACE_VAR(client) << TRACE_VAR(peer) << TRACE_VAR(lag);
+	str << TRACE_VAR(client) << TRACE_VAR(peer);
 }
 
 bool Client::Send(ENetPeer *p, string data, UDPChannel chan)
@@ -106,226 +106,258 @@ bool Client::Send(ENetPeer *p, string data, UDPChannel chan)
 	return true;
 }
 
+EStatus Client::HandleEvent(ENetEvent& event, bool insend)
+{
+	EStatus s;
+	
+	if(event.type == ENET_EVENT_TYPE_DISCONNECT)
+	{
+		// disconnection
+		connected = false;
+		enet_host_destroy(client);
+		Finish();
+		return S_Finished;
+	}
+	
+	if(event.type == ENET_EVENT_TYPE_RECEIVE)
+	{
+		// data
+		stringstream data;
+		data.write((char *)event.packet->data, event.packet->dataLength);
+		cerr << data.str();
+		// debug
+		//cout << "Packet (len " << event.packet->dataLength << ") channel " << (unsigned int)event.channelID << " contents: " << data.str();
+		
+		string cmd;
+		ws(data);
+		data >> cmd;
+		if(event.channelID == CSystem)
+		{
+			if(cmd == "Reg")
+			{
+				string name;
+				int id;
+				
+				ws(data);
+				if(data.peek() != ':') // should be id
+					data >> id;
+				
+				ws(data);
+				if(data.peek() != ':') // one word name....
+					data >> name;
+				else
+				{
+					data.get();
+					stringbuf temp;
+					data.get(temp);
+					name = temp.str();
+				}
+				
+				OnRegisterConfirm(id, name);
+			}
+			if(cmd == "Boot")
+			{
+				string reason;
+				
+				ws(data);
+				if(data.peek() != ':') // one word reason
+					data >> reason;
+				else
+				{
+					data.get();
+					stringbuf temp;
+					data.get(temp);
+					reason = temp.str();
+				}
+				
+				OnBoot(reason);
+			}
+			
+			if(cmd == "New");
+			{
+				int id;
+				string name;
+				
+				ws(data);
+				data >> id;
+				
+				ws(data);
+				if(data.peek() != ':')
+					data >> name;
+				else
+				{
+					data.get();
+					stringbuf temp;
+					data.get(temp);
+					name = temp.str();
+				}
+				
+				OnNew(id, name);
+			}
+			if(cmd == "Quit")
+			{
+				int id;
+				string reason;
+				
+				stringbuf temp1;
+				data.get(temp1);
+				cout << "This is left of it: " << temp1.str();
+				stringbuf temp;
+				data.get(temp);
+				cout << "This is left of it: " << temp.str();
+				
+				ws(data);
+				data >> id;
+				
+				//ws(data); // Booted(system(Excess Flood))
+				cout << "PEEK! " << data.peek() << endl;
+				if(data.peek() == ':')
+				{
+					data.get();
+					stringbuf temp;
+					data.get(temp);
+					reason = temp.str();
+					cout << "Hmm = " << temp.str() << endl;;
+				}
+				else
+					data >> reason;
+				
+				
+				OnQuit(id, reason);
+			}
+		}
+		else if(event.channelID == CGame)
+		{
+			if(cmd == "Join")
+			{
+				int id;
+				ws(data);
+				data >> id;
+				OnJoin(players[id]);
+			}
+			if(cmd == "Leave")
+			{
+				int id;
+				ws(data);
+				data >> id;
+				OnLeave(players[id]);
+			}
+			
+			if(cmd == "Mov")
+			{
+				int id, nx, ny;
+				
+				ws(data);
+				data >> id;
+				ws(data);
+				data >> nx; data.get(); data >> ny;
+				
+				OnMove(id, nx, ny);
+			}
+			
+			if(cmd == "Upd")
+			{
+				// not here yet
+			}
+			
+			if(cmd == "Sti")
+			{
+				int score, health, x, y, flags, state, serverstate, timeleft;
+				
+				ws(data);
+				data >> score >> health >> x; data.get(); data >> y >> flags >> state >> serverstate >> timeleft;
+				
+				OnStatusUpdate(score, health, x, y, flags, state, serverstate, timeleft);
+			}
+			
+			if(cmd == "Upd")
+			{
+				int id, pstate, face, spritestate, jumptime, xs;
+				
+				ws(data);
+				data >> id >> pstate >> face >> spritestate >> jumptime >> xs;
+				
+				OnUpdate(players[id], pstate, face, spritestate, jumptime, xs);
+			}
+		}
+		else if(event.channelID == CMisc)
+		{
+			if(cmd == "Pong")
+			{
+				string lb;
+				
+				stringbuf temp;
+				ws(data);
+				data.get(temp);
+				lb = temp.str();
+				
+				OnPong(lb);
+			}
+		}
+		else if(event.channelID == CChat)
+		{
+			if(cmd == "Msg")
+			{
+				int fromid;
+				string msg;
+				
+				ws(data);
+				data >> fromid;
+				
+				ws(data);
+				if(data.peek() != ':')
+					data >> msg;
+				else
+				{
+					data.get();
+					stringbuf temp;
+					data.get(temp);
+					msg = temp.str();
+				}
+				
+				OnMsg(players[fromid], msg);
+			}
+		}
+		else if(event.channelID == CFile)
+		{
+			if(cmd == "Send")
+			{
+				string filename;
+				
+				stringbuf temp;
+				data.get(temp);
+				filename = temp.str();
+				
+				s = OnSend(filename);
+				if(s != S_Continue) return s;
+			}
+		}
+		else
+		{
+			// do something???
+		}
+		enet_packet_destroy(event.packet);
+	}
+}
+
 EStatus Client::Tick(double dtime)
 {
 	EStatus s = GameState::Tick(dtime);
 	if(s != S_Continue) return s;
 	
-	progress += dtime;
+	/*progress += dtime;
 	if(progress > 3)
 	{
 		Ping();
 		progress -= 3;
-	}
+	}*/
 	
 	ENetEvent event;
 	
 	while(enet_host_service(client, &event, 0) > 0)
 	{
-		if(event.type == ENET_EVENT_TYPE_DISCONNECT)
-		{
-			// disconnection
-			connected = false;
-			enet_host_destroy(client);
-			Finish();
-			return S_Finished;
-		}
-		
-		if(event.type == ENET_EVENT_TYPE_RECEIVE)
-		{
-			// data
-			stringstream data;
-			data.write((char *)event.packet->data, event.packet->dataLength);
-			cerr << data.str();
-			// debug
-			//cout << "Packet (len " << event.packet->dataLength << ") channel " << (unsigned int)event.channelID << " contents: " << data.str();
-			
-			string cmd;
-			ws(data);
-			data >> cmd;
-			if(event.channelID == CSystem)
-			{
-				if(cmd == "Reg")
-				{
-					string name;
-					int id;
-					
-					ws(data);
-					if(data.peek() != ':') // should be id
-						data >> id;
-					
-					ws(data);
-					if(data.peek() != ':') // one word name....
-						data >> name;
-					else
-					{
-						data.get();
-						stringbuf temp;
-						data.get(temp);
-						name = temp.str();
-					}
-					
-					OnRegisterConfirm(id, name);
-				}
-				if(cmd == "Boot")
-				{
-					string reason;
-					
-					ws(data);
-					if(data.peek() != ':') // one word reason
-						data >> reason;
-					else
-					{
-						data.get();
-						stringbuf temp;
-						data.get(temp);
-						reason = temp.str();
-					}
-					
-					OnBoot(reason);
-				}
-				
-				if(cmd == "New");
-				{
-					int id;
-					string name;
-					
-					ws(data);
-					data >> id;
-					
-					ws(data);
-					if(data.peek() != ':')
-						data >> name;
-					else
-					{
-						data.get();
-						stringbuf temp;
-						data.get(temp);
-						name = temp.str();
-					}
-					
-					OnNew(id, name);
-				}
-				if(cmd == "Quit")
-				{
-					int id;
-					string reason;
-					
-					stringbuf temp1;
-					data.get(temp1);
-					cout << "This is left of it: " << temp1.str();
-					stringbuf temp;
-					data.get(temp);
-					cout << "This is left of it: " << temp.str();
-					
-					ws(data);
-					data >> id;
-					
-					//ws(data); // Booted(system(Excess Flood))
-					cout << "PEEK! " << data.peek() << endl;
-					if(data.peek() == ':')
-					{
-						data.get();
-						stringbuf temp;
-						data.get(temp);
-						reason = temp.str();
-						cout << "Hmm = " << temp.str() << endl;;
-					}
-					else
-						data >> reason;
-					
-					
-					OnQuit(id, reason);
-				}
-			}
-			else if(event.channelID == CGame)
-			{
-				if(cmd == "Join")
-				{
-					int id;
-					ws(data);
-					data >> id;
-					OnJoin(id);
-				}
-				if(cmd == "Leave")
-				{
-					int id;
-					ws(data);
-					data >> id;
-					OnLeave(id);
-				}
-				
-				if(cmd == "Mov")
-				{
-					int id, nx, ny;
-					
-					ws(data);
-					data >> id;
-					ws(data);
-					data >> nx; data.get(); data >> ny;
-					
-					OnMove(id, nx, ny);
-				}
-				
-				if(cmd == "Upd")
-				{
-					// not here yet
-				}
-				
-				if(cmd == "Sti")
-				{
-					int score, health, x, y, flags, state, serverstate, timeleft;
-					
-					ws(data);
-					data >> score >> health >> x; data.get(); data >> y >> flags >> state >> serverstate >> timeleft;
-					
-					OnStatusUpdate(score, health, x, y, flags, state, serverstate, timeleft);
-				}
-			}
-			else if(event.channelID == CMisc)
-			{
-				if(cmd == "Pong")
-				{
-					string lb;
-					
-					stringbuf temp;
-					ws(data);
-					data.get(temp);
-					lb = temp.str();
-					
-					OnPong(lb);
-				}
-			}
-			else if(event.channelID == CChat)
-			{
-				if(cmd == "Msg")
-				{
-					int fromid;
-					string msg;
-					
-					ws(data);
-					data >> fromid;
-					
-					ws(data);
-					if(data.peek() != ':')
-						data >> msg;
-					else
-					{
-						data.get();
-						stringbuf temp;
-						data.get(temp);
-						msg = temp.str();
-					}
-					
-					OnMsg(fromid, msg);
-				}
-			}
-			else
-			{
-				// do something???
-			}
-			enet_packet_destroy(event.packet);
-		}
+		s = HandleEvent(event);
+		if(s != S_Continue) return s;
 	}
 	
 	return s;
@@ -393,7 +425,8 @@ void Client::Join()
 }
 
 void Client::Leave()
-{stringstream s;
+{
+	stringstream s;
 	s << "Leave" << endl;
 	
 	Send(peer, s.str(), CGame);
@@ -437,12 +470,9 @@ void Client::UpdateMyself()
 	TRACE_ASSERT(game->localpawn);
 	Pawn* p = game->localpawn;
 	
-	//!! Tell the server that I have a new state and send:
-	//!! Send(p->pstate);
-	//!! Send(p->face);
-	//!! Send(p->spritestate);
-	//!! Send(p->jumptime);
-	//!! Send(p->xs);
+	stringstream s;
+	s << "Upd " << p->pstate << " " << p->face << " " << p->spritestate << " " << p->jumptime << " " << p->xs << endl;
+	Send(peer, s.str(), CGame);
 }
 
 
@@ -454,6 +484,8 @@ void Client::OnRegisterConfirm(int id, string name)
 	TRACE_ASSERT(game->localpawn);
 	game->localpawn->pnum = id;
 	cout << "I am " << name << ", player " << id << endl;
+	Pawn* p = new Pawn(id);
+	players[id] = p;
 }
 
 void Client::OnBoot(string reason)
@@ -469,11 +501,15 @@ void Client::OnNew(int id, string name)
 	if(id == game->localpawn->pnum)
 		return;
 	Pawn* p = new Pawn(id);
-	//!! Store me in a list somewhere
+	players[id] = p;
 }
 
 void Client::OnQuit(int id, string reason)
 {
+	cout << "<-- " << players[id]->name << " quit (" << reason << ")" << endl;
+	
+	delete players[id];
+	players.erase(id);
 }
 
 // Game
@@ -497,16 +533,60 @@ void Client::OnStatusUpdate(int score, int health, int x, int y, int flags, int 
 {
 }
 
+void OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumptime, int xs)
+{
+	p->pstate = (EPawnState)pstate;
+	p->face = (EDirection)face;
+	p->spritestate = (EState)spritestate;
+	p->jumptime = jumptime;
+	p->xs = xs;
+}
+
 // Misc
 void Client::OnPong(string pd)
 {
-	lag = timeGetTime() - atol(pd.c_str());
+	//lag = timeGetTime() - atol(pd.c_str());
 }
 
 // Chat
 void Client::OnMsg(Pawn* p, string message)
 {
 	cout << "<" << p->name << "> " << message << endl;
+}
+
+// File Send
+EStatus Client::OnSend(string filename)
+{
+	ENetEvent event;
+	EStatus s = S_Continue;
+	ofstream out;
+	out.open(filename.c_str(), ios::binary);
+	
+	while(enet_host_service(client, &event, 0) > 0)
+	{
+		if(event.type != ENET_EVENT_TYPE_RECEIVE || event.channelID != CFile)
+		{
+			s = HandleEvent(event, true); // argh. dont bug us when we are getting a file >:E
+			if(s != S_Continue) return s;
+		}
+		else
+		{
+			stringstream data;
+			data.write((char *)event.packet->data, event.packet->dataLength);
+			
+			if(data.str().substr(0, 3) != "End")
+				if(out)
+					out.write(data.str().c_str(), data.str().size());
+			else
+				break;
+		}
+	}
+	if(out)
+	{
+		out.flush();
+		out.close();
+	}
+	return s;
 }
 
 

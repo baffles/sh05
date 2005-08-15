@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <map>
 #include <time.h>
 
 #include "enet/enet.h"
@@ -18,6 +19,7 @@ enum UDPChannel
 	CGame,
 	CMisc,
 	CChat,
+	CFile,
 	CNumChans // always is last. Not an actual chan, but serves as a count
 };
 
@@ -29,13 +31,14 @@ class Client: public GameState
 		
 	public: // Public variables
 		class Game* game;
+		std::map<int, Pawn*> players;
 	
 	private: // Private variables
 		ENetAddress address;
 		ENetHost *client;
 		ENetPeer *peer;
-		int lag;
-		double progress;
+		//int lag;
+		//double progress;
 		bool connected;
 	
 	public: // Public functions
@@ -48,11 +51,12 @@ class Client: public GameState
 		virtual void CheckValid();
 		virtual void Dump(std::ostream& str);
 		
+		EStatus HandleEvent(ENetEvent& event, bool insend = false);
 		EStatus Tick(double dtime);
 		
 		bool InitLogic();
 		
-		int GetLag() { return lag; }
+		int GetLag() { return peer->roundTripTime; }
 		
 		// Send Handlers
 		void Register(std::string name, std::string password = "");
@@ -76,10 +80,13 @@ class Client: public GameState
 		void OnLeave(Pawn* p);
 		void OnMove(int id, int x, int y);
 		void OnStatusUpdate(int score, int health, int x, int y, int flags, int state, int serverstate, int timeleft);
+		void OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumptime, int xs);
 		// Misc
 		void OnPong(std::string pd);
 		// Chat
 		void OnMsg(Pawn* p, std::string message);
+		// File send stuff
+		EStatus OnSend(std::string filename);
 };
 
 #endif

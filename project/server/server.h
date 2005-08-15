@@ -24,13 +24,11 @@
 // kickfactor. If the dropped message count exceeds the kept message count by this factor, the user is booted.
 #define MSG_KF 1.5
 
-using namespace std;
-
 struct ServerUser
 {
 	bool registered;
-	string name;
-	string password;
+	std::string name;
+	std::string password;
 	
 	struct
 	{
@@ -60,7 +58,8 @@ enum UDPChannel
 	CSystem = 0,
 	CGame,
 	CMisc,
-	CChat
+	CChat,
+	CFile
 };
 
 class Server : public GameState
@@ -70,30 +69,31 @@ class Server : public GameState
 		ENetHost *server;
 		
 		ServerState state;
-		list<ServerUser> users;
+		std::list<ServerUser *> users;
 	
 	public:
 		Server(int port);
 		~Server();
 		
-		bool Send(ENetPeer *p, string data, UDPChannel chan, bool broadcast = false);
-		void Boot(UserData& usr, string reason);
+		bool Send(ENetPeer *p, std::string data, UDPChannel chan, bool broadcast = false);
+		void Boot(UserData& usr, std::string reason);
 		
 		EStatus Tick(double dtime);
 		void ServerTick();
 		
 		// System
-		void OnRegister(UserData& usr, string name, string pass);
-		void OnQuit(UserData& usr, string reason);
+		void OnRegister(UserData& usr, std::string name, std::string pass);
+		void OnQuit(UserData& usr, std::string reason);
 		// Game
 		void OnJoinGame(UserData& usr);
 		void OnLeaveGame(UserData& usr);
 		void OnRequestMove(UserData& usr, int x, int y);
 		void OnRequestStateInfo(UserData& usr);
+		void OnUpdate(UserData& usr, int pstate, int face, int spritestate, int jumptime, int xs);
 		// Misc
-		void OnPing(UserData& usr, string pingdata);
+		void OnPing(UserData& usr, std::string pingdata);
 		// Chat
-		void OnMsg(UserData& usr, string dest, string msg);
+		void OnMsg(UserData& usr, std::string dest, std::string msg);
 };
 
 #endif

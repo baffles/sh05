@@ -1,7 +1,11 @@
 // server.cpp
 //  Server class
 
+#include <iostream>
+
 #include "server.h"
+
+using namespace std;
 
 Server::Server(int port)
 {
@@ -60,19 +64,22 @@ void Server::ServerTick()
 		if(event.type == ENET_EVENT_TYPE_CONNECT)
 		{
 			// new client
-			ServerUser newuser;
-			newuser.registered = false;
-			newuser.pawn = new Pawn(users.size() + 1);
-			newuser.messageinfo.timeval = time(NULL);
-			newuser.messageinfo.count = newuser.messageinfo.kept = newuser.messageinfo.dropped = 0;
+			ServerUser *newuser = new ServerUser;
+			newuser->registered = false;
+			cout << "users.size() = " << users.size() << endl;
+			newuser->pawn = new Pawn(users.size() + 1);
+			newuser->messageinfo.timeval = time(NULL);
+			newuser->messageinfo.count = newuser->messageinfo.kept = newuser->messageinfo.dropped = 0;
 			users.push_back(newuser);
 			
-			event.peer->data = (void *)&users.back();
+			event.peer->data = (void *)users.back();
+			
+			cout << "Connection from " << event.peer->address.host << ":" << event.peer->address.port << endl;
 		}
 		if(event.type == ENET_EVENT_TYPE_DISCONNECT)
 		{
 			// disconnection
-			for(list<ServerUser>::iterator i = users.begin(); i != users.end(); i++)
+			/*for(list<ServerUser>::iterator i = users.begin(); i != users.end(); i++)
 			{
 				if(i->pawn->pnum == ((ServerUser *)event.peer->data)->pawn->pnum)
 				{
@@ -80,29 +87,40 @@ void Server::ServerTick()
 					users.erase(i);
 					break;
 				}
-			}
+			}*/
+			users.remove((ServerUser*)event.peer->data);
+			delete (ServerUser*)event.peer->data;
 			event.peer->data = NULL;
+			
+			cout << "Disconnected.." << endl;
 		}
 		
 		if(event.type == ENET_EVENT_TYPE_RECEIVE)
 		{
 			// data
-			stringstream data((char *)event.packet->data);
+			stringstream data;
+			data.write((char *)event.packet->data, event.packet->dataLength);
+			// debug
+			cout << "Packet (len " << event.packet->dataLength << ") channel " << (unsigned int)event.channelID << " contents: " << data.str();
+			
 			ServerUser *usr = (ServerUser *)event.peer->data;
 			UserData ud;
 			ud.user = usr;
 			ud.peer = event.peer;
 			
 			string cmd;
+			ws(data);
 			data >> cmd;
 			if(event.channelID == CSystem)
 			{
 				if(cmd == "Reg")
 				{
 					string name, password;
+					ws(data);
 					if(data.peek() != ':') // should be a password
 						data >> password;
 					
+					ws(data);
 					if(data.peek() != ':') // one word name....
 						data >> name;
 					else
@@ -119,6 +137,7 @@ void Server::ServerTick()
 				if(cmd == "Quit")
 				{
 					string reason;
+					ws(data);
 					if(data.peek() == ':')
 					{
 						data.get();
@@ -145,6 +164,7 @@ void Server::ServerTick()
 				if(cmd == "Req")
 				{
 					int x, y;
+					ws(data);
 					data >> x; data.get(); data >> y;
 					OnRequestMove(ud, x, y);
 				}
@@ -159,6 +179,7 @@ void Server::ServerTick()
 				{
 					string lb;
 					stringbuf temp;
+					ws(data);
 					data.get(temp);
 					lb = temp.str();
 					
@@ -170,11 +191,13 @@ void Server::ServerTick()
 				if(cmd == "Msg")
 				{
 					string dest, msg;
+					ws(data);
 					if(data.peek() != ':')
 						data >> dest;
 					else
 						dest = "chat";
 					
+					ws(data);
 					if(data.peek() != ':')
 						data >> msg;
 					else
@@ -204,7 +227,10 @@ void Server::OnRegister(UserData& usr, string name, string pass)
 	usr.user->registered = true;
 	usr.user->name = name;
 	usr.user->password = pass;
-	//usr.user->pawn->name = name;
+	usr.user->pawn->name = name;
+	
+	TRACE_ASSERT(usr.usr);
+	TRACE_ASSERT(usr.usr->pawn);
 	
 	stringstream s;
 	s << "Reg " << usr.user->pawn->pnum << " :" << name << endl;
@@ -213,6 +239,8 @@ void Server::OnRegister(UserData& usr, string name, string pass)
 	s.str("");
 	s << "New " << usr.user->pawn->pnum << " :" << name << endl;
 	Send(NULL, s.str(), CSystem, true);
+	
+	cout << "Registration " << name << " reply: " << s.str();
 }
 
 void Server::OnQuit(UserData& usr, string reason)
@@ -261,24 +289,41 @@ void Server::OnRequestStateInfo(UserData& usr)
 	Send(usr.peer, s.str(), CGame);
 }
 
+void Server::OnUpdate(UserData& usr, int pstate, int face, int spritestate, int jumptime, int xs)
+{
+	// Upd = update info - "Upd <pstate> <face> <spritestate> <jumptime> <xs>" [game]
+	usr.user->pawn->pstate = (EPawnState)pstate;
+	usr.user->pawn->face = (EDirection)face;
+	usr.user->pawn->spritestate = (EState)spritestate;
+	usr.user->pawn->jumptime = jumptime;
+	usr.user->pawn->xs = xs;
+	
+	stringstream s;
+	s << "Upd " << usr->user->pawn->pnum << " " << pstate << " " << face << " " << spritestate << " " << jumptime << " " << xs << endl;
+	Send(NULL, s.str(), CGame, true);
+}
+
 // Misc stuff
 void Server::OnPing(UserData& usr, string pingdata)
 {
 	stringstream s;
-	s << "PONG " << pingdata << endl;
+	s << "Pong " << pingdata << endl;
 	Send(usr.peer, s.str(), CMisc);
+	
+	cout << "Got ping, sending pong: " << s.str();
 }
 
 // Chat Stuff
 void Server::OnMsg(UserData& usr, string dest, string msg)
 {
+	//cout << "Rate throttler info: Timeval: " << usr.user->messageinfo.timeval << " <? " << (time(NULL) - MSG_S) << " [MSG_S = " << MSG_S << " MSG_C = " << MSG_C << "]" << endl;
 	if(usr.user->messageinfo.timeval < (time(NULL) - MSG_S))
 	{
 		usr.user->messageinfo.timeval = time(NULL);
 		usr.user->messageinfo.count = 0;
 	}
 	
-	if(usr.user->messageinfo.count > MSG_C)
+	if(usr.user->messageinfo.count++ > MSG_C)
 	{
 		usr.user->messageinfo.dropped++;
 		if(((double)usr.user->messageinfo.dropped / (double)usr.user->messageinfo.kept) > MSG_KF)
@@ -288,7 +333,7 @@ void Server::OnMsg(UserData& usr, string dest, string msg)
 	
 	usr.user->messageinfo.kept++;
 	stringstream s;
-	s << "MSG " << usr.user->pawn->pnum << " :" << msg << endl;
+	s << "Msg " << usr.user->pawn->pnum << " :" << msg << endl;
 	Send(NULL, s.str(), CChat, true);
 }
 
