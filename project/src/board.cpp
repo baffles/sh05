@@ -1,6 +1,7 @@
 // board.cpp
 //  Boaard clss
 
+#include <sstream>
 #include "board.h"
 #include "pawn.h"
 #include "abg.h"
@@ -117,42 +118,59 @@ void Board::Draw(BITMAP* dest)
 
 bool Board::InitGraphics()
 {
-	string file = Ini::GetString(settings, "data", "level", "../../media/NightSky.zip");
+	string file = Ini::GetString(settings, "data", "dir", "../../media");
+	file += "/" + Ini::GetString(settings, "data", "level", "NightSky.zip");
 	PACKFILE* data = pack_fopen_zip_dir(file.c_str());
 	if(!data)
 		return false;
 		
 	PACKFILE* temp;
 	
-	temp = pack_fopen_zip(data, "BG.bmp");
+	temp = pack_fopen_zip(data, "manifest.ini");
+	if(!temp)
+		return false;
+	
+	stringstream inifile;
+	while(1)
+	{
+		char c = pack_getc(temp);
+		if(pack_feof(temp))
+			break;
+		inifile.put(c);
+	}
+	pack_fclose(temp);
+	Ini::File manifest;
+	Ini::Load(inifile, manifest);
+	
+	temp = pack_fopen_zip(data, Ini::GetString(manifest, "graphics", "background", "BG.bmp").c_str());
 	if(temp)
 	{
 		background = load_bmp_pf(temp, NULL);
 		pack_fclose(temp);
 	}
 	
-	temp = pack_fopen_zip(data, "Floor.bmp");
+	temp = pack_fopen_zip(data, Ini::GetString(manifest, "graphics", "floor", "Floor.bmp").c_str());
 	if(temp)
 	{
 		floor = load_bmp_pf(temp, NULL);
 		pack_fclose(temp);
 	}
 	
-	temp = pack_fopen_zip(data, "PlatL.bmp");
+	temp = pack_fopen_zip(data, Ini::GetString(manifest, "graphics", "platleft", "PlatL.bmp").c_str());
 	if(temp)
 	{
 		platleft = load_bmp_pf(temp, NULL);
 		pack_fclose(temp);
 	}
 	
-	temp = pack_fopen_zip(data, "PlatM.bmp");
+	temp = pack_fopen_zip(data, Ini::GetString(manifest, "graphics", "platmiddle", "PlatM.bmp").c_str());
 	if(temp)
 	{
 		platmiddle = load_bmp_pf(temp, NULL);
 		pack_fclose(temp);
 	}
 	
-	temp = pack_fopen_zip(data, "PlatR.bmp");
+	temp = pack_fopen_zip(data, Ini::GetString(manifest, "graphics", "platright", "PlatR.bmp").c_str());
 	if(temp)
 	{
 		platright = load_bmp_pf(temp, NULL);
@@ -161,7 +179,9 @@ bool Board::InitGraphics()
 	
 	pack_fclose(data);
 	
-	return background && floor;
+	Ini::Save(cout, manifest);
+	
+	return background && floor && platleft && platmiddle && platright;
 }
 #endif
 		

@@ -74,7 +74,6 @@ void Pawn::MoveTo(int _x, int _y, double timetoarrive, bool isspeed)
 		movespeed = timetoarrive / floor(timetoarrive);
 	else
 		movespeed = timetoarrive;
-	if(instance) instance->Animate(S_Walking, movespeed * 2);
 }
 
 EStatus Pawn::Tick(double dtime)
@@ -82,8 +81,6 @@ EStatus Pawn::Tick(double dtime)
 	EStatus s = Object::Tick(dtime);
 	if(s != S_Continue && s != S_ContinueNoWait) return s;
 	s = S_ContinueNoWait;
-	
-	if(instance) instance->Tick(dtime);
 	
 	x += xs * (int) (dtime * 60);
 	if(xs > 0)
@@ -116,7 +113,7 @@ void Pawn::Draw(BITMAP* dest)
 {
 	int sx, sy;
 	GGame->board->RealToScreen(dest->w, dest->h, x, y, sx, sy);
-	if(instance) instance->DrawSelf(dest, sx, sy, PawnWidth, PawnHeight);
+	if(instance) masked_blit(instance->GetFrame(D_Left, S_Standing, 0), dest, 0, 0, sx, sy, PawnWidth, PawnHeight);
 }
 
 EStatus HumanPawn::Tick(double dtime)
@@ -127,12 +124,12 @@ EStatus HumanPawn::Tick(double dtime)
 			if(key[KEY_RIGHT])
 			{
 				xs = MIN(xs + WalkSpeed, WalkSpeed * 3);
-				instance->Face(D_Right);
+				face = D_Right;
 			}
 			else if(key[KEY_LEFT])
 			{
 				xs = MAX(xs - WalkSpeed, -WalkSpeed * 3);
-				instance->Face(D_Left);
+				face = D_Left;
 			}
 			if(key[KEY_SPACE] && physstate == PHYS_Normal)
 			{
@@ -143,12 +140,12 @@ EStatus HumanPawn::Tick(double dtime)
 			if(key[KEY_RIGHT])
 			{
 				xs = MIN(xs + WalkSpeed, WalkSpeed * 3) / 3;
-				instance->Face(D_Right);
+				face = D_Right;
 			}
 			else if(key[KEY_LEFT])
 			{
 				xs = MAX(xs - WalkSpeed, -WalkSpeed * 3) / 3;
-				instance->Face(D_Left);
+				face = D_Left;
 			}
 			break;
 	}
@@ -156,9 +153,9 @@ EStatus HumanPawn::Tick(double dtime)
 	{
 		Bullet* b = new Bullet;
 		GGame->AddObject(b);
-		b->x = x + (instance->dir == D_Left ? 0 : PawnWidth * 2 / 3);
+		b->x = x + (face == D_Left ? 0 : PawnWidth * 2 / 3);
 		b->y = y - (PawnWidth * 2 / 3);
-		b->xs = 5 * (instance->dir == D_Left ? -1 : 1);
+		b->xs = 5 * (face == D_Left ? -1 : 1);
 		b->InitGraphics();
 	}
 

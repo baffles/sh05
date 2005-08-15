@@ -62,8 +62,6 @@ int main(int argc, char* argv[])
 
 	GameState::StaticInitGraphics(UM_TripleBufferWMB, true, 320, 200, 24, GFX_AUTODETECT_WINDOWED);
 	
-	Character::StaticInitGraphics();
-	
 	string host = Ini::GetString(settings, "server", "server", "bafsoft.com");
 	int port = atoi(Ini::GetString(settings, "server", "port", "21870").c_str());
 	if(!port)

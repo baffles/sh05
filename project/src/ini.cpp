@@ -25,6 +25,11 @@ bool Ini::Load(const string& file, File& sections)
 	ifstream inifile(file.c_str());
 	if(!inifile.good())
 		return false;
+	return Load(inifile, sections);
+}
+
+bool Ini::Load(istream& inifile, File& sections)
+{
 	std::map<std::string, std::vector<std::string> >* cursection = NULL;
 	while(1)
 	{
@@ -81,6 +86,11 @@ void Ini::Save(const std::string& file, File& sections)
 	ofstream inifile(file.c_str());
 	if(!inifile.is_open())
 		return;
+	Save(inifile, sections);
+}
+
+void Ini::Save(std::ostream& inifile, File& sections)
+{
 	for(map<string, map<string, vector<string> > >::iterator i = sections.begin(); i != sections.end(); i++)
 	{
 		if(i->second.size())

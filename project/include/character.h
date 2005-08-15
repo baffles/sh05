@@ -5,14 +5,12 @@
 #define CHARACTER_H_INCLUDED
 
 #include <vector>
+#include <string>
 #ifndef DEDICATED_SERVER
 #	include <allegro.h>
 #endif
 #include "plat.h"
 #include "gamestate.h"
-
-#define ADD_CHARACTER(char) \
-	char* The##char = new char
 
 enum EDirection
 {
@@ -23,48 +21,32 @@ enum EState
 {
 	S_Standing, S_Walking, S_Jumping
 };
-	
+
 class Character
 {
 	public: // Public static variables
-		static std::vector<Character*>* chars;
-		static bool initialized;
+		static std::vector<Character*> chars;
 		
 	public: // Public static functions
-		static void Initialize();
-		static void RegisterCharacter(Character* c);
-		static void StaticInitGraphics();
 		static void StaticDestroy();
-		static Character* GetByName(const char* name);
+		static Character* GetByName(const std::string& name);
 		
 	public: // Public variables
-		const char* name;
-		const char* flavor;
-		uint32_t id;
+		std::string name;
 		
-		EDirection dir;
-		EState state;
-		double progress;
-		double animphase;
-		double timedialation;
+#ifndef DEDICATED_SERVER
+		BITMAP* sprite;
+#endif
 		
 	public: // Public functions
 		Character();
-		virtual ~Character()
-		{ }
+		virtual ~Character();
 		
-		virtual bool InitGraphics()
-		{ return true; }
+		virtual bool InitGraphics();
 
 #ifndef DEDICATED_SERVER
-		virtual void DrawSelf(BITMAP* dest, int x, int y, int w, int h) = 0;
-		
-		void StandardStates(BITMAP* dest, int x, int y, int w, int h, BITMAP* frame);
+		virtual BITMAP* GetFrame(EDirection dir, EState state, int frame);
 #endif
-
-		virtual EStatus Tick(double dtime);
-		virtual void Animate(EState animation, double timetoarrive);
-		virtual void Face(EDirection newdir);
 };
 
 #endif

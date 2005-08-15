@@ -29,6 +29,8 @@ class Pawn: public Object
 		int score;
 		int place;
 		EPawnState pstate;
+		EDirection face;
+		EState spritestate;
 		
 		int sx, sy;
 		int dx, dy;
