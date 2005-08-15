@@ -62,6 +62,7 @@ class Client: public GameState
 		void StatusUpdate();
 		void Ping();
 		void Msg(std::string message, std::string dest = "chat");
+		void UpdateMyself();
 		
 		// Recieve Handlers
 		// System
@@ -71,14 +72,14 @@ class Client: public GameState
 		void OnNew(int id, std::string name);
 		void OnQuit(int id, std::string reason);
 		// Game
-		void OnJoin(int id);
-		void OnLeave(int id);
+		void OnJoin(Pawn* p);
+		void OnLeave(Pawn* p);
 		void OnMove(int id, int x, int y);
 		void OnStatusUpdate(int score, int health, int x, int y, int flags, int state, int serverstate, int timeleft);
 		// Misc
 		void OnPong(std::string pd);
 		// Chat
-		void OnMsg(int id, std::string message);
+		void OnMsg(Pawn* p, std::string message);
 };
 
 #endif

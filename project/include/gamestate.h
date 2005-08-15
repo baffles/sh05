@@ -240,23 +240,6 @@ class SubStateText: public GameState
 #endif
 };
 
-/// Waits while moving a pawn to the given point and deletes itself when done.
-class SubStateWalkPawn: public GameState
-{
-	public: // Public variables
-		Pawn* p;
-		double timetoarrive;
-		
-	public: // Public functions
-		SubStateWalkPawn(Pawn* p, int x, int y, double timetoarrive, bool isspeed = false);
-		
-		/// Debugging functions
-		virtual void CheckValid();
-		virtual void Dump(std::ostream& str);
-		
-		virtual EStatus Tick(double dtime);
-};
-
 #endif
 
 // The end

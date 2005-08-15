@@ -847,33 +847,4 @@ void SubStateText::Draw(BITMAP* dest)
 }
 #endif
 
-SubStateWalkPawn::SubStateWalkPawn(Pawn* p, int x, int y, double _timetoarrive, bool isspeed): p(p), timetoarrive(_timetoarrive)
-{
-	p->MoveTo(x, y, timetoarrive, isspeed);
-}
-
-void SubStateWalkPawn::CheckValid()
-{
-	GameState::CheckValid();
-	TRACE_ASSERT(p);
-}
-
-void SubStateWalkPawn::Dump(ostream& str)
-{
-	GameState::Dump(str);
-	str << TRACE_VAR((void*) p);
-}
-
-EStatus SubStateWalkPawn::Tick(double dtime)
-{
-	EStatus s = GameState::Tick(dtime);
-	if(s != S_Continue) return s;
-	if(p->pstate == PS_None)
-	{
-		Finish();
-		return S_Finished;
-	}
-	return S_Continue;
-}
-
 // The end

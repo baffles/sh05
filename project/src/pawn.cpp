@@ -23,7 +23,7 @@ const char* PrintEPawnState(EPawnState s)
 #	undef PRINT_EGS
 }
 
-Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), instance(NULL), pnum(pnum), location(0), score(0), place(0), pstate(PS_None), jumptime(0), xs(0)
+Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), instance(NULL), pnum(pnum), score(0), place(0), pstate(PS_None), jumptime(0), xs(0)
 {
 	w = PawnWidth;
 	h = PawnHeight;
@@ -42,38 +42,13 @@ void Pawn::CheckValid()
 void Pawn::Dump(ostream& str)
 {
 	Object::Dump(str);
-	str << TRACE_VAR(instance) << TRACE_VAR(pnum) << TRACE_VAR(location) << " pstate " << PrintEPawnState(pstate) << TRACE_VAR(sx) << TRACE_VAR(sy) << TRACE_VAR(dx) << TRACE_VAR(dy) << TRACE_VAR(x) << TRACE_VAR(y) << TRACE_VAR(progress) << TRACE_VAR(timedialation) << TRACE_VAR(xs);
+	str << TRACE_VAR(instance) << TRACE_VAR(pnum) << " pstate " << PrintEPawnState(pstate) << TRACE_VAR(x) << TRACE_VAR(y) << TRACE_VAR(xs);
 }
 
 void Pawn::GotoState(EPawnState news)
 {
 	pstate = news;
-	progress = 0;
 	jumptime = 0;
-}
-
-void Pawn::MoveTo(int _x, int _y, double timetoarrive, bool isspeed)
-{
-	if(isspeed)
-	{
-		// Time = distance / rate
-		double dx, dy, d;
-		dx = fabs((double) x - _x);
-		dy = fabs((double) y - _y);
-		d = sqrt((dx * dx) + (dy * dy));
-		timetoarrive = d / timetoarrive;
-	}
-	sx = x;
-	sy = y;
-	dx = _x;
-	dy = _y;
-	timedialation = 1 / timetoarrive;
-	GotoState(PS_Walking);
-	double movespeed;
-	if(timetoarrive > 1)
-		movespeed = timetoarrive / floor(timetoarrive);
-	else
-		movespeed = timetoarrive;
 }
 
 EStatus Pawn::Tick(double dtime)

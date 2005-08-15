@@ -29,17 +29,11 @@ class Pawn: public Object
 		std::string name;
 		/// Server-assigned number
 		uint32_t pnum;
-		int location;
 		int score;
 		int place;
 		EPawnState pstate;
 		EDirection face;
 		EState spritestate;
-		
-		int sx, sy;
-		int dx, dy;
-		double progress;
-		double timedialation;
 		
 		/// Amount of time Pawn has been jumping for
 		double jumptime;
@@ -57,8 +51,7 @@ class Pawn: public Object
 		virtual void GotoState(EPawnState news);
 		
 		void Move(int x, int y)
-		{ this->x = sx = dx = x; this->y = sy = dy = y; }
-		void MoveTo(int x, int y, double timetoarrive, bool isspeed = false);
+		{ this->x = x; this->y = y; }
 		
 		virtual EStatus Tick(double dtime);
 #ifndef DEDICATED_SERVER

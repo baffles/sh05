@@ -431,14 +431,28 @@ void Client::Msg(std::string message, std::string dest)
 	Send(peer, s.str(), CChat);
 }
 
+void Client::UpdateMyself()
+{
+	TRACE_ASSERT(game);
+	TRACE_ASSERT(game->localpawn);
+	Pawn* p = game->localpawn;
+	
+	//!! Tell the server that I have a new state and send:
+	//!! Send(p->pstate);
+	//!! Send(p->face);
+	//!! Send(p->spritestate);
+	//!! Send(p->jumptime);
+	//!! Send(p->xs);
+}
+
 
 // Recieve Handlers
 // System
 void Client::OnRegisterConfirm(int id, string name)
 {
-	TRACE_ASSERT(Game::local);
-	TRACE_ASSERT(Game::local->localpawn);
-	Game::local->localpawn->pnum = id;
+	TRACE_ASSERT(game);
+	TRACE_ASSERT(game->localpawn);
+	game->localpawn->pnum = id;
 	cout << "I am " << name << ", player " << id << endl;
 }
 
@@ -450,28 +464,29 @@ void Client::OnBoot(string reason)
 
 void Client::OnNew(int id, string name)
 {
-	TRACE_ASSERT(Game::local);
-	TRACE_ASSERT(Game::local->localpawn);
-	if(id == Game::local->localpawn->pnum)
+	TRACE_ASSERT(game);
+	TRACE_ASSERT(game->localpawn);
+	if(id == game->localpawn->pnum)
 		return;
 	Pawn* p = new Pawn(id);
-	p->instance = Character::GetByName("CGamesPlay");
-	GGame->AddPlayer(p);
-	cout << "-- " << name << " joined the game (" << id << ")" << endl;
+	//!! Store me in a list somewhere
 }
 
 void Client::OnQuit(int id, string reason)
 {
-	cout << "<-- " << id << " Quit (" << reason << ")" << endl;
 }
 
 // Game
-void Client::OnJoin(int id)
+void Client::OnJoin(Pawn* p)
 {
+	p->instance = Character::GetByName("CGamesPlay");
+	GGame->AddPlayer(p);
+	cout << "-- " << p->name << " joined the game" << endl;
 }
 
-void Client::OnLeave(int id)
+void Client::OnLeave(Pawn* p)
 {
+	cout << "<-- " << p->name << " left the game" << endl;
 }
 
 void Client::OnMove(int id, int x, int y)
@@ -489,9 +504,9 @@ void Client::OnPong(string pd)
 }
 
 // Chat
-void Client::OnMsg(int id, string message)
+void Client::OnMsg(Pawn* p, string message)
 {
-	cout << "<" << id << "> " << message << endl;
+	cout << "<" << p->name << "> " << message << endl;
 }
 
 
