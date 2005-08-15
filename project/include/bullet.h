@@ -1,7 +1,7 @@
 // bullet.h
 //  Bullet class
 
-#ifndef BULLET_H_INLCUDED
+#ifndef BULLET_H_INCLUDED
 #define BULLET_H_INCLUDED
 
 #include "object.h"
