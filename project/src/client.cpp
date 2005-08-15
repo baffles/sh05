@@ -594,8 +594,6 @@ void Client::OnBulletShoot(Pawn *p, int id, int x, int y, int xs, int ys)
 	if(p == game->localpawn)
 		return;
 	
-	cout << "New bullet" << endl;
-	
 	Bullet *b = new Bullet;
 	b->id = id;
 	b->x = x;
@@ -604,6 +602,8 @@ void Client::OnBulletShoot(Pawn *p, int id, int x, int y, int xs, int ys)
 	b->ys = ys;
 	b->sender = p;
 	b->InitGraphics();
+	
+	cout << "New bullet " << b << endl;
 	
 	GGame->AddObject(b);
 }

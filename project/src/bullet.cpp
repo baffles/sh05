@@ -34,7 +34,8 @@ void Bullet::Dump(ostream& str)
 #ifndef DEDICATED_SERVER
 	str << TRACE_VAR(sprite);
 #endif
-	str << TRACE_VAR(id) << TRACE_VAR(xs) << TRACE_VAR(ys) << TRACE_VAR(sender);
+	str << TRACE_VAR(id) << TRACE_VAR(xs) << TRACE_VAR(ys) << " sender ";
+	TRACE_PRINT_ID(str, sender);
 }
 
 EStatus Bullet::Tick(double dtime)
@@ -48,7 +49,7 @@ EStatus Bullet::Tick(double dtime)
 	
 	for(vector<Pawn*>::iterator i = GGame->players.begin(); i != GGame->players.end(); i++)
 	{
-		if(*i != sender && (*i)->x <= x && x < (*i)->x + (*i)->w)
+		if(*i != sender && (*i)->x <= x && x < (*i)->x + (*i)->w && (*i)->y <= y && y < (*i)->y + (*i)->h)
 		{
 			(*i)->health -= 2;
 			cout << "hit " << (*i)->pnum << endl;
