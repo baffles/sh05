@@ -94,9 +94,13 @@ void Client::Dump(ostream& str)
 	str << TRACE_VAR(client) << TRACE_VAR(peer);
 }
 
-bool Client::Send(ENetPeer *p, string data, UDPChannel chan)
+bool Client::Send(ENetPeer *p, string data, UDPChannel chan, bool reliable)
 {
-	ENetPacket *packet = enet_packet_create(data.c_str(), data.length(), ENET_PACKET_FLAG_RELIABLE);
+	ENetPacket *packet;
+	if(reliable)
+		packet = enet_packet_create(data.c_str(), data.length(), ENET_PACKET_FLAG_RELIABLE);
+	else
+		packet = enet_packet_create(data.c_str(), data.length(), 0);
 	
 	enet_peer_send(p, chan, packet);
 	
@@ -466,7 +470,7 @@ void Client::UpdateMyself()
 	
 	stringstream s;
 	s << "Upd " << p->pstate << " " << p->face << " " << p->spritestate << " " << p->jumptime << " " << p->xs << endl;
-	Send(peer, s.str(), CGame);
+	Send(peer, s.str(), CGame, false);
 }
 
 
