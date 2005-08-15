@@ -17,6 +17,7 @@
 #include "enet/enet.h"
 #include "pawn.h"
 #include "gamestate.h"
+#include "gameinfo.h"
 
 // flood control setup. MSG_C messages allowed every MSG_S seconds
 #define MSG_C 5
@@ -69,6 +70,7 @@ class Server : public GameState
 		ENetHost *server;
 		
 		ServerState state;
+		GameInfo *game;
 		std::list<ServerUser *> users;
 	
 	public:
@@ -77,6 +79,8 @@ class Server : public GameState
 		
 		bool Send(ENetPeer *p, std::string data, UDPChannel chan, bool broadcast = false, bool reliable = true);
 		void Boot(UserData& usr, std::string reason);
+		
+		bool InitLogic();
 		
 		EStatus Tick(double dtime);
 		void ServerTick();
@@ -90,6 +94,7 @@ class Server : public GameState
 		void OnRequestMove(UserData& usr, int x, int y);
 		void OnRequestStateInfo(UserData& usr);
 		void OnUpdate(UserData& usr, int pstate, int face, int spritestate, int jumptime, int xs, int x, int y, int score, int health, int place, int ammo);
+		void OnBulletShoot(UserData& usr, int id, int x, int y, int xs, int ys);
 		// Misc
 		void OnPing(UserData& usr, std::string pingdata);
 		// Chat

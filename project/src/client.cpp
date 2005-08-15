@@ -276,6 +276,22 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 				
 				OnUpdate(players[id], pstate, face, spritestate, jumptime, xs, x, y, score, health, place, ammo);
 			}
+			
+			if(cmd == "BulletShoot")
+			{
+				unsigned int id;
+				int x, y, xs, ys;
+				
+				ws(data);
+				data >> id >> x >> y >> xs >> ys;
+				
+				OnBulletShoot(players[id], id, x, y, xs, ys);
+			}
+			
+			if(cmd == "BulletKill")
+			{
+				
+			}
 		}
 		else if(event.channelID == CMisc)
 		{
@@ -473,6 +489,13 @@ void Client::UpdateMyself()
 	Send(peer, s.str(), CGame, false);
 }
 
+void Client::Shoot(Bullet *b)
+{
+	stringstream s;
+	s << "BulletShoot " << b->id << " " << b->x << " " << b->y << " " << b->xs << " " << b->ys << endl;
+	Send(peer, s.str(), CGame);
+}
+
 
 // Recieve Handlers
 // System
@@ -549,6 +572,22 @@ void Client::OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumpti
 	p->health = health;
 	p->place = place;
 	p->ammo = ammo;
+}
+
+void Client::OnBulletShoot(Pawn *p, int id, int x, int y, int xs, int ys)
+{
+	if(p == game->localpawn)
+		return;
+	
+	Bullet *b = new Bullet;
+	b->id = id;
+	b->x = x;
+	b->y = y;
+	b->xs = xs;
+	b->ys = ys;
+	b->sender = p;
+	
+	GGame->AddObject(b);
 }
 
 // Misc

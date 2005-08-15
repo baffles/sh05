@@ -12,6 +12,7 @@
 
 #include "enet/enet.h"
 #include "gamestate.h"
+#include "bullet.h"
 
 enum UDPChannel
 {
@@ -67,6 +68,7 @@ class Client: public GameState
 		void Ping();
 		void Msg(std::string message, std::string dest = "chat");
 		void UpdateMyself();
+		void Shoot(Bullet *b);
 		
 		// Recieve Handlers
 		// System
@@ -81,6 +83,7 @@ class Client: public GameState
 		void OnMove(unsigned int id, int x, int y);
 		void OnStatusUpdate(int score, int health, int x, int y, int flags, int state, int serverstate, int timeleft);
 		void OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumptime, int xs, int x, int y, int score, int health, int place, int ammo);
+		void OnBulletShoot(Pawn *p, int id, int x, int y, int xs, int ys);
 		// Misc
 		void OnPong(std::string pd);
 		// Chat

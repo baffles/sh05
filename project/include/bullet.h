@@ -13,6 +13,8 @@ class Bullet: public Object
 		/// Sprite
 		BITMAP* sprite;
 #endif
+		/// ID
+		int id;
 		/// Speed
 		int xs, ys;
 		/// Pawn who sent this Bullet

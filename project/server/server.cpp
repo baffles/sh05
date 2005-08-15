@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "server.h"
+#include "bullet.h"
 
 using namespace std;
 
@@ -53,6 +54,15 @@ void Server::Boot(UserData& usr, string reason)
 }
 
 
+bool Server::InitLogic()
+{
+	game = new GameInfo;
+	AddManagedChild(game);
+	
+	return true;
+}
+
+
 EStatus Server::Tick(double dtime)
 {
 	ServerTick();
@@ -76,6 +86,7 @@ void Server::ServerTick()
 			newuser->messageinfo.timeval = time(NULL);
 			newuser->messageinfo.count = newuser->messageinfo.kept = newuser->messageinfo.dropped = 0;
 			users.push_back(newuser);
+			game->AddPlayer(newuser->pawn);
 			
 			event.peer->data = (void *)users.back();
 			
@@ -101,6 +112,7 @@ void Server::ServerTick()
 			}
 			
 			users.remove((ServerUser*)event.peer->data);
+			game->DelPlayer(((ServerUser*)event.peer->data)->pawn);
 			delete (ServerUser*)event.peer->data;
 			event.peer->data = NULL;
 			
@@ -190,6 +202,12 @@ void Server::ServerTick()
 					ws(data);
 					data >> pstate >> face >> spritestate >> jumptime >> xs >> x >> y >> score >> health >> place >> ammo;
 					OnUpdate(ud, pstate, face, spritestate, jumptime, xs, x, y, score, health, place, ammo);
+				}
+				if(cmd == "BulletShoot")
+				{
+					int id, x, y, xs, ys;
+					ws(data);
+					data >> id >> x >> y >> id >> x >> y >> xs >> ys;
 				}
 			}
 			else if(event.channelID == CMisc)
@@ -342,6 +360,25 @@ void Server::OnUpdate(UserData& usr, int pstate, int face, int spritestate, int 
 	Send(NULL, s.str(), CGame, true, false);
 	cout << "Sending Update" << endl;
 }
+
+void Server::OnBulletShoot(UserData& usr, int id, int x, int y, int xs, int ys)
+{
+	Bullet *b; // BulletShoot = new bullet - "BulletShoot <id> <shooterid> <x> <y> <xs> <ys>" [game]
+	b = new Bullet;
+	b->id = id;
+	b->x = x;
+	b->y = y;
+	b->xs = xs;
+	b->ys = ys;
+	b->sender = usr.user->pawn;
+	
+	game->AddObject(b);
+	
+	stringstream s;
+	s << "BulletShoot " << b->id << " " << usr.user->pawn->pnum << " " << x << " " << y << " " << xs << " " << ys << endl;
+	Send(NULL, s.str(), CGame, true);
+}
+
 
 // Misc stuff
 void Server::OnPing(UserData& usr, string pingdata)
