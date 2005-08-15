@@ -23,7 +23,7 @@ const char* PrintEPawnState(EPawnState s)
 #	undef PRINT_EGS
 }
 
-Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), instance(NULL), pnum(pnum), score(0), place(0), pstate(PS_None), face(D_Right), spritestate(S_Standing), jumptime(0), xs(0), animphase(0)
+Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), instance(NULL), pnum(pnum), score(0), place(0), pstate(PS_None), face(D_Right), spritestate(S_Standing), jumptime(0), xs(0), animphase(0), nextshot(0)
 {
 	w = PawnWidth;
 	h = PawnHeight;
@@ -45,7 +45,7 @@ void Pawn::CheckValid()
 void Pawn::Dump(ostream& str)
 {
 	Object::Dump(str);
-	str << TRACE_VAR(instance) << TRACE_VAR(pnum) << " pstate " << PrintEPawnState(pstate) << TRACE_VAR(x) << TRACE_VAR(y) << TRACE_VAR(xs) << TRACE_VAR(animphase);
+	str << TRACE_VAR(instance) << TRACE_VAR(pnum) << " pstate " << PrintEPawnState(pstate) << TRACE_VAR(face) << TRACE_VAR(spritestate) << TRACE_VAR(jumptime) << TRACE_VAR(xs) << TRACE_VAR(animphase) << TRACE_VAR(nextshot);
 }
 
 void Pawn::GotoState(EPawnState news)
@@ -65,6 +65,13 @@ EStatus Pawn::Tick(double dtime)
 		animphase -= 60;
 	if(xs == 0)
 		spritestate = S_Standing;
+		
+	if(nextshot > 0)
+	{
+		nextshot -= dtime;
+		if(nextshot < 0)
+			nextshot = 0;
+	}
 	
 	x += xs * (int) (dtime * 60);
 	if(xs > 0)
@@ -136,7 +143,7 @@ EStatus HumanPawn::Tick(double dtime)
 			}
 			break;
 	}
-	if(key[KEY_A] || key[KEY_S] || key[KEY_D] || key[KEY_F])
+	if((key[KEY_A] || key[KEY_S] || key[KEY_D] || key[KEY_F]) && nextshot <= 0)
 	{
 		Bullet* b = new Bullet;
 		GGame->AddObject(b);
@@ -144,6 +151,7 @@ EStatus HumanPawn::Tick(double dtime)
 		b->y = y - (PawnWidth * 2 / 3);
 		b->xs = 5 * (face == D_Left ? -1 : 1);
 		b->InitGraphics();
+		nextshot = .1;
 	}
 
 	return Pawn::Tick(dtime);

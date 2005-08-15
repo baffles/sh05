@@ -41,6 +41,8 @@ class Pawn: public Object
 		int xs;
 		/// Current animation phase (cycle 60 seconds)
 		double animphase;
+		/// Delay before another shot can be fired
+		double nextshot;
 		
 	public: // Public functions
 		Pawn(uint32_t pnum);
