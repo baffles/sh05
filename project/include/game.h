@@ -28,7 +28,9 @@ class Game: public GameState
 		
 		virtual EStatus Tick(double dtime);
 		
+#ifndef DEDICATED_SERVER
 		virtual void Draw(BITMAP* dest);
+#endif
 		
 		virtual bool InitLogic();
 		virtual bool InitGraphics();

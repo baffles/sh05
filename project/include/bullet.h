@@ -9,8 +9,10 @@
 class Bullet: public Object
 {
 	public: // Public variables
+#ifndef DEDICATED_SERVER
 		/// Sprite
 		BITMAP* sprite;
+#endif
 		/// Speed
 		int xs, ys;
 		
@@ -24,9 +26,11 @@ class Bullet: public Object
 		
 		EStatus Tick(double dtime);
 		
+#ifndef DEDICATED_SERVER
 		void Draw(BITMAP* dest);
 		
 		bool InitGraphics();
+#endif
 };
 
 #endif

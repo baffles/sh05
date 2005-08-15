@@ -51,6 +51,7 @@ Character::Character(): name("")
 
 Character::~Character()
 {
+#ifndef DEDICATED_SERVER
 	destroy_bitmap(sprite);
 	for(vector<BITMAP*>::iterator i = rightwalk.begin(); i != rightwalk.end(); i++)
 		destroy_bitmap(*i);
@@ -60,6 +61,7 @@ Character::~Character()
 		destroy_bitmap(*i);
 	for(vector<BITMAP*>::iterator i = leftjump.begin(); i != leftjump.end(); i++)
 		destroy_bitmap(*i);
+#endif
 }
 
 #ifndef DEDICATED_SERVER

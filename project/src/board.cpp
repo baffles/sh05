@@ -13,19 +13,21 @@ using namespace std;
 
 Board::Board(): camx(160), camy(1), _camy(100),
 #ifndef DEDICATED_SERVER
-	background(NULL), floor(NULL), platleft(NULL), platmiddle(NULL), platright(NULL),
+	background(NULL), floor(NULL), platleft(NULL), platmiddle(NULL), platright(NULL), platoffset(0), 
 #endif
-	platoffset(0), state(BS_Normal)
+	state(BS_Normal)
 {
 }
 
 Board::~Board()
 {
+#ifndef DEDICATED_SERVER
 	destroy_bitmap(background);
 	destroy_bitmap(floor);
 	destroy_bitmap(platleft);
 	destroy_bitmap(platmiddle);
 	destroy_bitmap(platright);
+#endif
 }
  
 void Board::CheckValid()
@@ -36,7 +38,9 @@ void Board::CheckValid()
 void Board::Dump(std::ostream& str)
 {
 	GameState::Dump(str);
+#ifndef DEDICATED_SERVER
 	str << TRACE_VAR(background) << TRACE_VAR(floor) << TRACE_VAR(platleft) << TRACE_VAR(platmiddle) << TRACE_VAR(platright) << TRACE_VAR(platoffset) << TRACE_VAR(camx) << TRACE_VAR(camy) << TRACE_VAR(_camy) << endl;
+#endif
 }
 
 void Board::RealToScreen(int w, int h, int inx, int iny, int& x, int& y)

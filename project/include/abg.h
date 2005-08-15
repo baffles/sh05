@@ -14,8 +14,6 @@ extern class GameInfo* GGame;
 extern uint32_t caret_width;
 /// Height of the caret, for DRSes
 extern uint32_t caret_height;
-/// Caret bitmap
-extern BITMAP* caret;
 /// Number of seconds the game has been running for
 extern uint32_t GTime;
 /// The main configuration file

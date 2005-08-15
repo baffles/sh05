@@ -7,7 +7,11 @@
 
 using namespace std;
 
-Bullet::Bullet(): Object(OF_Dynamic | OF_Interactive), sprite(NULL), xs(0), ys(0)
+Bullet::Bullet(): Object(OF_Dynamic | OF_Interactive),
+#ifndef DEDICATED_SERVER
+	sprite(NULL),
+#endif
+	xs(0), ys(0)
 {
 }
 
@@ -18,13 +22,18 @@ Bullet::~Bullet()
 void Bullet::CheckValid()
 {
 	Object::CheckValid();
+#ifndef DEDICATED_SERVER
 	TRACE_ASSERT(sprite);
+#endif
 }
 
 void Bullet::Dump(ostream& str)
 {
 	Object::Dump(str);
-	str << TRACE_VAR(sprite) << TRACE_VAR(xs) << TRACE_VAR(ys);
+#ifndef DEDICATED_SERVER
+	str << TRACE_VAR(sprite);
+#endif
+	str << TRACE_VAR(xs) << TRACE_VAR(ys);
 }
 
 EStatus Bullet::Tick(double dtime)
@@ -45,6 +54,7 @@ EStatus Bullet::Tick(double dtime)
 	return s;
 }
 
+#ifndef DEDICATED_SERVER
 void Bullet::Draw(BITMAP* dest)
 {
 	int x, y;
@@ -59,5 +69,6 @@ bool Bullet::InitGraphics()
 	putpixel(sprite, 4, 4, -1);
 	return sprite;
 }
+#endif
 
 // The end
