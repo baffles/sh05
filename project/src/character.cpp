@@ -7,6 +7,9 @@
 #include <sstream>
 #include "character.h"
 #include "abg.h"
+#ifndef DEDICATED_SERVER
+#include "zipfile.h"
+#endif
 
 using namespace std;
 
@@ -51,8 +54,15 @@ Character::~Character()
 	destroy_bitmap(sprite);
 	for(vector<BITMAP*>::iterator i = rightwalk.begin(); i != rightwalk.end(); i++)
 		destroy_bitmap(*i);
+	for(vector<BITMAP*>::iterator i = rightjump.begin(); i != rightjump.end(); i++)
+		destroy_bitmap(*i);
+	for(vector<BITMAP*>::iterator i = leftwalk.begin(); i != leftwalk.end(); i++)
+		destroy_bitmap(*i);
+	for(vector<BITMAP*>::iterator i = leftjump.begin(); i != leftjump.end(); i++)
+		destroy_bitmap(*i);
 }
 
+#ifndef DEDICATED_SERVER
 bool Character::InitGraphics()
 {
 	string file = Ini::GetString(settings, "data", "dir", "../../media");
@@ -86,8 +96,8 @@ bool Character::InitGraphics()
 		pack_fclose(temp);
 	}
 	
-	vector<string>& section = manifest["graphics"]["walkleft"];
-	for(vector<string>::iterator i = section.begin(); i != section.end(); i++)
+	vector<string>* section = &manifest["graphics"]["walkright"];
+	for(vector<string>::iterator i = section->begin(); i != section->end(); i++)
 	{
 		temp = pack_fopen_zip(data, i->c_str());
 		if(temp)
@@ -98,11 +108,46 @@ bool Character::InitGraphics()
 			pack_fclose(temp);
 		}
 	}
+	section = &manifest["graphics"]["walkleft"];
+	for(vector<string>::iterator i = section->begin(); i != section->end(); i++)
+	{
+		temp = pack_fopen_zip(data, i->c_str());
+		if(temp)
+		{
+			BITMAP* frame = load_bmp_pf(temp, NULL);
+			if(frame)
+				leftwalk.push_back(frame);
+			pack_fclose(temp);
+		}
+	}
+	section = &manifest["graphics"]["jumpright"];
+	for(vector<string>::iterator i = section->begin(); i != section->end(); i++)
+	{
+		temp = pack_fopen_zip(data, i->c_str());
+		if(temp)
+		{
+			BITMAP* frame = load_bmp_pf(temp, NULL);
+			if(frame)
+				rightjump.push_back(frame);
+			pack_fclose(temp);
+		}
+	}
+	section = &manifest["graphics"]["jumpleft"];
+	for(vector<string>::iterator i = section->begin(); i != section->end(); i++)
+	{
+		temp = pack_fopen_zip(data, i->c_str());
+		if(temp)
+		{
+			BITMAP* frame = load_bmp_pf(temp, NULL);
+			if(frame)
+				leftjump.push_back(frame);
+			pack_fclose(temp);
+		}
+	}
 	
 	return sprite;
 }
 
-#ifndef DEDICATED_SERVER
 BITMAP* Character::GetFrame(EDirection dir, EState state, int frame)
 {
 	if(dir == D_Left)

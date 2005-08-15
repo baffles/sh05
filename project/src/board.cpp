@@ -5,7 +5,9 @@
 #include "board.h"
 #include "pawn.h"
 #include "abg.h"
+#ifndef DEDICATED_SERVER
 #include "zipfile.h"
+#endif
 
 using namespace std;
 
