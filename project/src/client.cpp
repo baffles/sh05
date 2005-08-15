@@ -532,7 +532,7 @@ void Client::OnQuit(unsigned int id, string reason)
 	if(p == players.end())
 		return;
 	GGame->DelPlayer(p->second);
-	delete p->second;
+	//delete p->second;
 	players.erase(p);
 }
 
@@ -582,6 +582,10 @@ void Client::OnUpdate(Pawn* p, int pstate, int face, int spritestate, int jumpti
 		p->jumptime = 0;
 		p->xs = 0;
 		p->health = 100;
+		
+		Sleep(3000);
+		p->x = rand() % (BoardWidth - PawnWidth);
+		p->y = 10 + PawnHeight + (rand() % (BoardHeight - PawnHeight));
 	}
 }
 
@@ -590,6 +594,8 @@ void Client::OnBulletShoot(Pawn *p, int id, int x, int y, int xs, int ys)
 	if(p == game->localpawn)
 		return;
 	
+	cout << "New bullet" << endl;
+	
 	Bullet *b = new Bullet;
 	b->id = id;
 	b->x = x;
@@ -597,6 +603,7 @@ void Client::OnBulletShoot(Pawn *p, int id, int x, int y, int xs, int ys)
 	b->xs = xs;
 	b->ys = ys;
 	b->sender = p;
+	b->InitGraphics();
 	
 	GGame->AddObject(b);
 }

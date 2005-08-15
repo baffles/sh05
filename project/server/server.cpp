@@ -207,7 +207,9 @@ void Server::ServerTick()
 				{
 					int id, x, y, xs, ys;
 					ws(data);
-					data >> id >> x >> y >> id >> x >> y >> xs >> ys;
+					data >> id >> x >> y >> xs >> ys;
+					
+					OnBulletShoot(ud, id, x, y, xs, ys);
 				}
 			}
 			else if(event.channelID == CMisc)
