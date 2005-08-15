@@ -39,6 +39,8 @@ class Pawn: public Object
 		double jumptime;
 		/// Movement speed
 		int xs;
+		/// Current animation phase (cycle 60 seconds)
+		double animphase;
 		
 	public: // Public functions
 		Pawn(uint32_t pnum);

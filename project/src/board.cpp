@@ -39,8 +39,9 @@ void Board::Dump(std::ostream& str)
 {
 	GameState::Dump(str);
 #ifndef DEDICATED_SERVER
-	str << TRACE_VAR(background) << TRACE_VAR(floor) << TRACE_VAR(platleft) << TRACE_VAR(platmiddle) << TRACE_VAR(platright) << TRACE_VAR(platoffset) << TRACE_VAR(camx) << TRACE_VAR(camy) << TRACE_VAR(_camy) << endl;
+	str << TRACE_VAR(background) << TRACE_VAR(floor) << TRACE_VAR(platleft) << TRACE_VAR(platmiddle) << TRACE_VAR(platright) << TRACE_VAR(platoffset);
 #endif
+	str << TRACE_VAR(camx) << TRACE_VAR(camy) << TRACE_VAR(_camy);
 }
 
 void Board::RealToScreen(int w, int h, int inx, int iny, int& x, int& y)
@@ -184,8 +185,6 @@ bool Board::InitGraphics()
 	}
 	
 	pack_fclose(data);
-	
-	Ini::Save(cout, manifest);
 	
 	return background && floor && platleft && platmiddle && platright;
 }

@@ -23,7 +23,7 @@ const char* PrintEPawnState(EPawnState s)
 #	undef PRINT_EGS
 }
 
-Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), instance(NULL), pnum(pnum), score(0), place(0), pstate(PS_None), jumptime(0), xs(0)
+Pawn::Pawn(uint32_t pnum): Object(OF_Dynamic | OF_Interactive | OF_Physical), instance(NULL), pnum(pnum), score(0), place(0), pstate(PS_None), face(D_Right), spritestate(S_Standing), jumptime(0), xs(0), animphase(0)
 {
 	w = PawnWidth;
 	h = PawnHeight;
@@ -37,12 +37,15 @@ void Pawn::CheckValid()
 {
 	Object::CheckValid();
 	TRACE_ASSERT(instance);
+	TRACE_ASSERT(pstate >= PS_None && pstate <= PS_Falling);
+	TRACE_ASSERT(face == D_Left || face == D_Right);
+	TRACE_ASSERT(spritestate >= S_Standing && spritestate <= S_Jumping);
 }
 
 void Pawn::Dump(ostream& str)
 {
 	Object::Dump(str);
-	str << TRACE_VAR(instance) << TRACE_VAR(pnum) << " pstate " << PrintEPawnState(pstate) << TRACE_VAR(x) << TRACE_VAR(y) << TRACE_VAR(xs);
+	str << TRACE_VAR(instance) << TRACE_VAR(pnum) << " pstate " << PrintEPawnState(pstate) << TRACE_VAR(x) << TRACE_VAR(y) << TRACE_VAR(xs) << TRACE_VAR(animphase);
 }
 
 void Pawn::GotoState(EPawnState news)
@@ -57,12 +60,18 @@ EStatus Pawn::Tick(double dtime)
 	if(s != S_Continue && s != S_ContinueNoWait) return s;
 	s = S_ContinueNoWait;
 	
+	animphase += dtime;
+	if(animphase >= 60)
+		animphase -= 60;
+	if(xs == 0)
+		spritestate = S_Standing;
+	
 	x += xs * (int) (dtime * 60);
 	if(xs > 0)
 		xs = MAX(xs - (physstate == PHYS_Falling ? WalkSpeed / 3 : WalkSpeed), 0);
 	else if(xs < 0)
 		xs = MIN(xs + (physstate == PHYS_Falling ? WalkSpeed / 3 : WalkSpeed), 0);
-		
+
 	if(x < 0) x = 0;
 	if(x + w > BoardWidth) x = BoardWidth - w;
 	
@@ -88,7 +97,7 @@ void Pawn::Draw(BITMAP* dest)
 {
 	int sx, sy;
 	GGame->board->RealToScreen(dest->w, dest->h, x, y, sx, sy);
-	if(instance) masked_blit(instance->GetFrame(D_Left, S_Standing, 0), dest, 0, 0, sx, sy, PawnWidth, PawnHeight);
+	if(instance) masked_blit(instance->GetFrame(face, spritestate, (int) (animphase * 20)), dest, 0, 0, sx, sy, PawnWidth, PawnHeight);
 }
 
 EStatus HumanPawn::Tick(double dtime)
@@ -100,11 +109,13 @@ EStatus HumanPawn::Tick(double dtime)
 			{
 				xs = MIN(xs + WalkSpeed, WalkSpeed * 3);
 				face = D_Right;
+				spritestate = S_Walking;
 			}
 			else if(key[KEY_LEFT])
 			{
 				xs = MAX(xs - WalkSpeed, -WalkSpeed * 3);
 				face = D_Left;
+				spritestate = S_Walking;
 			}
 			if(key[KEY_SPACE] && physstate == PHYS_Normal)
 			{
@@ -112,6 +123,7 @@ EStatus HumanPawn::Tick(double dtime)
 			}
 			break;
 		case PHYS_Falling:
+			spritestate = S_Jumping;
 			if(key[KEY_RIGHT])
 			{
 				xs = MIN(xs + WalkSpeed, WalkSpeed * 3) / 3;
