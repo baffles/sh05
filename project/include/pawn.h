@@ -4,6 +4,7 @@
 #ifndef PAWN_H_INCLUDED
 #define PAWN_H_INCLUDED
 
+#include <string>
 #include "object.h"
 #include "character.h"
 
@@ -24,6 +25,9 @@ class Pawn: public Object
 {
 	public: // Public variables
 		Character* instance;
+		/// Player's name
+		std::string name;
+		/// Server-assigned number
 		uint32_t pnum;
 		int location;
 		int score;
