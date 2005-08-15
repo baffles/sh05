@@ -11,7 +11,7 @@ Bullet::Bullet(): Object(OF_Dynamic | OF_Interactive),
 #ifndef DEDICATED_SERVER
 	sprite(NULL),
 #endif
-	xs(0), ys(0)
+	xs(0), ys(0), sender(NULL)
 {
 }
 
@@ -25,6 +25,7 @@ void Bullet::CheckValid()
 #ifndef DEDICATED_SERVER
 	TRACE_ASSERT(sprite);
 #endif
+	TRACE_ASSERT(sender);
 }
 
 void Bullet::Dump(ostream& str)
@@ -33,7 +34,7 @@ void Bullet::Dump(ostream& str)
 #ifndef DEDICATED_SERVER
 	str << TRACE_VAR(sprite);
 #endif
-	str << TRACE_VAR(xs) << TRACE_VAR(ys);
+	str << TRACE_VAR(xs) << TRACE_VAR(ys) << TRACE_VAR(sender);
 }
 
 EStatus Bullet::Tick(double dtime)
@@ -44,6 +45,11 @@ EStatus Bullet::Tick(double dtime)
 	
 	x += xs;
 	y += ys;
+	
+	for(vector<Pawn*>::iterator i = GGame->players.begin(); i != GGame->players.end(); i++)
+	{
+		//if((*i)->x <= x
+	}
 	
 	if(x < 0 || x > BoardWidth || y < 0 || y > BoardHeight)
 	{

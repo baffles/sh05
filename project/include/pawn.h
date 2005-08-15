@@ -32,6 +32,7 @@ class Pawn: public Object
 		int score;
 		int place;
 		int ammo;
+		int health;
 		EPawnState pstate;
 		EDirection face;
 		EState spritestate;

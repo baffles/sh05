@@ -15,6 +15,8 @@ class Bullet: public Object
 #endif
 		/// Speed
 		int xs, ys;
+		/// Pawn who sent this Bullet
+		Pawn* sender;
 		
 	public: // Public functions
 		Bullet();

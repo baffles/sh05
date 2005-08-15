@@ -122,7 +122,6 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 		// data
 		stringstream data;
 		data.write((char *)event.packet->data, event.packet->dataLength);
-		cerr << data.str();
 		// debug
 		//cout << "Packet (len " << event.packet->dataLength << ") channel " << (unsigned int)event.channelID << " contents: " << data.str();
 		
@@ -197,15 +196,9 @@ EStatus Client::HandleEvent(ENetEvent& event, bool insend)
 				unsigned int id;
 				string reason;
 				
-				stringbuf temp1;
-				data.get(temp1);
-				cout << "This is left of it: " << temp1.str();
-				stringbuf temp;
-				data.get(temp);
-				cout << "This is left of it: " << temp.str();
-				
 				ws(data);
 				data >> id;
+				cout << "quits " << id << endl;
 				
 				//ws(data); // Booted(system(Excess Flood))
 				cout << "PEEK! " << data.peek() << endl;
