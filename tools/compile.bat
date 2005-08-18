@@ -1,2 +1,2 @@
-@gcc rendertobmp.c -o render.exe -lldpng -lpng -lz -lalleg
+@cl /o render.exe rendertobmp.c loadpng.lib libpng.lib zlib.lib alleg.lib 
 @pause

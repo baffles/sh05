@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <allegro.h>
+
+#ifndef NO_PNG
 #include <loadpng.h>
+#endif
 
 #define BPP 32
 #define TRCOLORS 2
@@ -17,9 +20,9 @@ void MakeColored(BITMAP *src, int r, int g, int b, int level){
  if(!src) return;
  if(r>255||g>255||b>255||r<0||g<0||b<0) return;
  if(level<=0) return;
- colors=(int *) malloc(sizeof(int)*level);
+ colors=(int *) malloc(sizeof(int)*(level+1));
  if(!colors) return;
-for(i=0;i<=level;i++){
+ for(i=0;i<=level;i++){
   colors[i]=makecol((r*i)/level,(g*i)/level,(b*i)/level);
  }
  //The damn slow way :P
@@ -45,7 +48,9 @@ exit(0);
 void pinit(){
 if(allegro_init()) pexit();
 set_color_depth(BPP);
+#ifndef NO_PNG
 register_png_file_type();
+#endif	
 }
 
 void main(int argc, char *argv[]){
@@ -71,4 +76,3 @@ pexit();
 }
 
 END_OF_MAIN();
-
